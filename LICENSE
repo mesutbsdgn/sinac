@@ -1,0 +1,30 @@
+Öğretim Denetçisi (ogretim-denetci) — Use-Only License / Kullanım Hakkı Lisansı
+Copyright (c) 2026 Mesut BASDOGAN (mesutbsdgn). All rights reserved. / Tüm hakları saklıdır.
+
+DRAFT — has not been reviewed by a lawyer. / TASLAK — hukukçu incelemesinden geçmemiştir.
+
+1. Grant / Hak. You may USE Öğretim Denetçisi (the skill text, scripts and data in this repository) with AI
+   agents and applications (for example Claude Code, Codex, OpenCode and CockpitLLM) for your own
+   purposes on devices you own or control. No other right is granted.
+   Öğretim Denetçisi'ni (bu depodaki beceri metni, betikler ve veriler) yapay zekâ ajanlarıyla ve uygulamalarla
+   (örn. Claude Code, Codex, OpenCode, CockpitLLM) sahibi/denetleyicisi olduğunuz cihazlarda kendi
+   amaçlarınız için KULLANABİLİRSİNİZ. Başka hiçbir hak verilmez.
+
+2. Restrictions / Kısıtlar. You may NOT: copy, republish or redistribute it or any part of it
+   (including in other skills, prompts, datasets or repositories); modify or create derivative
+   works; sell, rent, sublicense or share it; use it to train or fine-tune models; remove notices.
+   Kopyalayamaz, yeniden yayımlayamaz, başka beceri/istem/veri kümesi/depo içinde dağıtamaz;
+   değiştiremez, türev eser üretemez; satamaz, kiralayamaz, alt lisanslayamaz, paylaşamaz; model
+   eğitiminde ya da ince ayarda kullanamaz; bildirimleri kaldıramazsınız.
+
+3. No warranty / Garanti yok. PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND; THE COPYRIGHT HOLDER
+   IS NOT LIABLE FOR DAMAGES TO THE MAXIMUM EXTENT PERMITTED BY LAW. / "OLDUĞU GİBİ" SUNULUR;
+   YASANIN İZİN VERDİĞİ AZAMİ ÖLÇÜDE SORUMLULUK KABUL EDİLMEZ.
+   The checks are not medical, pharmaceutical, veterinary or legal advice and do not verify clinical
+   correctness. / Denetimler tıbbi, eczacılık, veteriner ya da hukuki görüş değildir; klinik doğruluğu
+   denetlemez.
+
+4. Termination / Fesih. Ends automatically on breach; stop using and delete all copies.
+   İhlalde kendiliğinden sona erer; kullanımı bırakıp tüm kopyaları silin.
+
+Contact / İletişim: admin@optivolab.com
