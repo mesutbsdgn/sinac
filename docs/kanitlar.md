@@ -191,3 +191,12 @@ Düzeltmeden sonra iki turun 117 belgesi beklenen kararı veriyor. Tasarım kara
 belirsizdir; iki yorumdan biri tutuyorsa ENGEL değil UYARI verilir (belirsizlikte sayısal düzeltme önerilmez).
 Bilinen sınır: düzenli ifade tabanlı denetim her yeni bağımsız turda yeni varyant bulunmasına açıktır; Sınaç yayın
 kararını kolaylaştırır, uzman/elle denetimin yerine geçmez (SKILL.md, README "Sınırları").
+
+### F1 logo ve F2 README (22 Kas 2026)
+
+Logo: Alibaba qwen-image-3.0 (`bl image`) ile 20 taslak üretildi; Mesut baykuş + kalkan + dolma kalem ucu yönünde C1'i
+seçti, Claude elle sade SVG'ye çizdi (`assets/sinac-logo.svg`, dış bağımlılık yok); açık/koyu temada ve 32 px'te
+okunduğu görüldü. README Durulaç düzenine göre yeniden kuruldu (taslak Sonnet 5.5, denetim Claude): eski metindeki
+bilgiler korundu; sağlık tablosundaki her düzey ve "öteki alanlar" tablosundaki her alan ataması betik çıktısı ve
+`ogretim-alanlari.json` ile doğrulandı. Örnek çıktı gerçek betik çıktısıdır. Hız yeniden ölçüldü: 1,9 MB gerçek
+Fransızca ders notu ~4,4 sn (eski 1,3 MB / 17–20 sn ölçümündeki belge bulunamadı; o satır sürüm geçmişinde kaldı).

@@ -1,27 +1,40 @@
 <div align="center">
 
+<img src="assets/sinac-logo.svg" width="120" alt="Sınaç logosu">
+
 # Sınaç
 
 ### Ders notunu sınar: doğru mu, öğretir mi, yayınlanabilir mi?
 
-![test](https://github.com/mesutbsdgn/sinac/actions/workflows/test.yml/badge.svg)
+![Lisans](https://img.shields.io/badge/lisans-kullanım%20hakkı-lightgrey) ![Biçim](https://img.shields.io/badge/bi%C3%A7im-Claude%20skill-8A63D2) ![Model](https://img.shields.io/badge/model-ba%C4%9F%C4%B1ms%C4%B1z-brightgreen) ![Dil](https://img.shields.io/badge/dil-T%C3%BCrk%C3%A7e-e30a17) ![Testler](https://img.shields.io/badge/testler-100%20test%20%2B%20211%20kar%C5%9F%C4%B1%20%C3%B6rnek-brightgreen) ![test](https://github.com/mesutbsdgn/sinac/actions/workflows/test.yml/badge.svg)
 
 </div>
 
-Adı *sınamak* fiilinden gelir, kardeşi Durulaç'la aynı ekle kurulur. Hem belgeyi sınar hem de ölçeğinin en önemli
-boyutunu, öğrencinin kendini sınamasını anlatır.
+Adı *sınamak* fiilinden gelir, kardeşi Durulaç'la aynı ekle kurulur. Hem belgeyi sınar hem de ölçeğinin en önemli boyutunu, öğrencinin kendini sınamasını anlatır. Ders notunu, konu anlatımını, rehberi ve öğrenci PDF'ini kanıta dayalı bir ölçekle denetleyen Claude becerisidir (skill).
 
-Ders notunu, konu anlatımını, rehberi ve öğrenci PDF'ini kanıta dayalı bir ölçekle denetleyen Claude becerisi (skill).
-PDF verilirse yazı boyu ve sayfa düzeni ölçülür; PDF'in metni de hasta kimliği ve ilaç güvenliği için taranır
-(md'de olmayan bulgu "PDF'te" diye işaretlenir; diğer kontroller md üzerinde çalışır).
-Belgenin **bilim dalını** ve **görsel/sözel biçimini** kendisi tanır; tıp notunu dil öğrenme ölçeğiyle, görsel bir
-anatomi atlasını düz metin ölçeğiyle değerlendirmez. Bulguları **satır numarası** ve kural kimliğiyle verir, üç durumlu
-bir karar söyler.
+Belgenin **bilim dalını** ve **görsel/sözel biçimini** kendisi tanır; tıp notunu dil öğrenme ölçeğiyle, görsel bir anatomi atlasını düz metin ölçeğiyle değerlendirmez. Bulguları **satır numarası** ve kural kimliğiyle verir, üç durumlu bir karar söyler.
 
-Dil sadeleştirmez; o iş kardeş becerisi [Durulaç](https://github.com/mesutbsdgn/turkce-ai-durulac)'ındır. İkisi
-birlikte kuruluysa önce Durulaç Türkçe açıklamayı sadeleştirir, sonra Sınaç ölçer.
+## İçindekiler
+
+- [Karar](#karar)
+- [Bir örnek](#bir-örnek)
+- [Ölçek](#ölçek)
+- [Üç katman](#üç-katman)
+- [Sağlık kontrolleri](#sağlık-kontrolleri)
+- [32 alan](#32-alan)
+- [Öteki alanlardan örnekler](#öteki-alanlardan-örnekler)
+- [Kullanım](#kullanım)
+- [Kurulum](#kurulum)
+- [Nasıl sınandı](#nasıl-sınandı)
+- [Kanıt](#kanıt)
+- [Kardeş beceri: Durulaç](#kardeş-beceri-durulaç)
+- [Sınırları](#sınırları)
+- [Sürüm geçmişi](#sürüm-geçmişi)
+- [Lisans](#lisans)
 
 ## Karar
+
+Her denetim üç sonuçtan birini verir:
 
 | Karar | Ne demek | Çıkış kodu |
 |---|---|---|
@@ -29,12 +42,75 @@ birlikte kuruluysa önce Durulaç Türkçe açıklamayı sadeleştirir, sonra S�
 | ◐ **Karar için denetim eksik** | Engel yok, ama içerik doğruluğu (`denetim:`) ya da hedef (`hedef:`) elle doğrulanmadı | 3 |
 | ✓ **Tanımlı kapsamda uygun** | Engel yok, elle alanlar dolu. İçeriğin doğru olduğu anlamına gelmez | 0 |
 
-Üç düzey: **ENGEL** (hasta güvenliği), **HATA** (yayını bozan biçim kusuru), **UYARI** (düzeltme listesi).
+Her bulgu üç düzeyden birini taşır:
+
+| Düzey | Ne demek | Kararı etkiler mi |
+|---|---|---|
+| **ENGEL** | Hasta güvenliği | Evet, yayına engel |
+| **HATA** | Yayını bozan biçim kusuru | Evet, yayına engel |
+| **UYARI** | Düzeltme listesi | Hayır, liste olarak verilir |
+
+## Bir örnek
+
+Girdi, `farmakoloji-notu.md`:
+
+```markdown
+---
+alan: tip
+hedef: Dönem 3 öğrencisi pediatrik parasetamol dozunu hesaplar
+denetim:
+---
+
+# Parasetamol: çocukta doz
+
+## 1. Doz
+
+Parasetamol oral 15 mg/kg, 6 saatte bir verilir.
+
+Örnek: 20 kg çocuk için 20 kg × 15 mg/kg = 3000 mg.
+
+Yetişkinde tablet 5,0 mg değil, 500 mg'dır; günde 4 kez, q.d. yazılmaz.
+
+## 2. Kendini sına
+
+1. 12 kg çocuğa tek doz kaç mg?
+```
+
+Komut (çıkış kodu 1):
+
+```bash
+python3 scripts/ogretim_denetim.py farmakoloji-notu.md --yil 2026
+```
+
+Çıktı (uzun elle listesi kısaltılmıştır; kısaltılan satır aşağıda belirtilmiştir):
+
+```text
+⛔ farmakoloji-notu.md: YAYINA ENGEL VAR · 10/12 (6/8 boyut ölçüldü) · PDF ölçülmedi
+  Alan: Tıp · kullanıcı seçimi, destek — · biçim: sozel
+  | Boyut | Puan |
+  |---|---|
+  | Doğruluk | 0 |
+  | Hedefle uyum | 2 |
+  | Seviye | 2 |
+  | Ezber ve kavrama | 2 |
+  | Okunaklılık | ölçülmedi |
+  | Sıra ve akış | 2 |
+  | Kendini sınama | 2 |
+  | Verimlilik | ölçülmedi |
+  ⛔ ENGEL · satır 13 · Doğruluk: Doz hesabı tutmuyor («20 kg × 15 mg/kg = 3000 mg» → doğrusu 300 mg) → Hesabı yeniden yap; sonuç nottaki sayıyla aynı olmalı  [doz_aritmetigi]
+  ⛔ ENGEL · satır 15 · Doğruluk: Doz yazımında sondaki sıfır ya da baştaki sıfırsız ondalık (5,0 mg) → 5,0 mg → 5 mg; ,5 mg → 0,5 mg. Virgül görülmezse 10 kat doz hatası (ISMP)  [tip_doz_yazimi]
+  ⚠ UYARI · satır 11 · Doğruluk: Çocukta kiloya göre doz var ama en yüksek doz yazılmamış → Hesaplanan doz genelde erişkin en yüksek dozunu geçmemeli; tavanı kaynağıyla yaz (bpac NZ)  [cocuk_azami_doz]
+  ⚠ UYARI · satır 13 · Doğruluk: Kiloya göre doz zaman birimi belirsiz (15 mg/kg) → 'mg/kg/gün' mü 'mg/kg/doz' mu yaz; sıklığı ve en yüksek dozu ekle  [doz_kg_belirsiz]
+  ☐ elle bekleyen: Doğruluk (frontmatter denetim: / hedef:)
+  ℹ Betik doz YAZIMINI denetler, dozun klinik doğruluğunu denetlemez: güncel kaynakla karşılaştır
+  … (11 maddelik sağlık elle listesi ve öğretim ☐ maddeleri; burada kısaltıldı, gerçek çıktıda tek tek yazılıdır)
+```
+
+Dört bulgu yakalandı. Doz hesabı (3000 mg yerine 300 mg olmalı) ve "5,0 mg" yazımı ENGEL sayıldığı için not yayına çıkamaz. Çocuk dozunda en yüksek dozun yazılmaması ile mg/kg'da zaman biriminin belirsizliği düzeltme listesine UYARI olarak girdi.
 
 ## Ölçek
 
-8 boyut, her biri 0 (hata) · 1 (uyarı) · 2 (temiz). Ölçülemeyen boyut (PDF yoksa verimlilik, `hedef:` yoksa hedefle
-uyum…) puanlanmaz; çıktı "11/12 (6/8 boyut ölçüldü)" gibi yazar.
+8 boyut, her biri 0 (hata) · 1 (uyarı) · 2 (temiz). Ölçülemeyen boyut (PDF yoksa verimlilik, `hedef:` yoksa hedefle uyum…) puanlanmaz; çıktı "11/12 (6/8 boyut ölçüldü)" gibi yazar.
 
 | Boyut | Örnek otomatik kontrol |
 |---|---|
@@ -47,13 +123,45 @@ uyum…) puanlanmaz; çıktı "11/12 (6/8 boyut ölçüldü)" gibi yazar.
 | Kendini sınama | kapalı kitap test bölümü, soru–cevap kapsamı |
 | Verimlilik | sayfa tavanı, yarım sayfa oranı |
 
+PDF verilirse yazı boyu ve sayfa düzeni ölçülür; PDF'in metni de hasta kimliği ve ilaç güvenliği için taranır (md'de olmayan bulgu "PDF'te" diye işaretlenir; diğer kontroller md üzerinde çalışır).
+
 ## Üç katman
 
-1. **Ortak çekirdek (her alanda):** yapı ve okunaklılık kontrolleri, **hasta kimliği** (ad, protokol no, tam doğum
-   tarihi) ve **TC kimlik sağlamasına uyan sayı** (etiketli ya da kişi bağlamında ENGEL, bağlamsız UYARI).
-2. **Risk taraması (alandan bağımsız):** metinde ilaç ya da doz geçiyorsa sağlık güvenlik kontrolleri, belge tarih
-   notu bile olsa çalışır.
-3. **Alan profili:** 32 alanın kendi kontrolleri; karma belgede her bölümün alanı ayrıca eklenir.
+| Katman | Ne yapar |
+|---|---|
+| 1. Ortak çekirdek (her alanda) | Yapı ve okunaklılık kontrolleri, **hasta kimliği** (ad, protokol no, tam doğum tarihi) ve **TC kimlik sağlamasına uyan sayı** (etiketli ya da kişi bağlamında ENGEL, bağlamsız UYARI) |
+| 2. Risk taraması (alandan bağımsız) | Metinde ilaç ya da doz geçiyorsa sağlık güvenlik kontrolleri, belge tarih notu bile olsa çalışır |
+| 3. Alan profili | 32 alanın kendi kontrolleri; karma belgede her bölümün alanı ayrıca eklenir |
+
+## Sağlık kontrolleri
+
+Yayını durduranlar:
+
+| Kontrol | Düzey | Örnek |
+|---|---|---|
+| Doz yazımı | ENGEL | "5,0 mg", ".5 mg", ",5 mg" |
+| Tutmayan doz hesabı | ENGEL | "20 kg × 5 mg/kg = 1000 mg" |
+| Tutmayan birim dönüşümü | ENGEL | "Glukoz 90 mg/dL = 50 mmol/L" |
+| Hasta adı, protokol numarası, tam doğum tarihi | ENGEL; vaka bağlamı yoksa (biyografi) yalnız UYARI | Açık etiketle küçük harfle yazılmış ad da, ISO biçimli doğum tarihi de yakalanır |
+
+Doz yazımı kalın yazıda, kodda, tablo hücresinde (birim sütun başlığında olsa da), HTML'de, yaygın LaTeX biçimlerinde (`5{,}0`, `\SI{}{}`, `\mathrm{mg}`) ve tam genişlik rakamda da aranır; "5,0 mg/kg", "5,0-10 mg", "40.0 MG" da yakalanır. "1.000 mg" binlik sayılır; "PSA 4,0 ng/mL" gibi düzey ölçümü ve ilaç adı geçmeyen fen föyündeki "25,0 mL" sayılmaz.
+
+Uyarı verenler:
+
+| Kontrol | Düzey | Örnek |
+|---|---|---|
+| ISMP'nin karıştırılmaya açık kısaltmaları | UYARI | U, IU, cc, q.d., μg, SC, TIW, D/C, OD/OS/OU, ml, "1:1000" |
+| Bitişik doz | UYARI | "10mg", "propranolol20 mg" |
+| Zaman birimi yazılmamış mg/kg | UYARI | "15 mg/kg" |
+| Çocuk dozunda en yüksek doz yok | UYARI | Kiloya göre doz var, tavan yazılmamış |
+| "Gerektiğinde" talimatında doz aralığı yok | UYARI | — |
+| Harfli gebelik kategorisi | UYARI | — |
+| Kaynaksız referans aralığı | UYARI | — |
+| Güncelliği doğrulanması gereken kılavuz, DSM-IV, yanlış yazılmış tür adı | UYARI | — |
+
+Tıp ve yedi sağlık alt alanına ayrıca 11 maddelik ortak sağlık elle listesi eklenir (psikolojide yok).
+
+## 32 alan
 
 | Grup | Alanlar |
 |---|---|
@@ -62,35 +170,19 @@ uyum…) puanlanmaz; çıktı "11/12 (6/8 boyut ölçüldü)" gibi yazar.
 | Sosyal ve beşerî | hukuk, iktisat ve işletme, tarih, coğrafya, sosyal bilgiler, ilahiyat, edebiyat, felsefe, sanat ve müzik, eğitim |
 | Dil ve genel | yabancı dil (fr, en, de, es, it), genel |
 
-**Sağlıkta yayını durduranlar:**
+Alan profilleri `references/ogretim-alanlari.json` dosyasındadır (32 alan profili).
 
-- "5,0 mg", ".5 mg" ya da ",5 mg" doz yazımı. Kalın yazıda, kodda, tablo hücresinde (birim sütun başlığında olsa da), HTML'de, yaygın LaTeX biçimlerinde (`5{,}0`, `\SI{}{}`, `\mathrm{mg}`) ve tam genişlik rakamda da aranır; "5,0 mg/kg", "5,0-10 mg", "40.0 MG" da yakalanır. "1.000 mg" binlik sayılır; "PSA 4,0 ng/mL" gibi düzey ölçümü ve ilaç adı geçmeyen fen föyündeki "25,0 mL" sayılmaz.
-- Tutmayan doz hesabı ("20 kg × 5 mg/kg = 1000 mg").
-- Tutmayan birim dönüşümü ("Glukoz 90 mg/dL = 50 mmol/L").
-- Hasta adı (açık etiketle küçük harfle yazılmışsa da), protokol numarası, tam doğum tarihi (ISO biçimi dahil; vaka
-  bağlamı yoksa — biyografi — yalnız UYARI).
+## Öteki alanlardan örnekler
 
-**Sağlıkta uyarı verenler:**
-
-- ISMP'nin karıştırılmaya açık kısaltmaları: U, IU, cc, q.d., μg, SC, TIW, D/C, OD/OS/OU, ml, "1:1000".
-- Bitişik doz ("10mg", "propranolol20 mg").
-- Zaman birimi yazılmamış "mg/kg".
-- Çocuk dozunda en yüksek doz yok; "gerektiğinde" talimatında doz aralığı yok.
-- Harfli gebelik kategorisi.
-- Kaynaksız referans aralığı.
-- Güncelliği doğrulanması gereken kılavuz, DSM-IV, yanlış yazılmış tür adı.
-
-Tıp ve yedi sağlık alt alanına ayrıca 11 maddelik ortak sağlık elle listesi eklenir (psikolojide yok).
-
-**Öteki alanlardan örnekler:**
-
-- SI birim yazımı.
-- Deney föyünde güvenlik notu.
-- "p = 0,000" yazımı.
-- Python 2 kullanımı.
-- Yürürlükten kalkmış kanun: geçmiş olaya uygulanıyorsa sayılmaz (6101 sayılı Kanun m. 1).
-- Künyesiz mahkeme kararı, kaynaksız hadis, kaynaksız alıntı.
-- Haritada lejant, ölçek, kuzey oku ya da kaynak eksikliği.
+| Alan | Kontrol |
+|---|---|
+| Fen | SI birim yazımı; deney föyünde güvenlik notu |
+| İstatistik | "p = 0,000" yazımı |
+| Bilgisayar | Python 2 kullanımı |
+| Hukuk | Yürürlükten kalkmış kanun: geçmiş olaya uygulanıyorsa sayılmaz (6101 sayılı Kanun m. 1); künyesiz mahkeme kararı |
+| İlahiyat | Kaynaksız hadis |
+| Edebiyat, tarih, felsefe, hukuk, ilahiyat, sanat | Kaynaksız alıntı |
+| Coğrafya | Haritada lejant, ölçek, kuzey oku ya da kaynak eksikliği |
 
 ## Kullanım
 
@@ -100,8 +192,7 @@ python3 scripts/ogretim_denetim.py not.md --pdf not.pdf --alan tip  # PDF ölç�
 python3 scripts/ogretim_denetim.py not.md --json --yil 2026         # makine okur; değerlendirme yılı sabit
 ```
 
-Claude'da doğal dille ya da adıyla: "Sınaç, bu farmakoloji notumu denetle", "Bu PDF öğretir mi?", "Hukuk ders notum
-güncel mi?"
+Claude'da doğal dille ya da adıyla: "Sınaç, bu farmakoloji notumu denetle", "Bu PDF öğretir mi?", "Hukuk ders notum güncel mi?"
 
 **Yanlış alarmı susturmak** (gerekçe zorunlu; gerekçesiz susturma engeli kaldırmaz):
 
@@ -116,53 +207,59 @@ güncel mi?"
 git clone https://github.com/mesutbsdgn/sinac.git ~/.claude/skills/sinac
 ```
 
-Python 3.9+, yalnız standart kütüphane, ağ yok. PDF ölçümü için isteğe bağlı poppler (`pdftotext`, `pdfimages`,
-`pdftoppm`).
+Python 3.9+, yalnız standart kütüphane, ağ yok. PDF ölçümü için isteğe bağlı poppler (`pdftotext`, `pdfimages`, `pdftoppm`).
 
 ## Nasıl sınandı
 
-- **Testler:** 100 test, hepsi geçiyor.
-  - `test_ogretim_denetim.py` (61);
-  - `test_ozellikler.py` (38): gerçek üretilmiş PDF'lerle yazı boyu, vektör çizim, boş sayfa, PDF içeriği; `--duzelt`, kodlama, susturma, maskeleme, ReDoS;
-  - `test_karsi_ornekler.py`: 211 karşı örnek.
+**Testler:** 100 test ve 211 karşı örnek, hepsi geçiyor.
 
-  GitHub Actions bu testleri Python 3.10 ve 3.13'te çalıştırır (Ubuntu 26.04 imajında 3.9 yok); Python 3.9.6'da yerelde
-  sınandı.
-- **Bağımsız inceleme** (22 Kasım 2026): GPT-6.1 Sol ve Qwen4 Max Preview, v1.0'ı yüksek eforla ve salt okunur
-  inceledi.
-  - Raporlardaki karşı örneklerden 32'si betikte çalıştırıldı ve 32'si de gerçek çıktı.
-  - Bunlar v2.0'da düzeltildi ve regresyon kümesine girdi (`scripts/tests/karsi_ornekler.json`).
-- **Fable 5.2 testi** (aynı gün, v2.0 adayı): 53 gerçekçi belge yazdı (28'i sağlık); 35'inde kararı etkileyen kusur buldu,
-  yayına hazırlık notu 3/10 verdi. Kritik ve yüksek bulguların hepsi yeniden üretildi, düzeltildi ve 55 kayıt olarak kümeye
-  eklendi. Kümedeki 131 kaydın her birinde kaynak yazılı ("Sol 5", "Qwen K2", "Fable K3"); kaynağı "TC sağlama", "Hasta
-  yaş", "Kiril" olan birkaç kenar örneğini Claude ekledi.
-- **Gemini 4 Argon incelemesi** (aynı gün, v2.0 son adayı): kodu okuyarak 7,5/10 verdi. 25 karşı örneğinin 20'si betikte
-  gerçek çıktı (3'ü çıkmadı, 2'si kısmen); hepsi düzeltildi ve 23 kayıt olarak kümeye eklendi (toplam 154).
-- **Kasten bozma:** hasta adı, ondalık cümle bölme, Markdown temizliği ve boş sayfa eşiği kasten bozulunca testler
-  kırmızıya döner.
-- **PDF kalibrasyonu:** kelime kutusu/punto oranı yazı tipine göre ölçüldü: Helvetica 0,925 · Times 0,900 ·
-  Courier 0,786. Betik bu yüzden tek bir punto değil, bir punto aralığı tahmin eder.
+| Dosya | Sayı | Kapsam |
+|---|---|---|
+| `test_ogretim_denetim.py` | 61 test | Denetim kuralları |
+| `test_ozellikler.py` | 38 test | Gerçek üretilmiş PDF'lerle yazı boyu, vektör çizim, boş sayfa, PDF içeriği; `--duzelt`, kodlama, susturma, maskeleme, ReDoS |
+| `test_karsi_ornekler.py` | 1 test, 211 karşı örnek | Regresyon kümesi |
+
+GitHub Actions bu testleri Python 3.10 ve 3.13'te çalıştırır (Ubuntu 26.04 imajında 3.9 yok); Python 3.9.6'da yerelde sınandı.
+
+İnceleme turları:
+
+| Tur | Model | Ne sınadı | Sonuç |
+|---|---|---|---|
+| Bağımsız inceleme (22 Kasım 2026) | GPT-6.1 Sol, Qwen4 Max Preview | v1.0'ı yüksek eforla ve salt okunur inceledi | Raporlardaki karşı örneklerden 32'si betikte çalıştırıldı ve 32'si de gerçek çıktı; v2.0'da düzeltildi ve regresyon kümesine girdi (`scripts/tests/karsi_ornekler.json`) |
+| Fable 5.2 testi (aynı gün, v2.0 adayı) | Fable 5.2 | 53 gerçekçi belge yazdı (28'i sağlık) | 35'inde kararı etkileyen kusur buldu, yayına hazırlık notu 3/10 verdi. Kritik ve yüksek bulguların hepsi yeniden üretildi, düzeltildi ve 55 kayıt olarak kümeye eklendi. Kümedeki 131 kaydın her birinde kaynak yazılı ("Sol 5", "Qwen K2", "Fable K3"); kaynağı "TC sağlama", "Hasta yaş", "Kiril" olan birkaç kenar örneğini Claude ekledi |
+| Gemini 4 Argon incelemesi (aynı gün, v2.0 son adayı) | Gemini 4 Argon | Kodu okuyarak inceledi | 7,5/10 verdi. 25 karşı örneğinin 20'si betikte gerçek çıktı (3'ü çıkmadı, 2'si kısmen); hepsi düzeltildi ve 23 kayıt olarak kümeye eklendi (toplam 154) |
+| Argon ikinci tur | Gemini 4 Argon | Karar, susturma, `--duzelt` bölümü | 6,5/10; 9 iddiadan 7'si gerçek çıktı ve düzeltildi |
+| GPT-6.2 Astra sınaması (son aday) | GPT-6.2 Astra | Kopya üzerinde 44 gerçekçi belge, beklentiler önceden yazılı | 4/10; 18 belgede karar farklıydı, Claude hepsini yeniden üretti, hepsi gerçekti |
+| Astra ikinci tur | GPT-6.2 Astra | 56 yeni belge (İngilizce sağlık notu, OCR, uzun tablo, LaTeX, hukuk, kod) | Yine 4/10; 23 belgede karar farklıydı, Claude 22'sini yeniden üretti, hepsi düzeltildi. Astra'nın iki turdaki 117 belgesinin hepsi beklenen kararı veriyor |
+
+Turların ayrıntılı bulguları [sürüm geçmişinde](#sürüm-geçmişi) (v2.0.0 değişiklikleri) yazılıdır.
+
+Öteki sınamalar:
+
+- **Kasten bozma:** hasta adı, ondalık cümle bölme, Markdown temizliği ve boş sayfa eşiği kasten bozulunca testler kırmızıya döner.
+- **PDF kalibrasyonu:** kelime kutusu/punto oranı yazı tipine göre ölçüldü: Helvetica 0,925 · Times 0,900 · Courier 0,786. Betik bu yüzden tek bir punto değil, bir punto aralığı tahmin eder.
+- **Hız** (22 Kasım 2026, geliştirme makinesi, Python 3): 1,9 MB'lık gerçek Fransızca ders notu yaklaşık 4,4 sn.
 
 ## Kanıt
 
 Üç quoteproof araştırması yapıldı: 23 başlık, 872 bulgu, 567'si kaynağında otomatik doğrulandı.
 
-- **Elle açılan kaynaklar:** kurala giren kritik bilgiler ayrıca kaynağında açıldı. Bunlar arasında ISMP, FDA,
-  NHMRC, PEP 8, python.org, Merck Veterinary Manual ve bpac NZ var. Mevzuat tarafında 6098 m. 647, 6100 m. 450,
-  6102 m. 1533 ve 6101 m. 1 de açıldı.
+- **Elle açılan kaynaklar:** kurala giren kritik bilgiler ayrıca kaynağında açıldı. Bunlar arasında ISMP, FDA, NHMRC, PEP 8, python.org, Merck Veterinary Manual ve bpac NZ var. Mevzuat tarafında 6098 m. 647, 6100 m. 450, 6102 m. 1533 ve 6101 m. 1 de açıldı.
 - **Açılamayanlar:** kaynağı açılamayan bilgi ENGEL ya da HATA kuralı yapılmadı.
 
 Ayrıntılar: [`docs/kanitlar.md`](docs/kanitlar.md), ölçek ve karar modeli [`references/ogretim.md`](references/ogretim.md).
+
+## Kardeş beceri: Durulaç
+
+Sınaç dil sadeleştirmez; o iş kardeş becerisi [Durulaç](https://github.com/mesutbsdgn/turkce-ai-durulac)'ındır. İkisi birlikte kuruluysa önce Durulaç Türkçe açıklamayı sadeleştirir, sonra Sınaç ölçer.
 
 ## Sınırları
 
 - Yazımı ve yapıyı denetler; dozun, tanının, kanun yorumunun ya da tarihsel bilginin doğru olduğunu kanıtlamaz.
 - Tıbbi, eczacılık, veteriner ya da hukuki görüş değildir.
 - Alan tahmini karma belgede yanılabilir; `alan:` ya da `--alan` ile düzeltilir.
-- **Açık iş:** regresyon kümesi iki modelin karşı örneklerinden oluşuyor; bağımsız öğretmen ve uzmanların etiketlediği
-  gerçek ders notlarından bir altın küme henüz yok.
-- **Ölçme geçerliği sınanmadı:** 8 boyutun öğretim kalitesini ayırt ettiği öğretmen değerlendirmesi ve öğrenci
-  sonuçlarıyla sınanmadı; toplam puan yalnız göstergedir.
+- **Açık iş:** regresyon kümesi iki modelin karşı örneklerinden oluşuyor; bağımsız öğretmen ve uzmanların etiketlediği gerçek ders notlarından bir altın küme henüz yok.
+- **Ölçme geçerliği sınanmadı:** 8 boyutun öğretim kalitesini ayırt ettiği öğretmen değerlendirmesi ve öğrenci sonuçlarıyla sınanmadı; toplam puan yalnız göstergedir.
 
 ## Sürüm geçmişi
 
@@ -172,7 +269,8 @@ Ayrıntılar: [`docs/kanitlar.md`](docs/kanitlar.md), ölçek ve karar modeli [`
 | v2.0.1 | 22 Kas 2026 | CI: Python 3.10 ve 3.13 (GitHub Ubuntu 26.04 imajında 3.9 yok); kod değişmedi |
 | v2.0.0 | 22 Kas 2026 | GPT-6.1 Sol, Qwen4 Max, Fable 5.2, Gemini 4 Argon (iki tur) ve GPT-6.2 Astra (iki tur) incelemeleri sonrası. Değişiklikler aşağıda |
 
-v2.0.0'daki değişiklikler:
+<details>
+<summary>v2.0.0'daki değişiklikler</summary>
 
 - **Karar ve düzeyler:** üç durumlu karar; ENGEL / HATA / UYARI düzeyleri.
 - **Kontrol katmanları:** risk taraması alandan bağımsız çalışıyor; hasta kimliği ortak çekirdeğe taşındı; bölüm
@@ -224,6 +322,8 @@ v2.0.0'daki değişiklikler:
   silmiyor; "Vaka: Ad Soyad" yakalanıyor; "hastane" vaka bağlamı sayılmıyor; satır içi koddaki susturma yorumu sayılmıyor.
   Sonuçta Astra'nın iki turdaki 117 belgesinin hepsi beklenen kararı veriyor.
 - **Test ve yayın:** 211 karşı örnek ve GitHub Actions eklendi.
+
+</details>
 
 ## Lisans
 
