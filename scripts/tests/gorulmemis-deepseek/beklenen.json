@@ -1,0 +1,152 @@
+[
+ {
+  "dosya": "d-01-hemsirelik-infuzyon-doz.md",
+  "dil": "tr",
+  "alan": "hemsirelik",
+  "karar": "yayına engel var",
+  "engel": [
+   {
+    "satir_metni": "70 kg hastada toplam doz 300 mg olarak hesaplanır",
+    "tur": "doz_hesabi"
+   }
+  ],
+  "hata": []
+ },
+ {
+  "dosya": "d-02-pharmacy-dispensing-check.md",
+  "dil": "en",
+  "alan": "eczacilik",
+  "karar": "tanımlı kapsamda uygun",
+  "engel": [],
+  "hata": []
+ },
+ {
+  "dosya": "d-03-hukuk-temerrut-ihtari.md",
+  "dil": "tr",
+  "alan": "hukuk",
+  "karar": "tanımlı kapsamda uygun",
+  "engel": [],
+  "hata": []
+ },
+ {
+  "dosya": "d-04-math-completing-square.md",
+  "dil": "en",
+  "alan": "matematik",
+  "karar": "karar için denetim eksik",
+  "engel": [],
+  "hata": []
+ },
+ {
+  "dosya": "d-05-acil-gogus-agrisi.md",
+  "dil": "tr",
+  "alan": "acil",
+  "karar": "yayına engel var",
+  "engel": [
+   {
+    "satir_metni": "58 yaşındaki Ayşe Yıldırım",
+    "tur": "hasta_kimligi"
+   }
+  ],
+  "hata": []
+ },
+ {
+  "dosya": "d-06-tip-glukoz.md",
+  "dil": "en",
+  "alan": "tip",
+  "karar": "yayına engel var",
+  "engel": [
+   {
+    "satir_metni": "A glucose of 126 mg/dL is written as 5.4 mmol/L in the chart.",
+    "tur": "lab_donusum"
+   }
+  ],
+  "hata": []
+ },
+ {
+  "dosya": "d-07-dis-lokal-anestezik.md",
+  "dil": "tr",
+  "alan": "dis",
+  "karar": "tanımlı kapsamda uygun",
+  "engel": [],
+  "hata": []
+ },
+ {
+  "dosya": "d-08-iktisat-reel-buyume.md",
+  "dil": "en",
+  "alan": "iktisat",
+  "karar": "tanımlı kapsamda uygun",
+  "engel": [],
+  "hata": []
+ },
+ {
+  "dosya": "d-09-kimya-mol-hesabi.md",
+  "dil": "tr",
+  "alan": "kimya",
+  "karar": "karar için denetim eksik",
+  "engel": [],
+  "hata": []
+ },
+ {
+  "dosya": "d-10-veteriner-antibiyotik-doz.md",
+  "dil": "en",
+  "alan": "veteriner",
+  "karar": "yayına engel var",
+  "engel": [
+   {
+    "satir_metni": "Give enrofloxacin at 5.0 mg/kg once daily for five days.",
+    "tur": "doz_yazimi"
+   }
+  ],
+  "hata": []
+ },
+ {
+  "dosya": "d-16-akarsu-debi.md",
+  "dil": "tr",
+  "alan": "cografya",
+  "karar": "tanımlı kapsamda uygun",
+  "engel": [],
+  "hata": []
+ },
+ {
+  "dosya": "d-17-acil-doz.md",
+  "dil": "en",
+  "alan": "acil",
+  "karar": "yayına engel var",
+  "engel": [
+   {
+    "satir_metni": "- Naloxone infusion 0.05 mg/kg/h for a 70 kg adult gives 0.35 mg/h.",
+    "tur": "doz_hesabi"
+   }
+  ],
+  "hata": []
+ },
+ {
+  "dosya": "d-18-victorian-novel.md",
+  "dil": "en",
+  "alan": "edebiyat",
+  "karar": "tanımlı kapsamda uygun",
+  "engel": [],
+  "hata": []
+ },
+ {
+  "dosya": "d-19-madde-analizi.md",
+  "dil": "tr",
+  "alan": "egitim",
+  "karar": "karar için denetim eksik",
+  "engel": [],
+  "hata": []
+ },
+ {
+  "dosya": "d-20-sepsis.md",
+  "dil": "en",
+  "alan": "tip",
+  "karar": "yayına engel var",
+  "engel": [
+   {
+    "satir_metni": "Mr. Daniel Okafor, MRN 4471902",
+    "tur": "hasta_kimligi"
+   }
+  ],
+  "hata": []
+ }
+]

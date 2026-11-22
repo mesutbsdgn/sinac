@@ -6,9 +6,11 @@
 
 ### Ders notunu sınar: doğru mu, öğretir mi, yayınlanabilir mi?
 
-![Lisans](https://img.shields.io/badge/lisans-kullanım%20hakkı-lightgrey) ![Biçim](https://img.shields.io/badge/bi%C3%A7im-Claude%20skill-8A63D2) ![Model](https://img.shields.io/badge/model-ba%C4%9F%C4%B1ms%C4%B1z-brightgreen) ![Dil](https://img.shields.io/badge/dil-T%C3%BCrk%C3%A7e-e30a17) ![Testler](https://img.shields.io/badge/testler-100%20test%20%2B%20211%20kar%C5%9F%C4%B1%20%C3%B6rnek-brightgreen) ![test](https://github.com/mesutbsdgn/sinac/actions/workflows/test.yml/badge.svg)
+![Lisans](https://img.shields.io/badge/lisans-kullanım%20hakkı-lightgrey) ![Biçim](https://img.shields.io/badge/bi%C3%A7im-Claude%20skill-8A63D2) ![Model](https://img.shields.io/badge/model-ba%C4%9F%C4%B1ms%C4%B1z-brightgreen) ![Dil](https://img.shields.io/badge/dil-T%C3%BCrk%C3%A7e%20%2B%20English-e30a17) ![Testler](https://img.shields.io/badge/testler-190%20test%20%2B%20211%20kar%C5%9F%C4%B1%20%C3%B6rnek-brightgreen) ![test](https://github.com/mesutbsdgn/sinac/actions/workflows/test.yml/badge.svg)
 
 </div>
+
+English: [README.en.md](README.en.md)
 
 Adı *sınamak* fiilinden gelir, kardeşi Durulaç'la aynı ekle kurulur. Hem belgeyi sınar hem de ölçeğinin en önemli boyutunu, öğrencinin kendini sınamasını anlatır. Ders notunu, konu anlatımını, rehberi ve öğrenci PDF'ini kanıta dayalı bir ölçekle denetleyen Claude becerisidir (skill).
 
@@ -23,6 +25,7 @@ Belgenin **bilim dalını** ve **görsel/sözel biçimini** kendisi tanır; tıp
 - [Sağlık kontrolleri](#sağlık-kontrolleri)
 - [32 alan](#32-alan)
 - [Öteki alanlardan örnekler](#öteki-alanlardan-örnekler)
+- [Alan tespiti ve iki dil](#alan-tespiti-ve-iki-dil)
 - [Kullanım](#kullanım)
 - [Kurulum](#kurulum)
 - [Nasıl sınandı](#nasıl-sınandı)
@@ -82,11 +85,11 @@ Komut (çıkış kodu 1):
 python3 scripts/ogretim_denetim.py farmakoloji-notu.md --yil 2026
 ```
 
-Çıktı (uzun elle listesi kısaltılmıştır; kısaltılan satır aşağıda belirtilmiştir):
+Çıktı (gerçek çıktıdır; yalnız uzun elle listesi kısaltılmıştır, kısaltılan satır aşağıda belirtilmiştir):
 
 ```text
 ⛔ farmakoloji-notu.md: YAYINA ENGEL VAR · 10/12 (6/8 boyut ölçüldü) · PDF ölçülmedi
-  Alan: Tıp · kullanıcı seçimi, destek — · biçim: sozel
+  Alan: Tıp · kullanıcı seçimi, destek — · biçim: sozel · belge dili: tr · grup: saglik
   | Boyut | Puan |
   |---|---|
   | Doğruluk | 0 |
@@ -103,7 +106,7 @@ python3 scripts/ogretim_denetim.py farmakoloji-notu.md --yil 2026
   ⚠ UYARI · satır 13 · Doğruluk: Kiloya göre doz zaman birimi belirsiz (15 mg/kg) → 'mg/kg/gün' mü 'mg/kg/doz' mu yaz; sıklığı ve en yüksek dozu ekle  [doz_kg_belirsiz]
   ☐ elle bekleyen: Doğruluk (frontmatter denetim: / hedef:)
   ℹ Betik doz YAZIMINI denetler, dozun klinik doğruluğunu denetlemez: güncel kaynakla karşılaştır
-  … (11 maddelik sağlık elle listesi ve öğretim ☐ maddeleri; burada kısaltıldı, gerçek çıktıda tek tek yazılıdır)
+  … (sağlık elle listesi ve öğretim ☐ maddeleri; burada kısaltıldı, gerçek çıktıda tek tek yazılıdır)
 ```
 
 Dört bulgu yakalandı. Doz hesabı (3000 mg yerine 300 mg olmalı) ve "5,0 mg" yazımı ENGEL sayıldığı için not yayına çıkamaz. Çocuk dozunda en yüksek dozun yazılmaması ile mg/kg'da zaman biriminin belirsizliği düzeltme listesine UYARI olarak girdi.
@@ -184,6 +187,70 @@ Alan profilleri `references/ogretim-alanlari.json` dosyasındadır (32 alan prof
 | Edebiyat, tarih, felsefe, hukuk, ilahiyat, sanat | Kaynaksız alıntı |
 | Coğrafya | Haritada lejant, ölçek, kuzey oku ya da kaynak eksikliği |
 
+## Alan tespiti ve iki dil
+
+v2.1.0'dan beri alan tespiti **dile duyarlıdır**: belge Türkçe, İngilizce ya da karışık olabilir.
+
+- **Birim dil tahmini:** gövde birimlere ayrılır (paragraf, liste maddesi, tablo satırı). Her birimin dili (`tr`, `en`, `fr`)
+  Türkçeye özgü harflerden ve durak sözcüklerden tahmin edilir; işaret yetersizse birim belgenin diline düşer. Çıktıda
+  `belge_dili` ve `grup` yazılır.
+- **Dile duyarlı eşleştirme:** Türkçe sözcük ve öbek listeleri yalnız Türkçe birimde (ek zinciriyle), İngilizce listeler
+  yalnız İngilizce birimde (tam sözcük ve çoğul) aranır. Fransızca birimler alan puanına katılmaz; kod blokları yalnız
+  bilgisayar alanına katkı verir.
+- **Alan sözlüğü:** alan başına Türkçe ve İngilizce sözcük, öbek (ağırlık 2) ve kısaltma listesi. Toplamda Türkçe sözcük
+  2355 (önce 718, hepsi Türkçe ve İngilizce karışıktı), Türkçe öbek 1499, İngilizce sözcük 2680, İngilizce öbek 1536,
+  kısaltma 374.
+- **Alan grupları:** sağlık, sayısal-fen, sosyal-beşerî, dil-genel. En iyi alan eşiğin altında kalsa da sağlık grubu
+  eşiği geçiyorsa alan `tip` (tıp) olur; böylece sağlık kontrolleri ve elle listesi devreye girer.
+- **Sayı biçimi dile bağlıdır:** İngilizce birimde "1,000 mg" binlik ayırıcıdır (doz yazımı ENGEL'i çıkmaz); Türkçede
+  virgül ondalıktır.
+- **Öteki yeni kurallar:** kolesterol (÷ 38,67) ve trigliserit (÷ 88,5) dönüşümü; tablo satırında ve düzyazıda doz hesabı
+  (kilo × mg/kg = doz); düzyazıda lab dönüşümü. Öğretici yanlış örnek ("Yanlış yazım örneği: «5,0 mg» yerine…", "Do not
+  write 5.0 mg") ENGEL değil UYARI verir. Yaş kalıbının yanındaki ad-soyad ("58 yaşındaki Ayşe Yıldırım") vaka bağlamında
+  ENGEL, değilse UYARI.
+
+Sözlüğün üretimi: Türkçe listeyi DeepSeek V4.1 Flash, İngilizce listeyi ve alan çekirdek sözcüklerini Gemini 4 Neon
+yazdı; ikisi birbirinin listesini eleştirdi (416 Türkçe ve 283 İngilizce öğe çıkarıldı). Ardından yerel süzgeç: genel
+akademik sözcük, üç ya da daha çok alanda geçen öğe, sözlükte geçen ya da birimle çakışan kısaltma elendi; sağlık alt
+alanlarından alt alanı ayırt etmeyen genel klinik sözcükler çıkarıldı. Yayımlanmış alan listeleri (MAWL, CSAVL, EAWL;
+hemşirelik, eczacılık, hukuk ve mühendislik listeleri) telif ve erişim nedeniyle kopyalanmadı; yalnız ilkeleri alındı.
+
+### Ölçüm
+
+Ölçüm `scripts/altin_olc.py` ile yapıldı; beklentiler betik çalıştırılmadan önce yazıldı. "Grup doğru" = grup doğru ve
+alan "genel" değil.
+
+| Küme | Yazan | Belge | Sürüm | Alan doğru | Grup doğru | Karar doğru | Kaçan ENGEL | Yanlış ENGEL |
+|---|---|---|---|---|---|---|---|---|
+| Geliştirme (`tests/altin`) | Sonnet 5.5 | 40 (20 tr, 20 en) | v2.0.1 | 14 | 22 | 38 | 2 | 1 |
+| | | | v2.1.0 | 28 | 38 | 40 | 0 | 0 |
+| Görülmemiş 1 (`tests/gorulmemis-gemini`) | Gemini 4 Neon | 20 (10/10) | v2.0.1 | 15 | — | 17 | — | — |
+| | | | v2.1.0 ilk geçiş | 17 | 20 | 18 | 3 | 2 (1 belge) |
+| | | | v2.1.0 son | 17 | 20 | 20 | 0 | 0 |
+| Görülmemiş 2 (`tests/gorulmemis-deepseek`) | DeepSeek V4.1 Flash | 15 (7 tr, 8 en) | v2.0.1 | 4 (6'sı "genel") | — | 10 | — | — |
+| | | | v2.1.0 ilk geçiş | 8 | 14 | 11 | 4 | 0 |
+| | | | v2.1.0 son | 8 | 14 | 15 | 0 | 0 |
+
+Geliştirme kümesinde alan ve grup doğruları dile göre: alan doğru v2.0.1'de 14 (tr 9, en 5), v2.1.0'da 28 (tr 15, en 13);
+grup doğru v2.0.1'de 22 (tr 14, en 8), v2.1.0'da 38 (tr 19, en 19). Görülmemiş 1'de alan doğru v2.0.1'de 15 (tr 10, en 5).
+
+**Dürüstlük notları:**
+
+- Geliştirme kümesi geliştirme sırasında kullanıldı; asıl genelleme ölçüsü değildir.
+- İki görülmemiş küme **ilk geçişte** kural açığı bulmak için kullanıldı, bulunan açıklar sonra düzeltildi. Bu yüzden
+  "son" satırları artık görülmemiş sayılmaz, regresyon kümesidir. Asıl genelleme ölçüsü **"ilk geçiş"** satırlarıdır:
+  Neon kümesinde karar 18/20, DeepSeek kümesinde 11/15; kaçan ENGEL sırasıyla 3 ve 4.
+- Kalan alan hatalarının çoğu sağlık içi alt alan karışıklığıdır (hemşirelik, eczacılık ve tıp birbirine karışıyor; hepsi
+  aynı sağlık kontrollerini aldığı için güvenlik açısından fark etmez) ve karma belgelerdir (sağlık + istatistik,
+  fizik + kimya).
+- DeepSeek kümesinde 15 belge var (dördüncü parti çıktı sınırında kesildi). DeepSeek frontmatter'a her belgede
+  "denetime:" yazmıştı; ölçümden önce "denetim:" olarak düzeltildi.
+- Üç küme de modellerce yazıldı; öğretmen ya da uzman etiketli gerçek altın küme hâlâ yok.
+
+**Fransızca derlem** (368 gerçek ders notu, Türkçe açıklamalı Fransızca): `dil` olarak tanınan 340'tan 357'ye çıktı,
+"genel" 19'dan 5'e indi. ENGEL artan belge yok; v2.0.1'deki tek yanlış ENGEL (kurgu karakterin doğum tarihi) gitti.
+Hız: 1,9 MB gerçek belge yaklaşık 4,4 sn'den 3,2 sn'ye indi; kısa not yaklaşık 0,2 sn.
+
 ## Kullanım
 
 ```bash
@@ -211,13 +278,15 @@ Python 3.9+, yalnız standart kütüphane, ağ yok. PDF ölçümü için isteğe
 
 ## Nasıl sınandı
 
-**Testler:** 100 test ve 211 karşı örnek, hepsi geçiyor.
+**Testler:** 190 test (211 karşı örnek ve 3 altın küme dahil), hepsi geçiyor.
 
 | Dosya | Sayı | Kapsam |
 |---|---|---|
 | `test_ogretim_denetim.py` | 61 test | Denetim kuralları |
 | `test_ozellikler.py` | 38 test | Gerçek üretilmiş PDF'lerle yazı boyu, vektör çizim, boş sayfa, PDF içeriği; `--duzelt`, kodlama, susturma, maskeleme, ReDoS |
+| `test_f3.py` | 89 test | Birim dil tahmini, dile duyarlı eşleştirme, sözlük, alan grupları, yeni kurallar |
 | `test_karsi_ornekler.py` | 1 test, 211 karşı örnek | Regresyon kümesi |
+| `test_altin.py` | 1 test, 3 altın küme, 75 belge | Karar, kaçan ENGEL ve yanlış ENGEL kilitli |
 
 GitHub Actions bu testleri Python 3.10 ve 3.13'te çalıştırır (Ubuntu 26.04 imajında 3.9 yok); Python 3.9.6'da yerelde sınandı.
 
@@ -238,7 +307,7 @@ Turların ayrıntılı bulguları [sürüm geçmişinde](#sürüm-geçmişi) (v2
 
 - **Kasten bozma:** hasta adı, ondalık cümle bölme, Markdown temizliği ve boş sayfa eşiği kasten bozulunca testler kırmızıya döner.
 - **PDF kalibrasyonu:** kelime kutusu/punto oranı yazı tipine göre ölçüldü: Helvetica 0,925 · Times 0,900 · Courier 0,786. Betik bu yüzden tek bir punto değil, bir punto aralığı tahmin eder.
-- **Hız** (22 Kasım 2026, geliştirme makinesi, Python 3): 1,9 MB'lık gerçek Fransızca ders notu yaklaşık 4,4 sn.
+- **Hız** (22 Kasım 2026, geliştirme makinesi, Python 3): 1,9 MB'lık gerçek Fransızca ders notu v2.0.1'de yaklaşık 4,4 sn, v2.1.0'da yaklaşık 3,2 sn.
 
 ## Kanıt
 
@@ -257,8 +326,9 @@ Sınaç dil sadeleştirmez; o iş kardeş becerisi [Durulaç](https://github.com
 
 - Yazımı ve yapıyı denetler; dozun, tanının, kanun yorumunun ya da tarihsel bilginin doğru olduğunu kanıtlamaz.
 - Tıbbi, eczacılık, veteriner ya da hukuki görüş değildir.
-- Alan tahmini karma belgede yanılabilir; `alan:` ya da `--alan` ile düzeltilir.
-- **Açık iş:** regresyon kümesi iki modelin karşı örneklerinden oluşuyor; bağımsız öğretmen ve uzmanların etiketlediği gerçek ders notlarından bir altın küme henüz yok.
+- Alan tespiti sözlük tabanlıdır; sağlık içi alt alanda (hemşirelik, eczacılık, tıp) ve karma belgede yanılabilir. `alan:` ya da `--alan` ile düzeltilir.
+- İngilizce desteği alan tespitini ve sağlık güvenlik kurallarını kapsar; uyarı ve öneri mesajları Türkçedir.
+- **Açık iş:** regresyon ve altın kümeleri modellerin yazdığı belgelerden oluşuyor; bağımsız öğretmen ve uzmanların etiketlediği gerçek ders notlarından bir altın küme henüz yok.
 - **Ölçme geçerliği sınanmadı:** 8 boyutun öğretim kalitesini ayırt ettiği öğretmen değerlendirmesi ve öğrenci sonuçlarıyla sınanmadı; toplam puan yalnız göstergedir.
 
 ## Sürüm geçmişi
@@ -266,8 +336,30 @@ Sınaç dil sadeleştirmez; o iş kardeş becerisi [Durulaç](https://github.com
 | Sürüm | Tarih | Değişiklik |
 |---|---|---|
 | v1.0.0 | 22 Kas 2026 | İlk yayın. Durulaç'ın `+ogretim` kipinden (v1.7–1.9) ayrı beceri olarak çıkarıldı, Sınaç adını aldı |
+| v2.1.0 | 22 Kas 2026 | Dile duyarlı alan tespiti (Türkçe ve İngilizce), alan grupları, yeni sağlık kuralları. Değişiklikler aşağıda |
 | v2.0.1 | 22 Kas 2026 | CI: Python 3.10 ve 3.13 (GitHub Ubuntu 26.04 imajında 3.9 yok); kod değişmedi |
 | v2.0.0 | 22 Kas 2026 | GPT-6.1 Sol, Qwen4 Max, Fable 5.2, Gemini 4 Argon (iki tur) ve GPT-6.2 Astra (iki tur) incelemeleri sonrası. Değişiklikler aşağıda |
+
+<details>
+<summary>v2.1.0'daki değişiklikler</summary>
+
+- **Alan tespiti:** birim dil tahmini (tr, en, fr; yetersizse belge diline düşer); Türkçe listeler yalnız Türkçe, İngilizce
+  listeler yalnız İngilizce birimde; Fransızca birimler alan puanına katılmaz; kod blokları yalnız bilgisayara katkı verir.
+  Çıktıda `belge_dili` ve `grup`.
+- **Sözlük:** alan başına `sozcukler`, `obekler`, `sozcukler_en`, `obekler_en`, `kisaltmalar`; model üretimi, çapraz
+  inceleme ve yerel süzgeçle. Toplam: Türkçe sözcük 2355, Türkçe öbek 1499, İngilizce sözcük 2680, İngilizce öbek 1536,
+  kısaltma 374.
+- **Alan grupları:** sağlık, sayısal-fen, sosyal-beşerî, dil-genel; eşik altında kalan sağlık belgesi `tıp` olur.
+- **Yeni kurallar:**
+  - İngilizce birimde "1,000 mg" binlik ayırıcı;
+  - kolesterol ve trigliserit dönüşümü (PubChem: kolesterol C27H46O 386,7 g/mol, CID 5997; triolein 885,4 g/mol, CID 5497163);
+  - tablo satırında ve düzyazıda doz hesabı; düzyazıda lab dönüşümü;
+  - öğretici yanlış örnek ENGEL değil UYARI;
+  - yaş kalıbının yanındaki ad-soyad vaka bağlamında ENGEL.
+- **Ölçüm ve test:** 190 test (211 karşı örnek, 3 altın küme, 75 belge); iki görülmemiş küme önce açık bulmak için
+  kullanıldı, sonra regresyon kümesi oldu. Fransızca derlemde `dil` tanıma 340'tan 357'ye çıktı.
+
+</details>
 
 <details>
 <summary>v2.0.0'daki değişiklikler</summary>

@@ -1,0 +1,677 @@
+[
+  {
+    "dosya": "tr01-hemsirelik-iv-ilac-hazirlama.md",
+    "dil": "tr",
+    "alan": "hemsirelik",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "| Morfin sülfat | 5,0 mg | IV yavaş | gerektiğinde, 4 saatte bir |",
+        "tur": "doz_yazimi"
+      }
+    ],
+    "hata": [],
+    "uyari": [
+      "bitişik doz 10mg",
+      "gerektiğinde talimatında doz aralığı yok"
+    ],
+    "tuzak": [
+      "tablo hücresinde sondaki sıfırlı doz 5,0 mg (zor varyant)",
+      "40 mg ve 10 mg doğru"
+    ],
+    "not": "Tablo hücresindeki tek 5,0 mg ISMP yazım hatasını yakalar mı; gerisi düzgün."
+  },
+  {
+    "dosya": "tr02-pediatri-amoksisilin-doz.md",
+    "dil": "tr",
+    "alan": "tip",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "Örnek 2: 12 kg × 25 mg/kg = 600 mg tek doz.",
+        "tur": "doz_hesabi"
+      }
+    ],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "Örnek 1 ve 3 doğru hesap",
+      "1.000 mg binlik ayraç, ondalık değil"
+    ],
+    "not": "Üç çözülmüş örnekten ortadakinde tutmayan çarpma (12×25=300) var."
+  },
+  {
+    "dosya": "tr03-laboratuvar-glukoz-kolesterol.md",
+    "dil": "tr",
+    "alan": "tip",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "- Glukoz 90 mg/dL = 50 mmol/L.",
+        "tur": "lab_donusum"
+      }
+    ],
+    "hata": [],
+    "uyari": [
+      "kaynaksız referans aralığı (70-100 mg/dL)"
+    ],
+    "tuzak": [
+      "diğer üç dönüşüm doğru",
+      "126 mg/dL ≈ 7,0 mmol/L düzey, doz değil"
+    ],
+    "not": "On kat yanlış glukoz dönüşümü; doğrusu yaklaşık 5,0 mmol/L."
+  },
+  {
+    "dosya": "tr04-acil-gogus-agrisi-vaka.md",
+    "dil": "tr",
+    "alan": "acil",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "Hasta: Ayşe Yılmaz, protokol no 2024-118833",
+        "tur": "hasta_kimligi"
+      }
+    ],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "Troponin 0,04 ng/mL düzey ölçümü, doz değil",
+      "300 mg aspirin doğru yazım"
+    ],
+    "not": "Vaka girişindeki ad ve protokol numarası tek satırda; gerisi anonim."
+  },
+  {
+    "dosya": "tr05-eczacilik-recete-karsilama.md",
+    "dil": "tr",
+    "alan": "eczacilik",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "Hasta TC kimlik no: 10000000146",
+        "tur": "tc_no"
+      }
+    ],
+    "hata": [],
+    "uyari": [
+      "ISMP kısaltması Q.D."
+    ],
+    "tuzak": [
+      "1.000 mg binlik ayraç",
+      "5 mg doğru yazım"
+    ],
+    "not": "Etiketli TC kimlik numarası; öğretici örnek denilse de gerçek formatta sağlama tutan sayı."
+  },
+  {
+    "dosya": "tr06-acil-anafilaksi-adrenalin.md",
+    "dil": "tr",
+    "alan": "acil",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "- **Adrenalin ,5 mg IM (uyluk dış yüzü)**",
+        "tur": "doz_yazimi"
+      }
+    ],
+    "hata": [],
+    "uyari": [
+      "mg/kg zaman birimi belirsiz (0,01 mg/kg)"
+    ],
+    "tuzak": [
+      "0,5 mg ve 0,01 mg/kg doğru yazım",
+      "20 kg × 0,01 mg/kg = 0,2 mg doğru hesap"
+    ],
+    "not": "Kalın yazıda baştaki sıfırsız ondalık (,5 mg) tek satırda; çevresi doğru."
+  },
+  {
+    "dosya": "tr07-matematik-turev-kurallari.md",
+    "dil": "tr",
+    "alan": "matematik",
+    "karar": "yayına engel var",
+    "engel": [],
+    "hata": [
+      {
+        "satir_metni": "TODO: ikinci örneği ekle",
+        "tur": "todo"
+      }
+    ],
+    "uyari": [],
+    "tuzak": [
+      "matematik formüller doğru"
+    ],
+    "not": "Taslak bırakılmış TODO notu (HATA) tek satırda; matematik içeriği doğru."
+  },
+  {
+    "dosya": "tr08-hemsirelik-devir-teslim-vaka.md",
+    "dil": "tr",
+    "alan": "hemsirelik",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "- Doğum tarihi: 12.04.1958 (hasta bilgi formundan)",
+        "tur": "hasta_kimligi"
+      }
+    ],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "SpO2 ve solunum sayısı düzey, doz değil"
+    ],
+    "not": "Vaka bağlamında ad olmadan tam doğum tarihi; tek başına kimlik sayılmalı."
+  },
+  {
+    "dosya": "tr09-dis-lokal-anestezi.md",
+    "dil": "tr",
+    "alan": "dis",
+    "karar": "karar için denetim eksik",
+    "engel": [],
+    "hata": [],
+    "uyari": [
+      "çocukta kiloya göre doz var ama azami doz tavanı yazılmamış",
+      "mg/kg zaman birimi belirsiz"
+    ],
+    "tuzak": [
+      "doğru doz hesabı 70×4,4=308",
+      "denetim satırı hiç yok"
+    ],
+    "not": "İçerik temiz, frontmatter'da denetim: yok; karar 'denetim eksik' olmalı."
+  },
+  {
+    "dosya": "tr10-psikoloji-depresyon-olcegi-istatistik.md",
+    "dil": "tr",
+    "alan": "psikoloji",
+    "karar": "karar için denetim eksik",
+    "engel": [],
+    "hata": [],
+    "uyari": [
+      "DSM-IV eski sürüm"
+    ],
+    "tuzak": [
+      "p < 0,001 yazımı doğru (p = 0,000 değil)",
+      "denetim: satırı boş"
+    ],
+    "not": "Psikoloji + istatistik karması; denetim satırı boş olduğu için 'denetim eksik'."
+  },
+  {
+    "dosya": "tr11-kimya-cozelti-hazirlama.md",
+    "dil": "tr",
+    "alan": "kimya",
+    "karar": "karar için denetim eksik",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "0,50 g ve 25,0 mL fen laboratuvarı ölçümü, doz değil"
+    ],
+    "not": "Hedef satırı boş; karar 'denetim eksik' olmalı (denetim dolu)."
+  },
+  {
+    "dosya": "tr12-eczacilik-ilac-hazirlama-yazim.md",
+    "dil": "tr",
+    "alan": "eczacilik",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "uyari": [
+      "ISMP kısaltması Q.D. (yazma uyarısı bağlamında)"
+    ],
+    "tuzak": [
+      "Yanlış: 5,0 mg ve ,5 mg açıkça öğretici yanlış örnek olarak işaretli",
+      "500/250×5=10 mL doğru hesap",
+      "1.000 mg binlik ayraç"
+    ],
+    "not": "Öğretici 'Yanlış/Doğru' tablosu ENGEL sayılmamalı; doğru hesap."
+  },
+  {
+    "dosya": "tr13-veteriner-meloksikam-kopek.md",
+    "dil": "tr",
+    "alan": "veteriner",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "uyari": [
+      "mg/kg yükleme dozunda zaman birimi açık yazılmamış"
+    ],
+    "tuzak": [
+      "0,2 mg/kg ve 0,1 mg/kg doğru yazım",
+      "doğru hesap 20×0,2=4"
+    ],
+    "not": "Veteriner dozunda doğru yazım ve hesap; ENGEL beklenmez."
+  },
+  {
+    "dosya": "tr14-tip-psa-duyarlilik-ozgullugu.md",
+    "dil": "tr",
+    "alan": "tip",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "PSA 4,0 ng/mL düzey ölçümü, doz değil",
+      "p < 0,001 doğru yazım",
+      "'Hasta: 67 yaşında erkek' ad değil"
+    ],
+    "not": "Tıp + istatistik karması; PSA 4,0 ng/mL tuzağı ve doğru hesaplar."
+  },
+  {
+    "dosya": "tr15-dil-fransizca-ilk-sozcukler.md",
+    "dil": "tr",
+    "alan": "dil",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "Fransızca sözcükler Latin harfli ama yabancı dilli metin",
+      "classe/station/nation İngilizceye benzer"
+    ],
+    "not": "Dil alanı; Fransızca sözcükler yanlış alan ya da yazım hatası sayılmamalı."
+  },
+  {
+    "dosya": "tr16-dil-ingilizce-present-perfect.md",
+    "dil": "tr",
+    "alan": "dil",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "İngilizce cümleler Türkçe belgede; yabancı dil örneği olarak tanınmalı",
+      "station/nation/class sözcükleri"
+    ],
+    "not": "İngilizce öğreten Türkçe not; örnek cümleler dil hatası sayılmamalı."
+  },
+  {
+    "dosya": "tr17-fizik-ohm-yasasi.md",
+    "dil": "tr",
+    "alan": "fizik",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "5,0 V ve 2,0 A birimli ölçümler, doz değil",
+      "10 W güç doğru"
+    ],
+    "not": "Fizik ölçümlerinde sondaki sıfır doz hatası sayılmamalı."
+  },
+  {
+    "dosya": "tr18-bilgisayar-python-dongu.md",
+    "dil": "tr",
+    "alan": "bilgisayar",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "Python 3.10 sürüm numarası",
+      "kod bloğunda 5.0 ve 1.0",
+      "sürüm 2.0"
+    ],
+    "not": "Sürüm numaraları ve kodda ondalık, ilaç dozu ya da hata değil."
+  },
+  {
+    "dosya": "tr19-hukuk-borclar-hukuku-temel.md",
+    "dil": "tr",
+    "alan": "hukuk",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "madde numaraları (m. 1, 27, 117, 146, 49) doz ya da TC no değil",
+      "6098 sayılı kanun numarası"
+    ],
+    "not": "Hukukta madde numaraları ve kanun numarası TC no ya da doz sanılmamalı."
+  },
+  {
+    "dosya": "tr20-tarih-cumhuriyet-donemi-ve-tip-tarihi.md",
+    "dil": "tr",
+    "alan": "tarih",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "biyografide tam doğum tarihi (vaka değil)",
+      "1923, 1930 yıl ifadeleri",
+      "tıp tarihi bağlamı ilaç değil"
+    ],
+    "not": "Biyografideki doğum tarihi hasta kimliği sayılmamalı (vaka bağlamı yok)."
+  },
+  {
+    "dosya": "en01-nursing-iv-medication-prep.md",
+    "dil": "en",
+    "alan": "hemsirelik",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "| Morphine sulfate | 5.0 mg | IV slow push | every 4 hours as needed |",
+        "tur": "doz_yazimi"
+      }
+    ],
+    "hata": [],
+    "uyari": [
+      "ISMP kısaltması U (10 U)",
+      "gerektiğinde talimatında doz aralığı yok"
+    ],
+    "tuzak": [
+      "table cell with trailing zero 5.0 mg (hard variant)",
+      "40 mg and 4 mg correct"
+    ],
+    "not": "Tek tablo hücresinde 5.0 mg; ISMP sondaki sıfır hatası."
+  },
+  {
+    "dosya": "en02-pediatrics-paracetamol-dose.md",
+    "dil": "en",
+    "alan": "tip",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "Example 2: 15 kg × 15 mg/kg = 325 mg per dose.",
+        "tur": "doz_hesabi"
+      }
+    ],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "examples 1 and 3 are correct",
+      "1,000 mg is a thousands separator"
+    ],
+    "not": "Ortadaki örnekte tutmayan çarpma (15×15=225)."
+  },
+  {
+    "dosya": "en03-lab-unit-conversion-cholesterol.md",
+    "dil": "en",
+    "alan": "tip",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "- Total cholesterol 200 mg/dL = 0.52 mmol/L.",
+        "tur": "lab_donusum"
+      }
+    ],
+    "hata": [],
+    "uyari": [
+      "kaynaksız referans aralığı (70-100 mg/dL)"
+    ],
+    "tuzak": [
+      "other three conversions are correct",
+      "126 mg/dL ≈ 7.0 mmol/L is a level"
+    ],
+    "not": "Kolesterol dönüşümü on kat yanlış (doğrusu 5.2 mmol/L)."
+  },
+  {
+    "dosya": "en04-emergency-chest-pain-case.md",
+    "dil": "en",
+    "alan": "acil",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "Patient: Jane Doe, DOB 03/14/1987, MRN 4471823",
+        "tur": "hasta_kimligi"
+      }
+    ],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "Troponin 0.04 ng/mL is a level, not a dose",
+      "aspirin 300 mg correct"
+    ],
+    "not": "Vaka girişinde ad, doğum tarihi ve MRN bir satırda."
+  },
+  {
+    "dosya": "en05-pharmacy-dispensing-lorazepam.md",
+    "dil": "en",
+    "alan": "eczacilik",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "- Rx: lorazepam .5 mg PO twice daily as needed, 14 tablets",
+        "tur": "doz_yazimi"
+      }
+    ],
+    "hata": [],
+    "uyari": [
+      "ISMP kısaltması q.d. (bağlamda yazma uyarısı)",
+      "as needed talimatında maksimum doz yok"
+    ],
+    "tuzak": [
+      "0.25 mg and 2.5 mg correct forms",
+      "20 mg correct"
+    ],
+    "not": "Baştaki sıfırsız ondalık '.5 mg' bir reçete satırında."
+  },
+  {
+    "dosya": "en06-computer-python-functions.md",
+    "dil": "en",
+    "alan": "bilgisayar",
+    "karar": "yayına engel var",
+    "engel": [],
+    "hata": [
+      {
+        "satir_metni": "Each function receives one pаrameter and returns a value.",
+        "tur": "kiril_karisimi"
+      }
+    ],
+    "uyari": [],
+    "tuzak": [
+      "Python 3.10 version number",
+      "the rest of the text is plain Latin"
+    ],
+    "not": "Latin sözcük içinde Kiril 'а' (parameter) tek satırda; HATA."
+  },
+  {
+    "dosya": "en07-nursing-weight-based-vancomycin.md",
+    "dil": "en",
+    "alan": "hemsirelik",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "| 70 kg | 15 mg/kg | **1,150 mg** |",
+        "tur": "doz_hesabi"
+      }
+    ],
+    "hata": [],
+    "uyari": [
+      "mg/kg zaman birimi tablo satırında yok"
+    ],
+    "tuzak": [
+      "bold cell in a table (hard variant)",
+      "thousands comma 1,200 mg"
+    ],
+    "not": "Tablo hücresinde kalın yazılı yanlış çarpım (70×15=1,050)."
+  },
+  {
+    "dosya": "en08-nursing-handover-sbar-mrn.md",
+    "dil": "en",
+    "alan": "hemsirelik",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "Handover note for bed 12 (MRN 6620419).",
+        "tur": "hasta_kimligi"
+      }
+    ],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "SpO2 and respiratory rate are measurements"
+    ],
+    "not": "Yalnız MRN (ad yok) vaka bağlamında hasta kimliği sayılmalı."
+  },
+  {
+    "dosya": "en09-veterinary-meloxicam-cat.md",
+    "dil": "en",
+    "alan": "veteriner",
+    "karar": "karar için denetim eksik",
+    "engel": [],
+    "hata": [],
+    "uyari": [
+      "mg/kg zaman birimi ve tavan doz yok"
+    ],
+    "tuzak": [
+      "0.05 mg/kg and 0.2 mg correct",
+      "no denetim line at all"
+    ],
+    "not": "Denetim satırı hiç yok; karar 'denetim eksik'."
+  },
+  {
+    "dosya": "en10-nutrition-energy-needs.md",
+    "dil": "en",
+    "alan": "beslenme",
+    "karar": "karar için denetim eksik",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "1.0 g/kg is a nutrient figure, not a drug dose",
+      "hedef line is blank"
+    ],
+    "not": "Hedef satırı boş; karar 'denetim eksik' (denetim dolu)."
+  },
+  {
+    "dosya": "en11-statistics-confidence-interval.md",
+    "dil": "en",
+    "alan": "istatistik",
+    "karar": "karar için denetim eksik",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "p < 0.001 correct style",
+      "denetim line is empty"
+    ],
+    "not": "Denetim satırı boş; karar 'denetim eksik'."
+  },
+  {
+    "dosya": "en12-medicine-glucose-statistics.md",
+    "dil": "en",
+    "alan": "tip",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "uyari": [
+      "kaynaksız referans aralığı (usual fasting range)"
+    ],
+    "tuzak": [
+      "glucose 90 mg/dL ≈ 5.0 mmol/L correct conversion with trailing zero",
+      "p < 0.001",
+      "'Patient: 54-year-old man' is not a name"
+    ],
+    "not": "Tıp + istatistik karması; doğru dönüşüm ve p < 0.001."
+  },
+  {
+    "dosya": "en13-emergency-anaphylaxis-epinephrine.md",
+    "dil": "en",
+    "alan": "acil",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "uyari": [
+      "mg/kg zaman birimi belirsiz (0.01 mg/kg)"
+    ],
+    "tuzak": [
+      "'Do not write 5.0 mg' is explicitly a bad-example warning",
+      "'Do not write .5 mg' likewise",
+      "0.5 mg and 0.2 mg correct"
+    ],
+    "not": "Öğretici olumsuz örnek ('Do not write 5.0 mg') ENGEL olmamalı; doğru hesap."
+  },
+  {
+    "dosya": "en14-physiotherapy-tens-parameters.md",
+    "dil": "en",
+    "alan": "fizyoterapi",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "1.0 W/cm² is a device setting, not a drug dose",
+      "angle and scale values"
+    ],
+    "not": "Cihaz ayarındaki 1.0 sondaki sıfırı doz sayılmamalı."
+  },
+  {
+    "dosya": "en15-language-french-for-turkish-speakers.md",
+    "dil": "en",
+    "alan": "dil",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "French and Turkish words in an English document",
+      "classe/station/nation resemble English"
+    ],
+    "not": "Dil alanı; Fransızca ve Türkçe sözcükler yazım hatası sayılmamalı."
+  },
+  {
+    "dosya": "en16-language-english-articles-for-turkish-speakers.md",
+    "dil": "en",
+    "alan": "dil",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "wrong sentences are labeled as wrong in a table",
+      "Turkish word bir inside English text"
+    ],
+    "not": "İngilizce yanlış cümleler 'Wrong' sütununda işaretli; dil notu."
+  },
+  {
+    "dosya": "en17-physics-chemistry-lab-notes.md",
+    "dil": "en",
+    "alan": "fizik",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "5.0 V, 2.0 A, 25.0 mL pipette, 0.50 g NaCl are measurements, not drug doses"
+    ],
+    "not": "Fizik + kimya ölçümlerinde sondaki sıfır doz hatası sayılmamalı; kimya ayrı bölüm."
+  },
+  {
+    "dosya": "en18-computer-versioning-and-data-types.md",
+    "dil": "en",
+    "alan": "bilgisayar",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "version 2.0 and Python 3.10 are version numbers",
+      "5.0 in code is a float",
+      "no drug context"
+    ],
+    "not": "Sürüm numaraları ve kodda 5.0 doz sanılmamalı."
+  },
+  {
+    "dosya": "en19-law-contract-formation.md",
+    "dil": "en",
+    "alan": "hukuk",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "article numbers and the law number 6098 are not doses or ID numbers"
+    ],
+    "not": "Hukuk madde numaraları ve kanun numarası tuzak."
+  },
+  {
+    "dosya": "en20-history-republic-and-biography.md",
+    "dil": "en",
+    "alan": "tarih",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "biography birth date, not a patient case",
+      "years 1923 and 1453"
+    ],
+    "not": "Biyografideki doğum tarihi hasta kimliği sayılmamalı."
+  }
+]

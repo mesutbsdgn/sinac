@@ -200,3 +200,23 @@ okunduğu görüldü. README Durulaç düzenine göre yeniden kuruldu (taslak So
 bilgiler korundu; sağlık tablosundaki her düzey ve "öteki alanlar" tablosundaki her alan ataması betik çıktısı ve
 `ogretim-alanlari.json` ile doğrulandı. Örnek çıktı gerçek betik çıktısıdır. Hız yeniden ölçüldü: 1,9 MB gerçek
 Fransızca ders notu ~4,4 sn (eski 1,3 MB / 17–20 sn ölçümündeki belge bulunamadı; o satır sürüm geçmişinde kaldı).
+
+### F3 lab dönüşümü: kolesterol ve trigliserit (22 Kas 2026)
+
+`lab_birim_karisik` artık kolesterol (total/LDL/HDL; "cholesterol", "ldl", "hdl") ve trigliserit için de "mg/dL = mmol/L"
+eşitliğini denetler (ENGEL; tolerans ve düzey glukozla aynı: ±%3 ve 0,15 mutlak). Katsayılar birincil kaynak olarak
+PubChem molekül ağırlığından türetildi, mmol/L = mg/dL × 10 / MA: kolesterol C27H46O 386,7 g/mol (CID 5997) → mg/dL ÷ 38,67;
+trigliserit (triolein, C57H104O6, 885,4 g/mol, CID 5497163) → mg/dL ÷ 88,5. Not: trigliseritin tek bir molekül ağırlığı
+yoktur (yağ asidi bileşimine göre değişir); 88,5 trigliseritin klinikte yaygın kullanılan triolein değeridir, bu yüzden
+bu eşitliğin tutmaması 10 kat hatayı yakalar, ±%3 içi sapmayı yargılamaz. Uygulama: `scripts/ogretim_denetim.py` `KATSAYI`.
+
+### F3 alan tespiti ve iki dil (22 Kas 2026)
+
+Araştırma (quoteproof, 4 alt konu, doğrulanmış notlar; `arastirma/2026-11-22-alan-sozlukleri`): yayımlanmış alan sözcük
+listeleri (MAWL 623, CSAVL 904 + 702, EAWL 887 sözcük ailesi/öğe; hemşirelik, eczacılık, hukuk, mühendislik listeleri)
+alan derleminden sıklık + yayılım ölçütüyle ve genel sözcükleri dışlayarak çıkarılmış; kısa metinde dil tanıma doğruluğu
+uzunlukla düşer. Listeler telif ve erişim nedeniyle kopyalanmadı. Kolesterol ve trigliserit katsayıları PubChem'den
+(kolesterol C27H46O 386,7 g/mol, CID 5997; triolein 885,4 g/mol, CID 5497163). Sözlük model üretimi (Türkçe DeepSeek
+V4.1 Flash, İngilizce Gemini 4 Neon) + çapraz inceleme (416 + 283 öğe çıkarıldı) + yerel süzgeçle kuruldu. Ölçüm
+`scripts/altin_olc.py` ile, üç kümede (75 belge); tablo ve dürüstlük notları `docs/f3-alan-tespiti.md` sonunda. Kümeleri
+modeller yazdı; öğretmen/uzman etiketli altın küme yok.

@@ -1,7 +1,7 @@
 ---
 name: sinac
-description: "Sınaç — ders notu, konu anlatımı, rehber, çalışma kâğıdı, ezber/kelime listesi ve öğrenci PDF'ini kanıta dayalı 8 boyutlu ölçekle denetler (doğruluk, hedef uyumu, seviye, ezber ve kavrama, okunaklılık, sıra ve akış, kendini sınama, verimlilik) ve üç durumlu karar verir (yayına engel var / denetim eksik / uygun), bulguları satır numarasıyla gösterir. Belgenin bilim dalını (32 alan: tıp ve 7 sağlık dalı, psikoloji, matematik, fen dalları, mühendislik, bilgisayar, hukuk, iktisat, tarih, coğrafya, ilahiyat, edebiyat, sanat, yabancı dil…) ve görsel/sözel biçimini kendisi tanır. Sağlıkta doz yazımı (5,0 mg), doz hesabı aritmetiği, ISMP kısaltmaları, hasta kimliği ve TC no alandan bağımsız denetlenir; kılavuz yaşı; hukukta mülga kanun; fende SI birimi. Use when the user asks to check, audit or score study notes, lecture notes, a teaching PDF or a vocabulary list: 'ders notumu denetle', 'bu PDF öğretir mi', 'notum doğru yazılmış mı', 'öğretim materyali ölçeği', 'Sınaç'."
-version: "2.0.1"
+description: "Sınaç — ders notu, konu anlatımı, rehber, çalışma kâğıdı, ezber/kelime listesi ve öğrenci PDF'ini (Türkçe ya da İngilizce) kanıta dayalı 8 boyutlu ölçekle denetler (doğruluk, hedef uyumu, seviye, ezber ve kavrama, okunaklılık, sıra ve akış, kendini sınama, verimlilik) ve üç durumlu karar verir (yayına engel var / denetim eksik / uygun), bulguları satır numarasıyla gösterir. Belgenin dilini, bilim dalını (32 alan: tıp ve 7 sağlık dalı, psikoloji, matematik, fen, mühendislik, bilgisayar, hukuk, iktisat, tarih, ilahiyat, edebiyat, yabancı dil…) ve biçimini kendisi tanır. Sağlıkta doz yazımı (5,0 mg), doz hesabı, ISMP kısaltmaları, hasta kimliği ve TC no alandan bağımsız denetlenir. Audits Turkish or English study notes and teaching PDFs: use when asked to check, audit or score lecture notes or a vocabulary list; 'ders notumu denetle', 'bu PDF öğretir mi', 'Sınaç'."
+version: "2.1.0"
 metadata:
   author: mesutbsdgn
   tags: [education, teaching-materials, medical-education, quality-check, turkish]
@@ -41,6 +41,11 @@ sadeleştirme bu becerinin işi değildir (o iş Durulaç'ın, `turkce-ai-durula
 4. Kullanıcıya ver: **karar**, alan ve destek (zayıfsa alanı sor), "k/8 boyut ölçüldü" ve puan tablosu, **bütün ENGEL
    ve HATA bulguları satır numarası ve kural kimliğiyle**, ilk 5 uyarı, elle bekleyen maddeler, alanın elle listesi.
 5. **Betik çalışmazsa puan uydurma:** çalışmadığını söyle, elle listeyi uygula, puan verme.
+
+**Çıktıdaki `belge_dili` ve `grup`:** `belge_dili` (tr, en, fr) birim dil tahminlerinin çoğunluğudur; `grup` alanın
+grubudur (saglik, sayisal_fen, sosyal_beseri, dil_genel). Alan eşik altındaysa ama sağlık grubu eşiği geçiyorsa alan `tip`
+olur (sağlık kontrolleri gelir, destek zayıf). Sağlık içi alt alan (hemşirelik, eczacılık, tıp) ve karma belgede alan
+yanılabilir; kullanıcıya söyle, `alan:` ile düzelt. İngilizce belgede uyarı mesajları yine Türkçedir.
 
 **Karar (üç durum):**
 - **yayına engel var** (çıkış 1): en az bir ENGEL (hasta güvenliği: doz yazımı, doz/dönüşüm aritmetiği, hasta kimliği,
@@ -87,4 +92,16 @@ derse öner.
 `references/ogretim.md` (ölçek, karar modeli, alan tabloları) · `references/ogretim-alanlari.json` (32 profil) ·
 `scripts/ogretim_denetim.py` · testler: `scripts/test_ogretim_denetim.py`, `scripts/test_ozellikler.py` (gerçek PDF
 dahil), `scripts/test_karsi_ornekler.py` + `scripts/tests/karsi_ornekler.json` (GPT-6.1 Sol, Qwen4 Max, Fable 5.2 ve
-Gemini 4 Argon ve GPT-6.2 Astra incelemelerinden 211 karşı örnek) · `eval.md` (son okuma) · `docs/kanitlar.md` (kanıt, açılamayan kaynaklar, inceleme özeti).
+Gemini 4 Argon ve GPT-6.2 Astra incelemelerinden 211 karşı örnek) · `scripts/test_f3.py` (dil ve alan tespiti), `scripts/test_altin.py` (3 altın küme, 75 belge) · `eval.md` (son okuma) · `docs/kanitlar.md` (kanıt, açılamayan kaynaklar, inceleme özeti).
+
+## English summary
+
+Sınaç audits Turkish or English study notes, lecture notes, guides and teaching PDFs against an 8-dimension,
+evidence-based scale and returns one of three verdicts (blocked / audit incomplete / fit within scope), with line numbers
+and rule IDs. It guesses the language per unit (paragraph, list item, table row), detects the field (32 fields, 4 groups)
+and format, and always runs patient-safety checks (dose writing such as "5.0 mg", dose and unit-conversion arithmetic,
+ISMP abbreviations, patient identity) when drugs or doses appear. In English units "1,000 mg" is a thousands separator.
+Output fields `belge_dili` (document language) and `grup` (field group) are reported. Warning and suggestion messages
+are in Turkish. It checks writing and structure, not clinical or factual correctness; field detection is lexicon-based and
+can be wrong for health sub-fields and mixed documents (override with `alan:` or `--alan`). Full documentation:
+`README.en.md`.

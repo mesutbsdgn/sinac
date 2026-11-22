@@ -1,0 +1,314 @@
+[
+  {
+    "dosya": "g-tr01-eczacilik-doz.md",
+    "dil": "tr",
+    "alan": "eczacilik",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "20 kg × 15 mg/kg/doz = 450 mg tek doz",
+        "tur": "doz_hesabi"
+      },
+      {
+        "satir_metni": "setirizin şurup günde iki kez 5,0 mg oral",
+        "tur": "doz_yazimi"
+      }
+    ],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [],
+    "not": "Pediatrik süspansiyon doz hesabında aritmetik hata (doğrusu 300 mg) ve sondaki sıfırlı doz yazımı (5,0 mg) içerir."
+  },
+  {
+    "dosya": "g-tr02-acil-vaka.md",
+    "dil": "tr",
+    "alan": "acil",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "Hasta: Mehmet Karaca, protokol no: 2026-44182, doğum tarihi: 14.03.1982.",
+        "tur": "hasta_kimligi"
+      },
+      {
+        "satir_metni": "TC Kimlik No: 10000000146.",
+        "tur": "tc_no"
+      }
+    ],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [],
+    "not": "Acil anafilaksi vaka örneğinde hasta adı, protokol no, tam doğum tarihi ve TC kimlik no yer tutucusu bulunur."
+  },
+  {
+    "dosya": "g-tr03-tip-lab-donusum.md",
+    "dil": "tr",
+    "alan": "tip",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "Açlık kan glukozu 180 mg/dL ölçülen bir hastada SI karşılığı 14,0 mmol/L",
+        "tur": "lab_donusum"
+      },
+      {
+        "satir_metni": "Serum kreatinin düzeyi 2,0 mg/dL olan nefroloji hastasında SI değeri 120,0 µmol/L",
+        "tur": "lab_donusum"
+      }
+    ],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [],
+    "not": "Glukoz (doğrusu 10,0 mmol/L) ve kreatinin (doğrusu 176,8 µmol/L) SI birim dönüşümleri hatalıdır."
+  },
+  {
+    "dosya": "g-tr04-edebiyat-tanzimat.md",
+    "dil": "tr",
+    "alan": "edebiyat",
+    "karar": "yayına engel var",
+    "engel": [],
+    "hata": [
+      {
+        "satir_metni": "TODO: Şinasi'nin Şair Evlenmesi özeti ve sahne yapısı eklenecek.",
+        "tur": "todo"
+      }
+    ],
+    "uyari": [],
+    "tuzak": [],
+    "not": "Tanzimat edebiyatı ders notunda yarım kalmış TODO notu bulunduğu için yayına engel vardır."
+  },
+  {
+    "dosya": "g-tr05-hemsirelik-bakim.md",
+    "dil": "tr",
+    "alan": "hemsirelik",
+    "karar": "karar için denetim eksik",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [],
+    "not": "Postpartum hemşirelik bakım planında engel yoktur ancak frontmatter denetim alanı boştur."
+  },
+  {
+    "dosya": "g-tr06-cografya-iklim.md",
+    "dil": "tr",
+    "alan": "cografya",
+    "karar": "karar için denetim eksik",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [],
+    "not": "Türkiye iklim tipleri ders notunda engel yoktur ancak frontmatter'da denetim alanı hiç yer almaz."
+  },
+  {
+    "dosya": "g-tr07-iktisat-enflasyon.md",
+    "dil": "tr",
+    "alan": "iktisat",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "%5,0 enflasyon",
+      "%12,0"
+    ],
+    "not": "İktisat notu uygundur; ekonomideki %5,0 enflasyon ifadesi ilaç dozu olmadığı için yanlış pozitif üretmemelidir."
+  },
+  {
+    "dosya": "g-tr08-ilahiyat-hadis.md",
+    "dil": "tr",
+    "alan": "ilahiyat",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "İmam Buhârî, 19 Temmuz 810 tarihinde Buhara'da doğmuş"
+    ],
+    "not": "Hadis usulü notu uygundur; tarihsel biyografideki doğum tarihi hasta kimliği sayılmamalıdır."
+  },
+  {
+    "dosya": "g-tr09-dil-almanca.md",
+    "dil": "tr",
+    "alan": "dil",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "3,00 Euro",
+      "14.30 Uhr"
+    ],
+    "not": "Türkçe konuşan öğrenciye Almanca A1 öğreten not uygundur; para ve saat ifadeleri doz tuzağıdır."
+  },
+  {
+    "dosya": "g-tr10-psikoloji-doz-ornegi.md",
+    "dil": "tr",
+    "alan": "psikoloji",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "Yanlış yazım örneği: \"5,0 mg\" yerine \"5 mg\" yazılmalıdır.",
+      "50 kg × 2 mg/kg = 100 mg",
+      "p* = .03"
+    ],
+    "not": "Psikoloji notu uygundur; açıkça yanlış yazım örneği olarak işaretli 5,0 mg, doğru doz hesabı ve APA p = .03 tuzakları içerir."
+  },
+  {
+    "dosya": "g-en01-veteriner-dosing.md",
+    "dil": "en",
+    "alan": "veteriner",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "For a 10 kg dog at 5 mg/kg/dose, give 80 mg per dose orally.",
+        "tur": "doz_hesabi"
+      },
+      {
+        "satir_metni": "administer .5 mg intravenously as an initial bolus",
+        "tur": "doz_yazimi"
+      },
+      {
+        "satir_metni": "maintenance dose of 2.0 mg every 6 hours",
+        "tur": "doz_yazimi"
+      }
+    ],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [],
+    "not": "Veteriner analjezi notunda yanlış doz hesabı (doğrusu 50 mg), baştaki sıfırsız (.5 mg) ve sondaki sıfırlı (2.0 mg) doz yazımı vardır."
+  },
+  {
+    "dosya": "g-en02-tip-clinical-case.md",
+    "dil": "en",
+    "alan": "tip",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "Patient: Daniel Brooks, MRN: 8842109, DOB: 1974-09-22.",
+        "tur": "hasta_kimligi"
+      },
+      {
+        "satir_metni": "Total cholesterol: 200 mg/dL (8.50 mmol/L)",
+        "tur": "lab_donusum"
+      },
+      {
+        "satir_metni": "Triglycerides: 177 mg/dL (4.00 mmol/L)",
+        "tur": "lab_donusum"
+      }
+    ],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [],
+    "not": "Klinik vakada hasta kimliği (ad, MRN, doğum tarihi) ile hatalı kolesterol (≈5.17 mmol/L) ve trigliserit (2.00 mmol/L) dönüşümleri bulunur."
+  },
+  {
+    "dosya": "g-en03-muhendislik-kiril.md",
+    "dil": "en",
+    "alan": "muhendislik",
+    "karar": "yayına engel var",
+    "engel": [],
+    "hata": [
+      {
+        "satir_metni": "The maximum bending mоment occurs at midspan",
+        "tur": "kiril"
+      }
+    ],
+    "uyari": [],
+    "tuzak": [],
+    "not": "Yapı mekaniği notunda Latin sözcük içinde Kiril küçük 'о' (U+043E) harfi bulunduğu için yayına engel vardır."
+  },
+  {
+    "dosya": "g-en04-beslenme-macros.md",
+    "dil": "en",
+    "alan": "beslenme",
+    "karar": "karar için denetim eksik",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [],
+    "not": "Klinik beslenme notunda engel yoktur ancak frontmatter denetim alanı boştur."
+  },
+  {
+    "dosya": "g-en05-yer-bilimleri-plates.md",
+    "dil": "en",
+    "alan": "yer_bilimleri",
+    "karar": "karar için denetim eksik",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [],
+    "not": "Yer bilimleri notunda engel yoktur ve denetim doludur ancak frontmatter hedef alanı eksiktir."
+  },
+  {
+    "dosya": "g-en06-fizyoterapi-rehab.md",
+    "dil": "en",
+    "alan": "fizyoterapi",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "PSA 4.0 ng/mL",
+      "90 mg/dL (5.0 mmol/L)",
+      "1,000 mg calcium"
+    ],
+    "not": "Fizyoterapi notu uygundur; PSA 4.0 ng/mL, doğru glukoz dönüşümü ve İngilizce binlik ayırıcı 1,000 mg tuzaklarını içerir."
+  },
+  {
+    "dosya": "g-en07-istatistik-python-karma.md",
+    "dil": "en",
+    "alan": "istatistik",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "Python 3.12",
+      "2.0 m/s",
+      "p = .04"
+    ],
+    "not": "Karma (istatistik + bilgisayar) ders notu uygundur; Python 3.12, 2.0 m/s ve p = .04 tuzaklarını içerir."
+  },
+  {
+    "dosya": "g-en08-biyoloji-kimya-karma.md",
+    "dil": "en",
+    "alan": "biyoloji",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "108 mg/dL (6.0 mmol/L)",
+      "1.0 mol/L"
+    ],
+    "not": "Karma (biyoloji + kimya) biyokimya notu uygundur; doğru glukoz dönüşümü ve 1.0 mol/L derişim tuzaklarını içerir."
+  },
+  {
+    "dosya": "g-en09-sanat-baroque.md",
+    "dil": "en",
+    "alan": "sanat",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "Caravaggio (born 29 September 1571",
+      "Rembrandt van Rijn (born 15 July 1606"
+    ],
+    "not": "Barok sanat tarihi notu uygundur; sanatçı biyografilerindeki tam doğum tarihleri hasta kimliği sayılmamalıdır."
+  },
+  {
+    "dosya": "g-en10-felsefe-epistemology.md",
+    "dil": "en",
+    "alan": "felsefe",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "uyari": [],
+    "tuzak": [
+      "2.0 m/s",
+      "Immanuel Kant (born 22 April 1724"
+    ],
+    "not": "Epistemoloji notu uygundur; fizik hız örneği (2.0 m/s) ve filozof doğum tarihi yanlış pozitif üretmemelidir."
+  }
+]
