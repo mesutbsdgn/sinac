@@ -1,20 +1,24 @@
 {
- "_aciklama": "ogretim_denetim.py alan profilleri. Alan: ad, sozcukler (küçük harf, kök yeter), isteğe bağlı ust (alt alan: üst alanın sözcükleri de geçse daha özel olan seçilir), kontroller (betikteki KONTROLLER adları ya da '@grup'), elle_gruplar, elle, sinama_oneri. '_' ile başlayan anahtarlar profil değildir: _gruplar ve _elle_gruplar ortak listeler, _gorsel görsel biçim eki. Gerekçeler: references/ogretim.md ve docs/ogretim-alan-kanitlari.md.",
+ "_aciklama": "ogretim_denetim.py alan profilleri. Alan: ad, sozcukler (küçük harf, kök yeter), isteğe bağlı ust (alt alan: üst alanın sözcükleri de geçse daha özel olan seçilir), kontroller (betikteki KONTROLLER adları ya da '@grup'), elle_gruplar, elle, sinama_oneri. '_' ile başlayan anahtarlar profil değildir: _gruplar ve _elle_gruplar ortak listeler, _gorsel görsel biçim eki. Gerekçeler: references/ogretim.md ve docs/kanitlar.md. '_ortak_elle' her alanın elle listesinin başına eklenir. Hasta kimliği ve TC kimlik kontrolleri ortak çekirdektedir; ilaç/doz örüntüsü görülürse sağlık güvenlik kontrolleri alandan bağımsız çalışır (risk taraması).",
  "_gruplar": {
   "saglik": [
    "tip_doz_yazimi",
    "tip_tehlikeli_kisaltma",
    "saglik_kisaltma_ek",
+   "saglik_bosluk",
    "doz_kg_belirsiz",
+   "doz_aritmetigi",
+   "cocuk_azami_doz",
+   "prn_talimat",
    "kisaltma_tanimsiz",
    "kilavuz_yilsiz",
    "kilavuz_eski",
-   "hasta_kimlik",
    "gebelik_kategorisi",
    "lab_birim_karisik",
    "referans_kaynaksiz",
    "tur_adi_yazimi",
-   "tani_surumu_eski"
+   "tani_surumu_eski",
+   "p_degeri"
   ],
   "kaynak": [
    "kaynaksiz_otorite",
@@ -108,7 +112,6 @@
    "lezyon",
    "komplikasyon",
    "yan etki",
-   "iv ",
    "mg/kg",
    "diagnosis",
    "treatment",
@@ -117,7 +120,46 @@
    "fizik muayene bulgusu",
    "laboratuvar bulgusu",
    "biyokimya",
-   "hematoloji"
+   "hematoloji",
+   "patient",
+   "clinical",
+   "dose",
+   "drug",
+   "syndrome",
+   "symptom",
+   "therapy",
+   "infection",
+   "mg daily",
+   "hypertension",
+   "physician",
+   "medication",
+   "intravenöz",
+   "verilir",
+   "anestezi",
+   "yoğun bakım",
+   "onkoloji",
+   "diyabet",
+   "endokrin",
+   "palyatif",
+   "nöroloji",
+   "nefroloji",
+   "geriatri",
+   "kardiyoloji",
+   "dahiliye",
+   "pediatri",
+   "cerrahi",
+   "hemodiyaliz",
+   "kemoterapi",
+   "sepsis",
+   "entübe",
+   "ventilatör",
+   "hipoglisemi",
+   "hipertansiyon",
+   "insülin",
+   "kalp yetmezliği",
+   "böbrek yetmezliği",
+   "epikriz",
+   "hasta kayıt"
   ],
   "kontroller": [
    "@saglik",
@@ -204,7 +246,15 @@
    "sıvı-elektrolit",
    "ilaç uygulama",
    "enjeksiyon",
-   "aseptik"
+   "aseptik",
+   "nursing",
+   "nurse",
+   "care plan",
+   "nursing diagnosis",
+   "diyabet hemşireliği",
+   "onkoloji hemşireliği",
+   "hasta bakımı",
+   "hemşirelik bakımı"
   ],
   "kontroller": [
    "@saglik",
@@ -244,7 +294,12 @@
    "jenerik",
    "müstahzar",
    "kübü",
-   "prospektüs"
+   "prospektüs",
+   "pharmacokinetics",
+   "pharmacology",
+   "bioavailability",
+   "half-life",
+   "drug interaction"
   ],
   "kontroller": [
    "@saglik"
@@ -281,7 +336,12 @@
    "kuduz",
    "şap",
    "mastitis",
-   "hayvancılık"
+   "hayvancılık",
+   "veterinary",
+   "dog",
+   "cat",
+   "cattle",
+   "livestock"
   ],
   "kontroller": [
    "@saglik",
@@ -320,7 +380,11 @@
    "öğün",
    "glisemik indeks",
    "besin öğesi",
-   "antropometri"
+   "antropometri",
+   "nutrition",
+   "diet",
+   "dietitian",
+   "calorie"
   ],
   "kontroller": [
    "@saglik",
@@ -357,7 +421,10 @@
    "protez",
    "propriosepsiyon",
    "izometrik",
-   "fonksiyonel"
+   "fonksiyonel",
+   "physiotherapy",
+   "rehabilitation",
+   "range of motion"
   ],
   "kontroller": [
    "@saglik",
@@ -394,7 +461,11 @@
    "glasgow",
    "gks",
    "anafilaksi",
-   "acil müdahale"
+   "acil müdahale",
+   "emergency",
+   "resuscitation",
+   "triage",
+   "cpr"
   ],
   "kontroller": [
    "@saglik"
@@ -433,15 +504,15 @@
    "gelişim psikolojisi",
    "deney grubu",
    "kontrol grubu",
-   "örneklem"
+   "örneklem",
+   "psychology",
+   "cognitive",
+   "behavior",
+   "psychiatry"
   ],
   "kontroller": [
-   "tani_surumu_eski",
-   "p_degeri",
-   "hasta_kimlik",
-   "kaynaksiz_otorite",
-   "kilavuz_eski",
-   "tip_doz_yazimi"
+   "@saglik",
+   "kaynaksiz_otorite"
   ],
   "elle": [
    "Tanı ölçütleri güncel sürümden (DSM-5-TR 2022; ICD-11 2022'de yürürlükte, ICD-10 kullanan ülkede hangisinin esas alındığı yazılı); ölçütler kendi kendine tanı için değil",
@@ -478,7 +549,21 @@
    "√",
    "tümevarım",
    "dizi",
-   "seri"
+   "seri",
+   "theorem",
+   "proof",
+   "derivative",
+   "equation",
+   "matrix",
+   "kesir",
+   "üçgen",
+   "denklemi",
+   "fonksiyonu",
+   "türevi",
+   "integrali",
+   "eşitsizliği",
+   "geometri",
+   "cebir"
   ],
   "kontroller": [
    "@sayisal"
@@ -510,7 +595,11 @@
    "anova",
    "etki büyüklüğü",
    "olasılık dağılımı",
-   "veri seti"
+   "veri seti",
+   "statistics",
+   "regression",
+   "hypothesis",
+   "confidence interval"
   ],
   "kontroller": [
    "@sayisal",
@@ -575,7 +664,17 @@
    "termodinamik",
    "kuantum",
    "serbest cisim",
-   "sürtünme"
+   "sürtünme",
+   "basınç",
+   "elektrik",
+   "devre",
+   "hareket",
+   "kütle",
+   "yoğunluk",
+   "kaldırma kuvveti",
+   "sürat",
+   "ivmesi",
+   "sıcaklık"
   ],
   "kontroller": [
    "@fen"
@@ -607,7 +706,17 @@
    "katalizör",
    "oksidasyon",
    "indirgenme",
-   "periyodik"
+   "periyodik",
+   "erlen",
+   "büret",
+   "pipet",
+   "molekül",
+   "atom",
+   "indikatör",
+   "nötralleşme",
+   "mol kütlesi",
+   "asidik",
+   "bazik"
   ],
   "kontroller": [
    "@fen"
@@ -640,7 +749,15 @@
    "mutasyon",
    "organel",
    "doku",
-   "metabolizma"
+   "metabolizma",
+   "bakteri",
+   "besiyeri",
+   "koloni",
+   "mikroskop",
+   "gram boyama",
+   "mikrobiyoloji",
+   "kültür ortamı",
+   "inkübasyon"
   ],
   "kontroller": [
    "@fen",
@@ -660,7 +777,10 @@
    "jeoloji",
    "kayaç",
    "mineral",
-   "fay",
+   "fay hattı",
+   "fay zonu",
+   "fayı",
+   "fayların",
    "levha",
    "deprem",
    "volkan",
@@ -699,7 +819,10 @@
    "pestisit",
    "ilaçlama",
    "hasat",
-   "ekim",
+   "ekim zamanı",
+   "ekim nöbeti",
+   "ekim normu",
+   "tohum ekimi",
    "tohum",
    "verim",
    "dekar",
@@ -707,7 +830,9 @@
    "zararlı",
    "hastalık etmeni",
    "sera",
-   "çeşit",
+   "bitki çeşidi",
+   "çeşit ıslahı",
+   "tescilli çeşit",
    "üretim sezonu"
   ],
   "kontroller": [
@@ -728,9 +853,9 @@
   "ad": "Bilgisayar bilimleri ve yazılım",
   "sozcukler": [
    "algoritma",
-   "döngü",
-   "nesne",
-   "sınıf",
+   "for döngüsü",
+   "while döngüsü",
+   "sınıf tanımı",
    "derleyici",
    "python",
    "java",
@@ -743,11 +868,24 @@
    "api",
    "github",
    "hata ayıklama",
-   "kodu",
    "kaynak kod",
    "print(",
    "def ",
-   "return"
+   "return",
+   "algorithm",
+   "function",
+   "variable",
+   "loop",
+   "compiler",
+   "sorgu",
+   "select",
+   "insert into",
+   "fonksiyonlar",
+   "nesne yönelimli",
+   "dizi indeksi",
+   "import numpy",
+   "import pandas",
+   "from import"
   ],
   "kontroller": [
    "kod_ornegi",
@@ -872,7 +1010,10 @@
    "ekonomi",
    "enflasyon",
    "gsyh",
-   "arz",
+   "arz ve talep",
+   "arz eğrisi",
+   "toplam arz",
+   "arz fazlası",
    "talep",
    "faiz",
    "muhasebe",
@@ -922,7 +1063,9 @@
    "isyan",
    "dönemi",
    "beylik",
-   "halife"
+   "halife",
+   "tarihsel",
+   "tarihçi"
   ],
   "kontroller": [
    "@kaynak",
@@ -1169,5 +1312,10 @@
    "'Öğrenme stilleri' gibi kanıtı zayıf görüşler kanıt düzeyiyle anılıyor"
   ],
   "sinama_oneri": "Ders planı yazdıran ve kuram–uygulama eşleştiren sorular ekle"
- }
+ },
+ "_ortak_elle": [
+  "Her öğrenme hedefi için: hangi açıklama/örnek öğretiyor, hangi soru sınıyor, hangi cevap/geri bildirim hatayı düzeltiyor? (IES: düzeltici geri bildirim)",
+  "İçerik bağımsız bir kaynağa ya da uzmana göre doğru; frontmatter'a `denetim: TARİH KİM/MODEL` yazıldı",
+  "Belgenin hangi hedefe/sınav görevine hizmet ettiği frontmatter'da: `hedef: …`"
+ ]
 }

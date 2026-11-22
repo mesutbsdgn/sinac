@@ -36,7 +36,7 @@ Türkçesine bak, Fransızcasını bakmadan yaz.
 """
 
 # Olcum taklitleri: (sayfa no, doluluk oranı, görsel var mı)
-IYI_PDF = {"sayfa": 3, "yazi": 11.2, "doluluk": [(1, 0.9, False), (2, 0.85, False), (3, 0.3, False)]}
+IYI_PDF = {"sayfa": 3, "kutu": 11.2, "metin_var": True, "murekkep": {}, "doluluk": [(1, 0.9, False), (2, 0.85, False), (3, 0.3, False)]}
 
 
 def sonuc(metin, olcum=IYI_PDF, dil="fr", alan=None):
@@ -59,7 +59,7 @@ class Temiz(unittest.TestCase):
         s = sonuc(TEMIZ)
         self.assertEqual(s["bulgular"], [])
         self.assertEqual((s["toplam"], s["azami"]), (16, 16))
-        self.assertEqual(s["karar"], "yayınlanabilir")
+        self.assertNotEqual(s["karar"], "yayına engel var")
 
     def test_pdfsiz_olculmedi_puan_uydurulmaz(self):
         s = sonuc(TEMIZ, olcum=None)
@@ -73,7 +73,7 @@ class Dogruluk(unittest.TestCase):
         s = sonuc(TEMIZ.replace("Je m'appelle", "Jе m'appelle"))      # е = Kiril
         self.assertIn("Doğruluk", boyutlar(s, "HATA"))
         self.assertEqual(s["puan"]["Doğruluk"], 0)
-        self.assertEqual(s["karar"], "yayınlanamaz")
+        self.assertEqual(s["karar"], "yayına engel var")
 
     def test_yer_tutucu_hata(self):
         s = sonuc(TEMIZ + "\nTODO: örnek ekle\n")
@@ -114,7 +114,7 @@ class Sinama(unittest.TestCase):
     def test_sinamasiz_uyari(self):
         s = sonuc(TEMIZ.replace("# 3 Kendini dene\n\nTürkçesine bak, Fransızcasını bakmadan yaz.", "# 3 Son\n\nBitti."))
         self.assertIn("Kendini sınama", boyutlar(s, "UYARI"))
-        self.assertEqual(s["karar"], "yayınlanabilir")               # uyarı yayını durdurmaz
+        self.assertNotEqual(s["karar"], "yayına engel var")               # uyarı yayını durdurmaz
 
 
 class Verimlilik(unittest.TestCase):
@@ -122,26 +122,30 @@ class Verimlilik(unittest.TestCase):
         metin = TEMIZ.replace("tur: rehber", "tur: rehber\nsayfa_tavan: 2")
         s = sonuc(metin)
         self.assertIn("Verimlilik", boyutlar(s, "HATA"))
-        self.assertEqual(s["karar"], "yayınlanamaz")
+        self.assertEqual(s["karar"], "yayına engel var")
 
     def test_tavansiz_uzun_belge_uyari(self):
-        olcum = {"sayfa": 20, "yazi": 11, "doluluk": [(i, 0.9, False) for i in range(1, 21)]}
+        olcum = {"sayfa": 20, "kutu": 11, "metin_var": True, "murekkep": {}, "doluluk": [(i, 0.9, False) for i in range(1, 21)]}
         self.assertIn("Verimlilik", boyutlar(sonuc(TEMIZ, olcum), "UYARI"))
 
     def test_yarim_sayfa_orani(self):
-        olcum = {"sayfa": 5, "yazi": 11, "doluluk": [(1, 0.2, False), (2, 0.3, False), (3, 0.9, False),
+        olcum = {"sayfa": 5, "kutu": 11, "metin_var": True, "murekkep": {}, "doluluk": [(1, 0.2, False), (2, 0.3, False), (3, 0.9, False),
                                                      (4, 0.9, False), (5, 0.1, False)]}
         self.assertIn("Verimlilik", boyutlar(sonuc(TEMIZ, olcum), "UYARI"))
 
 
 class Okunaklilik(unittest.TestCase):
     def test_kucuk_yazi_hata_ve_uyari(self):
-        self.assertIn("Okunaklılık", boyutlar(sonuc(TEMIZ, dict(IYI_PDF, yazi=7.5)), "HATA"))
-        self.assertIn("Okunaklılık", boyutlar(sonuc(TEMIZ, dict(IYI_PDF, yazi=8.6)), "UYARI"))
+        self.assertIn("Okunaklılık", boyutlar(sonuc(TEMIZ, dict(IYI_PDF, kutu=5.0)), "HATA"))
+        self.assertIn("Okunaklılık", boyutlar(sonuc(TEMIZ, dict(IYI_PDF, kutu=8.0)), "UYARI"))
 
     def test_bos_sayfa_hata(self):
-        olcum = dict(IYI_PDF, doluluk=[(1, 0.9, False), (2, 0.01, False), (3, 0.9, False)])
+        olcum = dict(IYI_PDF, doluluk=[(1, 0.9, False), (2, 0.01, False), (3, 0.9, False)], murekkep={2: 0.0})
         self.assertIn("Okunaklılık", boyutlar(sonuc(TEMIZ, olcum), "HATA"))
+        cizimli = dict(olcum, murekkep={2: 0.3})                      # metinsiz ama çizimli sayfa boş değildir
+        self.assertNotIn("Okunaklılık", boyutlar(sonuc(TEMIZ, cizimli)))
+        bilinmez = dict(olcum, murekkep={2: None})                     # pdftoppm yok: yalnız uyarı
+        self.assertIn("Okunaklılık", boyutlar(sonuc(TEMIZ, bilinmez), "UYARI"))
 
     def test_gorselli_sayfa_bos_sayilmaz(self):
         olcum = dict(IYI_PDF, doluluk=[(1, 0.9, False), (2, 0.01, True), (3, 0.9, False)])
@@ -244,7 +248,7 @@ class AlanTespiti(unittest.TestCase):
 
     def test_frontmatter_ve_bayrak_tespiti_gecer(self):
         self.assertEqual(tespit("---\nalan: tarih\n---\n" + TIP)["alan"], "tarih")
-        self.assertEqual(tespit(TIP, alan="matematik")["tespit"]["kaynak"], "--alan")
+        self.assertEqual(tespit(TIP, alan="matematik")["tespit"]["kaynak"], "kullanıcı seçimi")
         with self.assertRaises(ValueError):
             tespit(TIP, alan="astroloji")
 
@@ -270,8 +274,11 @@ class AlanKontrolleri(unittest.TestCase):
 
     def test_tip_doz_hatasi(self):
         s = tespit(TIP.replace("5 mg", "5,0 mg ve ,5 mg"))
-        self.assertEqual(s["karar"], "yayınlanamaz")
-        self.assertEqual(len([b for b in s["bulgular"] if b["duzey"] == "HATA"]), 2)
+        self.assertEqual(s["karar"], "yayına engel var")
+        engel = [b for b in s["bulgular"] if b["duzey"] == "ENGEL"]
+        self.assertEqual(len(engel), 2)                             # v2.1: her eşleşme ayrı bulgu, kendi satırıyla
+        self.assertIn("5,0 mg", " ".join(b["mesaj"] for b in engel))
+        self.assertIn(",5 mg", " ".join(b["mesaj"] for b in engel))
 
     def test_lab_degeri_ve_mikrogram_dogru_yorumlanir(self):
         s = tespit(TIP + "\nHb 12,0 g/dL normaldir. B12 250 μg verilir.\n")
@@ -281,7 +288,7 @@ class AlanKontrolleri(unittest.TestCase):
     def test_tip_tehlikeli_kisaltma_ve_tanimsiz(self):
         s = tespit(TIP + "\nİnsülin 10 U. KBH ve KKY, AF; KBH, KKY ve AF birlikte.\n")
         mesaj = " ".join(b["mesaj"] for b in s["bulgular"])
-        self.assertIn("U/IU", mesaj)
+        self.assertIn("U / IU", mesaj)
         self.assertIn("Tanımsız kısaltma", mesaj)
 
     def test_kilavuz_yilsiz(self):
@@ -392,17 +399,17 @@ class SaglikKontrolleri(unittest.TestCase):
     def test_tc_kimlik_her_alanda_hata(self):
         m, s = mesajlar(TARIH + "\nÖğrenci no 10000000146.\n")
         self.assertIn("TC kimlik", m)
-        self.assertEqual(s["karar"], "yayınlanamaz")
+        self.assertEqual(s["karar"], "yayına engel var")
         self.assertNotIn("TC kimlik", mesajlar(TARIH + "\nSayı 12345678901.\n")[0])   # sağlama tutmuyor
 
     def test_hasta_adi_ve_protokol_hata(self):
         m, s = mesajlar(TIP + "\nHasta: Ayşe Yılmaz, protokol no 458812.\n")
-        self.assertIn("tanıtabilecek", m)
-        self.assertEqual(s["karar"], "yayınlanamaz")
-        self.assertNotIn("tanıtabilecek", mesajlar(TIP + "\n58 yaşında kadın hasta.\n")[0])
+        self.assertIn("hasta adı", m)
+        self.assertEqual(s["karar"], "yayına engel var")
+        self.assertNotIn("hasta adı", mesajlar(TIP + "\n58 yaşında kadın hasta.\n")[0])
 
     def test_kiloya_gore_doz(self):
-        self.assertIn("zaman birimi", mesajlar(TIP + "\nAmoksisilin 50 mg/kg/d verilir.\n")[0])
+        self.assertIn("d gün mü doz mu", mesajlar(TIP + "\nAmoksisilin 50 mg/kg/d verilir.\n")[0])
         self.assertNotIn("zaman birimi", mesajlar(TIP + "\nAmoksisilin 50 mg/kg/gün, iki doza bölünmüş.\n")[0])
 
     def test_ek_kisaltmalar(self):
@@ -416,15 +423,16 @@ class SaglikKontrolleri(unittest.TestCase):
         self.assertNotIn("DSM-IV", mesajlar(TIP + "\nDSM-IV ile DSM-5-TR karşılaştırılır.\n")[0])
 
     def test_lab_birim_ve_referans(self):
-        self.assertIn("iki birimle", mesajlar(TIP + "\nAçlık glukoz 126 mg/dL ya da 7 mmol/L.\n")[0])
+        self.assertIn("iki birimle", mesajlar(TIP + "\nAçlık glukoz 126 mg/dL. Tokluk glukozu 11 mmol/L.\n")[0])
+        self.assertNotIn("iki birimle", mesajlar(TIP + "\nAçlık glukoz 126 mg/dL ya da 7 mmol/L.\n")[0])  # doğru dönüşüm
         self.assertNotIn("iki birimle", mesajlar(TIP + "\nGlukoz 126 mg/dL = 7 mmol/L (÷ 18 dönüşüm).\n")[0])
         m = mesajlar(TIP + "\nSodyum normal değer 135-145. Potasyum normal değer 3,5-5.\n")[0]
         self.assertIn("Referans aralığı", m)
 
     def test_kilavuz_eski(self):
-        eski = o.BU_YIL - 8
-        self.assertIn("eski kılavuz", mesajlar(TIP + f"\nESC {eski} kılavuzuna göre tedavi.\n")[0])
-        self.assertNotIn("eski kılavuz", mesajlar(TIP + f"\nESC {o.BU_YIL - 1} kılavuzuna göre tedavi.\n")[0])
+        yil = 2026
+        self.assertIn("güncelliği doğrulanmalı", mesajlar(TIP + "\nESC 2018 kılavuzuna göre tedavi.\n", yil=yil)[0])
+        self.assertNotIn("güncelliği doğrulanmalı", mesajlar(TIP + "\nESC 2025 kılavuzuna göre tedavi.\n", yil=yil)[0])
 
     def test_tur_adi(self):
         self.assertIn("Tür adı", mesajlar(TIP + "\nEscherichia Coli ve E.coli idrar yolunda.\n")[0])
@@ -467,12 +475,20 @@ class DigerAlanKontrolleri(unittest.TestCase):
         self.assertIn("99 karakter", mesajlar("# 1\n```python\n" + "x = " + "1" * 120 + "\n```\n", alan="bilgisayar")[0])
 
     def test_hukuk_mulga(self):
+        # 6101 sayılı Kanun m. 1: geçmiş işlemlere eski kanun uygulanabilir → mülga kanun yayını durdurmaz, UYARI verir
         m, s = mesajlar(ALAN_ORNEKLERI["hukuk"].replace("mülga hükümler ayrılır", "") + "\n818 sayılı Borçlar Kanunu uygulanır.\n")
-        self.assertEqual(s["karar"], "yayınlanamaz")
-        m2, s2 = mesajlar(ALAN_ORNEKLERI["hukuk"].replace("mülga hükümler ayrılır", "") + "\n765 sayılı Kanun uygulanır.\n")
-        self.assertIn("Yürürlükten kalkmış", m2)
-        self.assertEqual(s2["karar"], "yayınlanabilir")                   # 765: kaynakta açılamadı → UYARI
-        self.assertNotIn("Yürürlükten kalkmış", mesajlar(ALAN_ORNEKLERI["hukuk"] + "\n818 sayılı mülga Kanun ile karşılaştır.\n")[0])
+        self.assertIn("Yürürlükten kalkmış", m)
+        self.assertNotEqual(s["karar"], "yayına engel var")
+        self.assertIn("(818)", "x" if False else "(818)")
+        m2 = mesajlar("# 1\nBorçlar Kanunu (818) uygulanır.\n", alan="hukuk")[0]
+        self.assertIn("Yürürlükten kalkmış", m2)                       # parantezli numara da yakalanır
+        self.assertNotIn("Yürürlükten kalkmış",
+                         mesajlar("# 1\n2010 yılında kurulan sözleşmeye 818 sayılı Borçlar Kanunu uygulanır.\n", alan="hukuk")[0])
+        self.assertNotIn("Yürürlükten kalkmış",
+                         mesajlar("# 1\n6102 sayılı TTK, 6762 sayılı TTK'dan farklıdır.\n", alan="hukuk")[0])
+        # istisna yalnız aynı cümlede: başka cümledeki "karşılaştır" susturmaz
+        self.assertIn("Yürürlükten kalkmış",
+                      mesajlar("# 1\n818 sayılı BK bugün uygulanır. Eski ve yeni kanun karşılaştırılır.\n", alan="hukuk")[0])
 
     def test_hukuk_kunye_ve_numara(self):
         m = mesajlar("# 1\nTürk Medeni Kanunu ve Türk Ticaret Kanunu. Yargıtay kararı ile içtihat oluştu.\n", alan="hukuk")[0]

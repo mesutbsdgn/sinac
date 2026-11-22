@@ -1,0 +1,2781 @@
+[
+ {
+  "kaynak": "Sol 1 / Qwen K5",
+  "girdi": "# Test\n2+2=5.\n",
+  "alan": null,
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen K5",
+  "girdi": "# 1 Başlık\n\nBir şeyler.\n",
+  "alan": null,
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 2",
+  "girdi": "# 1 İlaç\nİlaç 5,0 mg verilir.\n",
+  "alan": null,
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 2",
+  "girdi": "İlaçların dozlarının hastaların tanılarının takibi: 5,0 mg.\n",
+  "alan": null,
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 2",
+  "girdi": "The patient needs insulin 5.0 mg daily.\n",
+  "alan": null,
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen K4",
+  "girdi": "# 1 Hypertension\nDiagnosis and treatment. The drug dose is 5.0 mg daily.\n",
+  "alan": null,
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 19 / Qwen Y2",
+  "girdi": "İlaç 10 U; 5 mg/kg verilir.\n",
+  "alan": "psikoloji",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [
+   "tip_tehlikeli_kisaltma",
+   "doz_kg_belirsiz"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen Y8",
+  "girdi": "# 1\nDişçi muayenesi. Diş çürüğü tedavisi yapılır. Dişçi dolgu yapar. Çürüğün kanal tedavisi.\n",
+  "alan": null,
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 4",
+  "girdi": "İlaç 5,0 **mg** verilir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 4",
+  "girdi": "İlaç `5,0 mg` verilir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 4",
+  "girdi": "```text\nİlaç 5,0 mg verilir.\n```\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 4",
+  "girdi": "Doz < 10 mg, sonra > 20 mg.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [
+   "saglik_kisaltma_ek"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen K2",
+  "girdi": "| İlaç | Doz | Birim |\n|---|---|---|\n| X | 5,0 | mg |\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen K2",
+  "girdi": "Doz $5,0\\,\\text{mg}$ verilir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 4",
+  "girdi": "İlaç dozu 5, O mg.\n",
+  "alan": "tip",
+  "var": [
+   "harf olabilir"
+  ],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 5",
+  "girdi": "Yanlış yazım: 5,0 mg. Doğru yazım: 5 mg.\n",
+  "alan": "tip",
+  "var": [
+   "öğretici"
+  ],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 5 / Qwen K2",
+  "girdi": "İlaç dozu 5,0 mg/kg/gün.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 5",
+  "girdi": "İlaç dozu 5,0 mg / kg / gün.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen K2",
+  "girdi": "Doz 0,50 mg verilir.\n",
+  "alan": "tip",
+  "var": [
+   "Ondalık kısmın sonunda sıfır"
+  ],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen K2",
+  "girdi": "Doz 5,0 mgr verilir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen K2",
+  "girdi": "Günlük lif 5,0 g olmalı.\n",
+  "alan": "beslenme",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "tip_doz_yazimi"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen Y6 lab",
+  "girdi": "Hb 12,0 g/dL normaldir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "tip_doz_yazimi"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 6",
+  "girdi": "U/IU kullanmayın: 10 U yerine 10 ünite yazın.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "tip_tehlikeli_kisaltma"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 6",
+  "girdi": "İnsülin 10 u; B12 tiw; ilaç SQ.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [
+   "tip_tehlikeli_kisaltma",
+   "saglik_kisaltma_ek"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen Y6",
+  "girdi": "ALT 40 U/L.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "tip_tehlikeli_kisaltma"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen Y6",
+  "girdi": "İlaç 5 mg SC yapıldı.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [
+   "saglik_kisaltma_ek"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen Y6",
+  "girdi": "MgSO₄ infüzyonu başlanır.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [
+   "tip_tehlikeli_kisaltma"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen Y6",
+  "girdi": "> 5 mg doz notu\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "saglik_kisaltma_ek"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol ek 1",
+  "girdi": "Propranolol20 mg ve 10mg verilir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [
+   "saglik_bosluk"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol ek 2",
+  "girdi": "Şurup 5 ml verilir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [
+   "saglik_kisaltma_ek"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol ek 3",
+  "girdi": "Adrenalin 1:1000 im uygulanır.\n",
+  "alan": "acil",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [
+   "saglik_kisaltma_ek"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 7",
+  "girdi": "Günde iki kez 5 mg/kg verilir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "doz_kg_belirsiz"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 7",
+  "girdi": "İlaç A 5 mg/kg. Diğer ilaç tek doz verilir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [
+   "doz_kg_belirsiz"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen Y6",
+  "girdi": "50 mg/kg/day divided.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "doz_kg_belirsiz"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol ek 5",
+  "girdi": "Hasta 20 kg × 5 mg/kg = 1000 mg verilir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "doz_aritmetigi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol ek 5",
+  "girdi": "Hasta 20 kg × 5 mg/kg = 100 mg verilir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "doz_aritmetigi"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol ek 8",
+  "girdi": "Şurup 100 mg/5 mL; 50 mg = 5 mL verilir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "doz_aritmetigi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol ek 8",
+  "girdi": "Şurup 100 mg/5 mL; 50 mg = 2,5 mL verilir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "doz_aritmetigi"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol ek 6",
+  "girdi": "Çocukta 15 mg/kg/doz verilir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [
+   "cocuk_azami_doz"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol ek 7",
+  "girdi": "Parasetamol 500 mg ağrı olursa kullanılır.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [
+   "prn_talimat"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 8",
+  "girdi": "Sağlama algoritması için sentetik örnek: 10000000146.\n",
+  "alan": null,
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [
+   "tc_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 8",
+  "girdi": "T.C. Kimlik No: 100 000 001 46.\n",
+  "alan": null,
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tc_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "TC sağlama",
+  "girdi": "Sayı 12345678901.\n",
+  "alan": null,
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "tc_kimlik"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 9 / Qwen K1",
+  "girdi": "Hasta: Ayşe Yılmaz.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "hasta_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 9",
+  "girdi": "Hasta: ÖRNEK KİŞİ; protokol no AB-12345.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "hasta_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 9",
+  "girdi": "Tamamen kurmaca vaka. hasta: Örnek Kişi.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [],
+  "duzey": null,
+  "not": "v2.1: 'Örnek Kişi' açık yer tutucu; ad sayılmaz, engel yok (Sol'un amacı yanlış alarmı önlemek)"
+ },
+ {
+  "kaynak": "Qwen Y1",
+  "girdi": "Hasta: Ayşe Yılmaz, protokol no 458812.\n",
+  "alan": "hukuk",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "hasta_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen K1",
+  "girdi": "Vaka: doğum tarihi 12.03.1965.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "hasta_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Hasta yaş",
+  "girdi": "58 yaşında kadın hasta başvurdu.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "hasta_kimlik"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 10",
+  "girdi": "Dönüşüm katsayısı 18 olarak verilmiştir.\nGlukoz 90 mg/dL ya da 5 mmol/L.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "lab_birim_karisik"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 10",
+  "girdi": "Glukoz 90 mg/dL = 50 mmol/L.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "lab_birim_karisik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 10",
+  "girdi": "Glukoz 90 mg/dL = 5 mmol/L.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "lab_birim_karisik"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol ek ref",
+  "girdi": "Potasyum normal değer 3,5–5.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [
+   "referans_kaynaksiz"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 11",
+  "girdi": "2010 yılı hasta sayısı 500 idi; ESC 2026 kılavuzu uygulanır.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "kilavuz_eski"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 11",
+  "girdi": "ESC\n2010\nkılavuzu uygulanır.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [
+   "kilavuz_eski"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen Y5",
+  "girdi": "Kılavuzlar beş yılda bir yenilenir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "kilavuz_yilsiz"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen Y5",
+  "girdi": "GINA 2024 raporuna göre tedavi.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [
+   "kilavuz_eski"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen Y5",
+  "girdi": "2015 kılavuzu ile 2025 kılavuzu karşılaştırılır.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "kilavuz_eski"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 12",
+  "girdi": "2010 yılında kurulan sözleşmeye 818 sayılı Borçlar Kanunu uygulanır.\n",
+  "alan": "hukuk",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "hukuk_mulga"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 12",
+  "girdi": "Mülga kavramının tanımı yapılır.\n818 sayılı Borçlar Kanunu bugün uygulanır.\n",
+  "alan": "hukuk",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [
+   "hukuk_mulga"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen Y4",
+  "girdi": "6102 sayılı TTK, 6762 sayılı TTK'dan farklıdır.\n",
+  "alan": "hukuk",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "hukuk_mulga"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen Y4",
+  "girdi": "Borçlar Kanunu (818) uygulanır.\n",
+  "alan": "hukuk",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [
+   "hukuk_mulga"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 13",
+  "girdi": "# 1\nUzmanlara göre bu iddia doğrudur [99].\n\n# Kaynakça\n",
+  "alan": "tarih",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [
+   "kaynakca_yok"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 13",
+  "girdi": "# 1\nMetin.\n\n# Kaynakça\n",
+  "alan": "tarih",
+  "var": [
+   "içi boş"
+  ],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 14",
+  "girdi": "Sonuç p = 0.05 bulundu.\n",
+  "alan": "istatistik",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "p_degeri"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Sol 14",
+  "girdi": "Sonuç p = .0000 bulundu.\n",
+  "alan": "istatistik",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [
+   "p_degeri"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen O4",
+  "girdi": "Sonuç p=0,000 bulundu.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [
+   "p_degeri"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen K3",
+  "girdi": "Hız Δv/Δt ile bulunur.\n",
+  "alan": "fizik",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [
+   "alfabe"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen K3",
+  "girdi": "Kaldırma kuvveti ρgV ile bulunur.\n",
+  "alan": "fizik",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "alfabe"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen K3",
+  "girdi": "Çevre 2πr olur.\n",
+  "alan": "matematik",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "alfabe"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Kiril",
+  "girdi": "Jе m'appelle Ali.\n",
+  "alan": "genel",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen Y3",
+  "girdi": "EKG, MR ve BT istendi. EKG normal, MR normal, BT normal.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "kisaltma_tanimsiz"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen Y3",
+  "girdi": "KBH: izlem. KBH: tekrar. KAH: x. KAH: y. KKY: a. KKY: b.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [
+   "kisaltma_tanimsiz"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen Y7",
+  "girdi": "# 1 Endokrin\nTestosteron seviyesi ölçülür.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [
+   "kendini_sinama"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen O3",
+  "girdi": "Patlama 5 Mt TNT eşdeğeri.\n",
+  "alan": "fizik",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "si_birim"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Qwen O3",
+  "girdi": "Su 20°C ve 5kg kütle.\n",
+  "alan": "fizik",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [
+   "si_bosluk"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K1-K5",
+  "girdi": "Digoksin .5 mg PO verilir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K1-K5",
+  "girdi": "| İlaç | Doz (mg) |\n|---|---|\n| Morfin | 5,0 |\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K1-K5",
+  "girdi": "Furosemid 40.0 MG.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K1-K5",
+  "girdi": "Heparin 5,0 cc.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K1-K5",
+  "girdi": "Aspart 6,0 iu.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K1-K5",
+  "girdi": "Ondansetron 8,0&nbsp;mg IV.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K1-K5",
+  "girdi": "Digoksin $5{,}0\\,\\mathrm{mg}$\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K1-K5",
+  "girdi": "Seftriakson 1,0 g 1x1\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K1-K5",
+  "girdi": "Lorazepam 5,0-10 mg.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K1-K5",
+  "girdi": "Doz ５,０ mg\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K1-K5",
+  "girdi": "Ketiapin 2,0 veya 5 mg.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K1-K5",
+  "girdi": "\\SI{2,0}{mg} verilir\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K1-K5",
+  "girdi": "15,0~mg/kg verilir\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K1-K5",
+  "girdi": "Morfin 5,0 miligramlık doz\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K1-K5",
+  "girdi": "Amlodipin yerine ramipril 5,0 mg verilir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K1-K5",
+  "girdi": "Tuzdan kaçının; bisoprolol 5,0 mg\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K1-K5",
+  "girdi": "Ketiapin 300,0 mg (hatalı örnek değil)\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K1-K5",
+  "girdi": "Morfin 5,0 mg, normal doz.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K4/Y12",
+  "girdi": "| Hasta adı | Ayşe Yılmaz |\n|---|---|\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "hasta_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K4/Y12",
+  "girdi": "<table><tr><td>Hasta</td><td>Mehmet Demir</td></tr></table>\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "hasta_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K4/Y12",
+  "girdi": "Protokol No.: 884213\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "hasta_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K4/Y12",
+  "girdi": "MRN: 884213\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "hasta_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K4/Y12",
+  "girdi": "D.T.: 12.03.1965\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "hasta_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K4/Y12",
+  "girdi": "Doğum Tarihi: 12 Mart 1965\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "hasta_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K4/Y12",
+  "girdi": "Hasta Ayşe Yılmaz, 58 yaşında.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "hasta_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K4/Y12",
+  "girdi": "Hastanın ismi: Ayşe Yılmaz\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "hasta_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K4/Y12",
+  "girdi": "Hasta Adı/Soyadı: Ayşe Yılmaz\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "hasta_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K4/Y12",
+  "girdi": "Hasta: Ayşe Yılmaz, 62 yaşında. Sentetik opioid olan fentanil.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "hasta_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K4",
+  "girdi": "Hasta: A. Yılmaz\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [
+   "hasta_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K7",
+  "girdi": "---\nHasta: Selin Aydın, protokol no: 44781236\n\nDiazepam 10,0 mg IV.\n---\n\n## Devam\nMetin.\n",
+  "alan": null,
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "hasta_kimlik",
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K8",
+  "girdi": "TCKN: 517-394-826-50\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tc_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K8",
+  "girdi": "T.C.: 284.631.975.94\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tc_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K8",
+  "girdi": "Kan testi yapılan hastanın TC: 10000000146\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tc_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable Y1-Y7",
+  "girdi": "20 kg × 50 mg/kg/gün = 1.000 mg/gün verilir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "tip_doz_yazimi",
+   "hasta_kimlik",
+   "tc_kimlik",
+   "alfabe",
+   "yer_tutucu",
+   "doz_aritmetigi"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable Y1-Y7",
+  "girdi": "Heparin 25.000 ünite/5 mL flakon.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "tip_doz_yazimi",
+   "hasta_kimlik",
+   "tc_kimlik",
+   "alfabe",
+   "yer_tutucu",
+   "doz_aritmetigi"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable Y1-Y7",
+  "girdi": "PSA 4,0 ng/mL sınırdadır. İdrar çıkışı 1,0 mL/kg/saat olmalı. Vankomisin çukur 15,0 mcg/mL.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "tip_doz_yazimi",
+   "hasta_kimlik",
+   "tc_kimlik",
+   "alfabe",
+   "yer_tutucu",
+   "doz_aritmetigi"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable Y1-Y7",
+  "girdi": "# Titrasyon\n\n25,0 mL HCl çözeltisi pipetle erlene alınır.\n",
+  "alan": "kimya",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "tip_doz_yazimi",
+   "hasta_kimlik",
+   "tc_kimlik",
+   "alfabe",
+   "yer_tutucu",
+   "doz_aritmetigi"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable Y1-Y7",
+  "girdi": "100,0 mL su ve 5,0 g buz.\n",
+  "alan": "fizik",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "tip_doz_yazimi",
+   "hasta_kimlik",
+   "tc_kimlik",
+   "alfabe",
+   "yer_tutucu",
+   "doz_aritmetigi"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable Y1-Y7",
+  "girdi": "Vaka: Akut Astım Atağı\n\nOlgu: Otuz İki Yaşında Erkek\n\nHasta: Genel Durumu İyi\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "tip_doz_yazimi",
+   "hasta_kimlik",
+   "tc_kimlik",
+   "alfabe",
+   "yer_tutucu",
+   "doz_aritmetigi"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable Y1-Y7",
+  "girdi": "Ad Soyad: ______________  Öğrenci No: ___________\n",
+  "alan": "genel",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "tip_doz_yazimi",
+   "hasta_kimlik",
+   "tc_kimlik",
+   "alfabe",
+   "yer_tutucu",
+   "doz_aritmetigi"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable Y1-Y7",
+  "girdi": "Name: John Smith\n",
+  "alan": "dil",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "tip_doz_yazimi",
+   "hasta_kimlik",
+   "tc_kimlik",
+   "alfabe",
+   "yer_tutucu",
+   "doz_aritmetigi"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable Y1-Y7",
+  "girdi": "Dosya No: 2023/4567 E. sayılı dava.\n\nDoğum tarihi: 19.05.1881\n",
+  "alan": "hukuk",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "tip_doz_yazimi",
+   "hasta_kimlik",
+   "tc_kimlik",
+   "alfabe",
+   "yer_tutucu",
+   "doz_aritmetigi"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable Y1-Y7",
+  "girdi": "kayıt no: 10001\n",
+  "alan": "bilgisayar",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "tip_doz_yazimi",
+   "hasta_kimlik",
+   "tc_kimlik",
+   "alfabe",
+   "yer_tutucu",
+   "doz_aritmetigi"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable Y1-Y7",
+  "girdi": "СССР'nin kuruluşu 1922'dir. λόγος'un düzeni.\n",
+  "alan": "tarih",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "tip_doz_yazimi",
+   "hasta_kimlik",
+   "tc_kimlik",
+   "alfabe",
+   "yer_tutucu",
+   "doz_aritmetigi"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable Y1-Y7",
+  "girdi": "1. 5 + ??? = 12 işleminde ne gelir?\n",
+  "alan": "matematik",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "tip_doz_yazimi",
+   "hasta_kimlik",
+   "tc_kimlik",
+   "alfabe",
+   "yer_tutucu",
+   "doz_aritmetigi"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable Y1-Y7",
+  "girdi": "# Görev Listesi (TODO) Uygulaması\n",
+  "alan": "bilgisayar",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "tip_doz_yazimi",
+   "hasta_kimlik",
+   "tc_kimlik",
+   "alfabe",
+   "yer_tutucu",
+   "doz_aritmetigi"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable Y1-Y7",
+  "girdi": "Hb 12,0 g/dL, pH 7,0, x = 5,0.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": null,
+  "kural_var": [],
+  "kural_yok": [
+   "tip_doz_yazimi",
+   "hasta_kimlik",
+   "tc_kimlik",
+   "alfabe",
+   "yer_tutucu",
+   "doz_aritmetigi"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable Y8",
+  "girdi": "18 kg × 15 mg/kg/doz = 720 mg/doz\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "doz_aritmetigi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable Y8",
+  "girdi": "20 kg × 2 mcg/kg = 400 mcg\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "doz_aritmetigi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable Y8",
+  "girdi": "0,5 mg = 50 mcg\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "doz_aritmetigi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable Y8",
+  "girdi": "20 kg × 5 mg/kg → 1000 mg\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "doz_aritmetigi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable Y8",
+  "girdi": "Glukoz: 54 mg/dL (30 mmol/L)\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "lab_birim_karisik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable Y9",
+  "girdi": "# Tarih notu\n\nKinin 300 mg verilirdi. Glukoz 90 mg/dL = 50 mmol/L.\n",
+  "alan": "tarih",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "lab_birim_karisik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable K6",
+  "girdi": "# Not\n\nKalsiyum 15,0 mg/dL üstü krizdir. <!-- sinac: yoksay — lab değeri -->\n\nMorfin 5,0 mg IV yapılır.\n",
+  "alan": null,
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Fable Y11",
+  "girdi": "---\ndenetim: hayır, henüz yapılmadı\nhedef: yok\n---\n# x\nKendini dene: ilk adım?\nCevap: k.\nÖrnek: a.\nKaynak: (KDIGO, 2024)\n",
+  "alan": null,
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Argon 3.1",
+  "girdi": "Hastaya adrenalin .5-1 mg IM uygulanır.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Argon 3.1",
+  "girdi": "Diazepam 5,0 ve 10 mg tabletler halinde verilir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Argon 3.1",
+  "girdi": "Seftriakson 1,0-2 g IV verilir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Argon 3.2",
+  "girdi": "Amoksisilin süspansiyon hazırlanır; 5,0 mL sabah, 5,0 mL akşam içilir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Argon 3.2",
+  "girdi": "Sukralfat yemeklerden önce 1,0 g alınır.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Argon 3.3",
+  "girdi": "Pediatri vakası — Doğum tarihi: 14.05.16 olan hasta acile başvurdu.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "hasta_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Argon 3.4",
+  "girdi": "Hastada kan şekeri 50 mmol/L = 90 mg/dL ölçüldü.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "lab_birim_karisik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Argon 3.4",
+  "girdi": "Açlık glukozu 5,0 mmol/L (90 mg/dL) düzeyindedir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [
+   "lab_birim_karisik"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Argon 3.6",
+  "girdi": "Yanlış kısaltma örneği: 10 U insülin <!-- sinac: yoksay — öğretici örnek satırı -->\nTedavi protokolü: Hastaya 20 U regüler insülin yapılır.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [
+   "tip_tehlikeli_kisaltma"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Argon 3.7",
+  "girdi": "Çocukta amoksisilin 50 mg/kg/24 saat (maksimum 1000 mg) verilir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [
+   "doz_kg_belirsiz"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Argon 3.7",
+  "girdi": "Parasetamol 500 mg PO q6h PRN (max 4 g/gün) verilir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [
+   "prn_talimat"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Argon 3.7",
+  "girdi": "Gerekirse 5 mg morfin IV uygulanır.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [
+   "prn_talimat"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Argon 3.7",
+  "girdi": "Ankilozan spondilit (AS 2. evre) ve genel sağkalım OS 5 yıl.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [
+   "saglik_kisaltma_ek"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Argon 4.1",
+  "girdi": "Hasta: Göğüs Ağrısı ile başvurdu.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [
+   "hasta_kimlik"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Argon 4.1",
+  "girdi": "Hasta: Diyabetes Mellitus tanılı.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [
+   "hasta_kimlik"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Argon 4.1",
+  "girdi": "| Hasta | Klinik Tablo |\n|---|---|\n| Grup 1 | Stabil |\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [
+   "hasta_kimlik"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Claude (Argon 4.1 karşıtı)",
+  "girdi": "Hasta: Başak Demir, 45 yaşında.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "hasta_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Claude (Argon 4.1 karşıtı)",
+  "girdi": "Hasta adı: Ateş Kaya\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "hasta_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Argon 4.2",
+  "girdi": "Amoksisilin 125 mg/5 mL süspansiyonda 250 mg = 10 mL; 250 mg/5 mL süspansiyonda ise 250 mg = 5 mL verilir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [
+   "doz_aritmetigi"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Argon 4.2",
+  "girdi": "Flakon 500 mg/10 mL olarak sulandırılır; 100 mg için 50 mL SF içine eklenir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [
+   "doz_aritmetigi"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Argon 4.4",
+  "girdi": "Bir porsiyon ıspanakta 3,0 mg demir ve 120,0 mcg folat bulunur.\n",
+  "alan": "beslenme",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [
+   "tip_doz_yazimi"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Argon 4.4",
+  "girdi": "Furosemid uygulanan hastada 24 saatlik idrar çıkışı 1500,0 mL ölçüldü.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [
+   "tip_doz_yazimi"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Argon 5.1",
+  "girdi": "Savaş sırasında yaralılara morfin 10 mg SC ve TIW verilirdi.\n",
+  "alan": "tarih",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [
+   "saglik_kisaltma_ek"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Claude A2",
+  "girdi": "Seftriakson 2g IV verilir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [
+   "saglik_bosluk"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Claude A2",
+  "girdi": "İnsülin 10U SC yapılır.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [
+   "saglik_bosluk"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Claude A2",
+  "girdi": "5G ağı hızlıdır.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [
+   "saglik_bosluk"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Claude A2",
+  "girdi": "Titrasyonda 2g NaCl tartılır.\n",
+  "alan": "kimya",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [
+   "saglik_bosluk"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Claude A3",
+  "girdi": "Analitik terazide 0,50 mg tartılır.\n",
+  "alan": "eczacilik",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [
+   "tip_doz_yazimi"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Claude A4",
+  "girdi": "Ölçüm sonucu 10000000146 birim.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [
+   "tc_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Claude A1 (karma)",
+  "girdi": "| tr-98297915022fdf7f | ses | 3 sn |\n",
+  "alan": "genel",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [
+   "tc_kimlik"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Claude (tr-fr)",
+  "girdi": "---\ndil: tr-fr\n---\n# Les salutations\n\nBonjour = Merhaba.\n",
+  "alan": "dil",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Argon B2-2",
+  "girdi": "---\ndenetim: \"--- 2026\"\nhedef: \"???\"\n---\n# Not\n\nMetin.\n",
+  "alan": "genel",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Argon B2-2",
+  "girdi": "---\ndenetim: \"2026 (bekliyor)\"\nhedef: A1 sınavı\n---\n# Not\n\nMetin.\n",
+  "alan": "genel",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Argon B2-3",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Not\n\nMorfin 5,0 mg <!-- sinac: yoksay - Tablo 1–3 aralığındaki tarihsel alıntı -->\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "tanımlı kapsamda uygun",
+  "kural_var": [],
+  "kural_yok": [
+   "tip_doz_yazimi"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Argon B2-3",
+  "girdi": "# Not\n\n```\n<!-- sinac: yoksay tip_doz_yazimi — örnek gösterim için yazıldı -->\n```\nMorfin 5,0 mg IV.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Argon B2-6",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: yok\nsinav: TUS 2026\n---\n# Not\n\nMetin.\n",
+  "alan": "genel",
+  "var": [],
+  "yok": [],
+  "karar": "tanımlı kapsamda uygun",
+  "kural_var": [],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra 1",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Not\n\nDigoksin 0.125 mg = 125 mcg olarak yazılır.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "tanımlı kapsamda uygun",
+  "kural_var": [],
+  "kural_yok": [
+   "doz_aritmetigi"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra 1",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Not\n\nDigoksin 0.125 mg = 125000 mcg olarak yazılır.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "doz_aritmetigi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra 2",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Not\n\nÇocuk: 12 kg × 25 mcg/kg = 3 mg verilir (en çok 1 mg).\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "doz_aritmetigi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra 4",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Not\n\nOndansetron 8 mg/mL. Hazırlama kartı: 24 mg = 30 mL.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "doz_aritmetigi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra 5",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# İstatistik notu\n\nÖrnek: Glukoz: 144 mg/dL = 80 mmol/L.\n",
+  "alan": "istatistik",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "lab_birim_karisik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra 6",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Not\n\nUygulama dozu: 4,0\nmg IV verilir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra 7",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Not\n\nİlaç | Sabah dozu (mg)\n--- | ---\nMorfin | 7,0\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra 7",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Not\n\n<table><tr><th>İlaç</th><th>Doz (mg)</th></tr><tr><td>Morfin</td><td>2,0</td></tr></table>\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra 7",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Not\n\nMorfin $\\SI{6,0}{\\milli\\gram}$ verilir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra 8",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Not\n\nİlaç dozu 3,0 mg uygulanır, eski enjektörü kullanmayın.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra 8",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Not\n\nMorfin için çekilecek sıvının hacmi 6,0 mL olmalıdır.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Claude (Astra 8 karşıtı)",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Not\n\nYanlış yazım: 5,0 mg; doğrusu 5 mg.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "tanımlı kapsamda uygun",
+  "kural_var": [],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra 9",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Vakalar\n\nİlk sayfa kurmaca vaka için boş bırakılır.\n\n## İkinci vaka\n\nHasta yatırıldı. Protokol no: ZX-86421.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "hasta_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra 10",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Vaka\n\nHasta başvurdu. Doğum tarihi: 2014-09-23\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "hasta_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra 10",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Vaka\n\nHasta başvurdu, doğum tarihi 17.04.1928.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "hasta_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra 10",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Vaka\n\nHasta adı: ayşe yılmaz\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "hasta_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra 11",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Tiyatro tarihi\n\nAçık biyografi kartı, tiyatro tarihi dersi. Doğum tarihi: 14.06.1948.\n",
+  "alan": "tarih",
+  "var": [],
+  "yok": [],
+  "karar": "tanımlı kapsamda uygun",
+  "kural_var": [
+   "hasta_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra 13",
+  "girdi": "---\ndenetim: 2026-11-22 tarihinde incelenmedi\nhedef: A1\n---\n# Not\n\nMetin.\n",
+  "alan": "genel",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra 13",
+  "girdi": "---\ndenetim: 31.02.2025 kurul\nhedef: A1\n---\n# Not\n\nMetin.\n",
+  "alan": "genel",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra 13",
+  "girdi": "---\r\ndenetim: 2026-11-22 Claude\r\nhedef: A1\r\n---\r\n# Not\r\n\r\nMetin.\r\n",
+  "alan": "genel",
+  "var": [],
+  "yok": [],
+  "karar": "tanımlı kapsamda uygun",
+  "kural_var": [],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra 14",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Not\n\n````md\n```\n<!-- sinac: yoksay yer_tutucu — kod örneği gösterimi -->\n```\n````\n\nTODO: çözümü yaz.\n",
+  "alan": "genel",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "yer_tutucu"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra2 1",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Note\n\nEnglish notation: the decimal point marks a fraction. Digoxin 1.125 mg = 1125 mcg.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "tanımlı kapsamda uygun",
+  "kural_var": [],
+  "kural_yok": [
+   "doz_aritmetigi"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra2 1",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Note\n\nEnglish notation: the decimal point marks a fraction. Digoxin 1.125 mg = 1125000 mcg.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "doz_aritmetigi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra2 1",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Note\n\nDigoxin 1.125 mg = 1125 mcg.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "tanımlı kapsamda uygun",
+  "kural_var": [
+   "doz_aritmetigi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra2 3",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Not\n\nÇocuk: 14 kg × 2 mg/kg/doz = 28 mL verilir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "doz_aritmetigi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra2 3",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Not\n\nOndansetron 12 mg/mL.\n36 mg = 30 mL.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "doz_aritmetigi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra2 4",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Note\n\nGlucose: 126 mg/dL = 70 mmol/L.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "lab_birim_karisik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra2 5",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Note\n\nPractice dose: 6.0\nMG per dose\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra2 6",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Not\n\n| İlaç | Doz (mg) |\n|---|---|\n| Morfin | 2,0–4 |\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra2 6",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Not\n\nMorfin \\qty{6{,}0}{\\milli\\gram} verilir.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra2 7",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Not\n\nİdrar çıkışı izlenirken eğitim flakonundan çekilecek ilaç dozu 8,0 mL.\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra2 8",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Case\n\nPatient admitted. DOB: 09 Sep 2016\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "hasta_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra2 8",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Case\n\nPatient name: not recorded\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "tanımlı kapsamda uygun",
+  "kural_var": [],
+  "kural_yok": [
+   "hasta_kimlik"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra2 8",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Vaka\n\nHasta adı: kayıt dışı\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "tanımlı kapsamda uygun",
+  "kural_var": [],
+  "kural_yok": [
+   "hasta_kimlik"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra2 9",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Not\n\nKuru numune için verilen ölçüm: 4,0 mg.\n",
+  "alan": "kimya",
+  "var": [],
+  "yok": [],
+  "karar": "tanımlı kapsamda uygun",
+  "kural_var": [],
+  "kural_yok": [
+   "tip_doz_yazimi"
+  ],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra2 11",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Not\n\nTODO: bu kısım sonra <!-- sinac: yoksay — taslak notu, öğretmene ait -->\n\nFIXME: bu bölümün çözümünü yaz.\n",
+  "alan": "genel",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "yer_tutucu"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra2 12",
+  "girdi": "---\ndenetim: 2026-11-22 not reviewed\nhedef: A1\n---\n# Not\n\nMetin.\n",
+  "alan": "genel",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra2 12",
+  "girdi": "---\ndenetim: 31/02/26 Ders kurulu\nhedef: A1\n---\n# Not\n\nMetin.\n",
+  "alan": "genel",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra2 12",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: not specified\n---\n# Not\n\nMetin.\n",
+  "alan": "genel",
+  "var": [],
+  "yok": [],
+  "karar": "karar için denetim eksik",
+  "kural_var": [],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra2 H15",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Kayıt\n\nVaka: Leyran Duralp\n",
+  "alan": "tip",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "hasta_kimlik"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra2 H28",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# İlaç kartı\n\nMalzemenin yanlış örnek: etiketsiz şırınga olduğunu gösterin, ardından ilaç dozunu 7,0 mg olarak çizelgeye yazın.\n",
+  "alan": "hemsirelik",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "tip_doz_yazimi"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra2 D08",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Kent tarihçisi\n\nHastane mimarisini araştıran müze küratörünün biyografi kartı. Doğum tarihi: 18.08.1954.\n",
+  "alan": "tarih",
+  "var": [],
+  "yok": [],
+  "karar": "tanımlı kapsamda uygun",
+  "kural_var": [],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra2 D22",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Kod gösterimi\n\nHTML açıklamasında şu metin gözükür: `<!-- sinac: yoksay yer_tutucu — yönergenin belgelenen sözdizimi -->`.\nTODO: yayıma girecek örnek çizimi ekle.\n",
+  "alan": "bilgisayar",
+  "var": [],
+  "yok": [],
+  "karar": "yayına engel var",
+  "kural_var": [
+   "yer_tutucu"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ },
+ {
+  "kaynak": "Astra2 D06",
+  "girdi": "---\ndenetim: 2026-11-22 Claude\nhedef: A1\n---\n# Künye\n\nYazarın 1999 baskılı el kitabına bakarak bugün açılan davada 1086 sayılı Kanun uygulanır.\n",
+  "alan": "hukuk",
+  "var": [],
+  "yok": [],
+  "karar": "tanımlı kapsamda uygun",
+  "kural_var": [
+   "hukuk_mulga"
+  ],
+  "kural_yok": [],
+  "duzey": null
+ }
+]
