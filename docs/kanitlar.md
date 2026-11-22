@@ -1,4 +1,4 @@
-# Öğretim Denetçisi — kanıt özeti (22.11.2026)
+# Sınaç — kanıt özeti (22.11.2026)
 
 Araştırma: quoteproof, 6 başlık (tıp, diş hekimliği, matematik, tarih/sosyal, coğrafya/harita, görsel materyal),
 DeepSeek/Qwen çalışanları, 67 bağımsız kaynak, 249 bulgu: 151 doğrulandı · 15 kısmen · 43 bulunamadı (sentezden

@@ -1,4 +1,4 @@
-# Öğretim Denetçisi — son okuma
+# Sınaç — son okuma
 
 Raporu teslim etmeden önce her maddeye evet/hayır de; hayırsa düzelt.
 

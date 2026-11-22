@@ -1,11 +1,20 @@
-# Öğretim Denetçisi (ogretim-denetci)
+<div align="center">
+
+# Sınaç
+
+### Ders notunu sınar: doğru mu, öğretir mi, yayınlanabilir mi?
+
+</div>
+
+Adı *sınamak* fiilinden gelir, kardeşi Durulaç'la aynı ekle kurulur. Hem belgeyi sınar hem de ölçeğinin en önemli
+boyutunu, öğrencinin kendini sınamasını anlatır.
 
 Ders notunu, konu anlatımını, rehberi ve öğrenci PDF'ini kanıta dayalı bir ölçekle denetleyen Claude becerisi (skill).
 Belgenin **bilim dalını** ve **görsel/sözel biçimini** kendisi tanır; tıp notunu dil öğrenme ölçeğiyle, görsel bir
 anatomi atlasını düz metin ölçeğiyle değerlendirmez. Sonunda "yayınlanabilir mi" kararı verir.
 
 Dil sadeleştirmez; o iş kardeş becerisi [Durulaç](https://github.com/mesutbsdgn/turkce-ai-durulac)'ındır. İkisi
-birlikte kuruluysa önce Durulaç Türkçe açıklamayı sadeleştirir, sonra denetçi ölçer.
+birlikte kuruluysa önce Durulaç Türkçe açıklamayı sadeleştirir, sonra Sınaç ölçer.
 
 ## Ölçek
 
@@ -44,12 +53,12 @@ python3 scripts/ogretim_denetim.py not.md --pdf not.pdf --alan tip # PDF ölçü
 python3 scripts/ogretim_denetim.py not.md --json
 ```
 
-Claude'da doğal dille: "Bu farmakoloji notumu denetle", "Bu PDF öğretir mi?", "Hukuk ders notum güncel mi?"
+Claude'da doğal dille ya da adıyla: "Sınaç, bu farmakoloji notumu denetle", "Bu PDF öğretir mi?", "Hukuk ders notum güncel mi?"
 
 ## Kurulum
 
 ```bash
-git clone <depo-adresi> ~/.claude/skills/ogretim-denetci
+git clone https://github.com/mesutbsdgn/sinac.git ~/.claude/skills/sinac
 ```
 
 Python 3.9+, yalnız standart kütüphane. PDF ölçümü için isteğe bağlı poppler (`pdftotext`, `pdfimages`).
@@ -70,7 +79,7 @@ kuralı yapılmadı. Ayrıntı: [`docs/kanitlar.md`](docs/kanitlar.md), ölçek:
 
 | Sürüm | Tarih | Değişiklik |
 |---|---|---|
-| v1.0.0 | 22 Kas 2026 | Durulaç'ın `+ogretim` kipinden (v1.7–1.9) ayrı beceri olarak çıkarıldı |
+| v1.0.0 | 22 Kas 2026 | İlk yayın. Durulaç'ın `+ogretim` kipinden (v1.7–1.9) ayrı beceri olarak çıkarıldı, Sınaç adını aldı |
 
 ## Lisans
 

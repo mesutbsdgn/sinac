@@ -1,4 +1,4 @@
-# Öğretim Denetçisi — bu depoda çalışan ajanlar için kurallar
+# Sınaç — bu depoda çalışan ajanlar için kurallar
 
 - Betik yalnız Python standart kütüphanesiyle çalışır (≥ 3.9); ağ ve dış paket eklenmez. PDF ölçümü isteğe bağlıdır.
 - Kaynağı doğrulanmamış kural en çok UYARI ya da elle madde olur, HATA olamaz. Sağlıktaki HATA kuralları (doz yazımı,

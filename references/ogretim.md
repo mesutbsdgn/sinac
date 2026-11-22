@@ -1,4 +1,4 @@
-# Öğretim Denetçisi — ölçek, alanlar ve kurallar
+# Sınaç — ölçek, alanlar ve kurallar
 
 Öğrenciye giden belgeleri (ders notu, konu anlatımı, rehber, ezber kitapçığı, kelime listesi, pano) **8 boyutlu**,
 kanıta dayalı bir ölçekle denetler, puanlar (0–2 × 8 = **16**), güvenli düzeltmeleri yapar ve **yayınlanabilir mi**
@@ -16,8 +16,8 @@ doğrulandı). Kurala giren kanıt ve Claude'un kaynağında açtıkları: `docs
   Tetikleyiciler: "ders notunu denetle", "öğretim materyali ölçeği", "bu PDF öğretir mi", "notumu kontrol et".
 - **Kapalı:** sözleşme ve dilekçe gibi hukuk belgeleri, edebî eserin kendisi (şiir, öykü), sohbet/mesaj, resmî yazı.
   Akademik makale öğretim materyali değildir (tez modu kullanılır). Hukuk fakültesi ders notu ve edebiyat ders notu
-  öğretim materyalidir; denetçi bunlarda açıktır.
-- Denetçi dili sadeleştirmez. Kullanıcı Türkçe açıklamanın sadeleşmesini de isterse önce Durulaç becerisinin
+  öğretim materyalidir; Sınaç bunlarda açıktır.
+- Sınaç dili sadeleştirmez. Kullanıcı Türkçe açıklamanın sadeleşmesini de isterse önce Durulaç becerisinin
   (`turkce-ai-durulac`) Temizle kipi uygulanır: yalnız Türkçe açıklama düzenlenir; yabancı dildeki örnek cümle, okunuş,
   formül, doz, diş/kanun numarası ve tabloya dokunulmaz. Sonra ölçek çalışır. Durulaç kurulu değilse bu adım atlanır
   ve kullanıcıya söylenir.

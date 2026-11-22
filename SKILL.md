@@ -1,13 +1,13 @@
 ---
-name: ogretim-denetci
-description: "Öğretim Denetçisi — ders notu, konu anlatımı, rehber, çalışma kâğıdı, ezber/kelime listesi ve öğrenci PDF'ini kanıta dayalı 8 boyutlu ölçekle denetler (doğruluk, hedef uyumu, seviye, ezber ve kavrama, okunaklılık, sıra ve akış, kendini sınama, verimlilik; /16) ve 'yayınlanabilir mi' kararı verir. Belgenin bilim dalını (32 alan: tıp, diş, hemşirelik, eczacılık, veteriner, beslenme, fizyoterapi, acil, psikoloji, matematik, istatistik, fizik, kimya, biyoloji, mühendislik, bilgisayar, hukuk, iktisat, tarih, coğrafya, ilahiyat, edebiyat, sanat, mimarlık, yabancı dil…) ve görsel/sözel biçimini kendisi tanır. Sağlıkta doz yazımı (5,0 mg), ISMP kısaltmaları, hasta kimliği, TC kimlik no, kılavuz yaşı; hukukta mülga kanun; fende SI birimi. Use when the user asks to check, audit or score study notes, lecture notes, a teaching PDF or a vocabulary list: 'ders notumu denetle', 'bu PDF öğretir mi', 'notum doğru yazılmış mı', 'öğretim materyali ölçeği'."
+name: sinac
+description: "Sınaç — ders notu, konu anlatımı, rehber, çalışma kâğıdı, ezber/kelime listesi ve öğrenci PDF'ini kanıta dayalı 8 boyutlu ölçekle denetler (doğruluk, hedef uyumu, seviye, ezber ve kavrama, okunaklılık, sıra ve akış, kendini sınama, verimlilik; /16) ve 'yayınlanabilir mi' kararı verir. Belgenin bilim dalını (32 alan: tıp, diş, hemşirelik, eczacılık, veteriner, beslenme, fizyoterapi, acil, psikoloji, matematik, istatistik, fizik, kimya, biyoloji, mühendislik, bilgisayar, hukuk, iktisat, tarih, coğrafya, ilahiyat, edebiyat, sanat, mimarlık, yabancı dil…) ve görsel/sözel biçimini kendisi tanır. Sağlıkta doz yazımı (5,0 mg), ISMP kısaltmaları, hasta kimliği, TC kimlik no, kılavuz yaşı; hukukta mülga kanun; fende SI birimi. Use when the user asks to check, audit or score study notes, lecture notes, a teaching PDF or a vocabulary list: 'ders notumu denetle', 'bu PDF öğretir mi', 'notum doğru yazılmış mı', 'öğretim materyali ölçeği', 'Sınaç'."
 version: "1.0.0"
 metadata:
   author: mesutbsdgn
   tags: [education, teaching-materials, medical-education, quality-check, turkish]
 ---
 
-# Öğretim Denetçisi
+# Sınaç
 
 Öğrenciye giden belgeyi bir öğretim tasarımcısı ve alanın titiz bir hocası gibi denetle: önce **alanı** ve **biçimi**
 belirle, sonra her alanda aynı kalan ortak çekirdeği ve o alanın profilini uygula, puanla, karar ver. Dil
@@ -63,5 +63,5 @@ Doğruluk ve hedef uyumu her zaman elle maddedir; boşsa "otomatik denetimden ge
 ## Dosyalar
 
 `references/ogretim.md` (ölçek) · `references/ogretim-alanlari.json` (32 alan profili; yeni alan buraya) ·
-`scripts/ogretim_denetim.py` (denetçi) · `scripts/test_ogretim_denetim.py` (61 test) · `eval.md` (son okuma) ·
+`scripts/ogretim_denetim.py` (denetim betiği) · `scripts/test_ogretim_denetim.py` (61 test) · `eval.md` (son okuma) ·
 `docs/kanitlar.md` (alıntılı kanıt ve açılamayan kaynaklar).

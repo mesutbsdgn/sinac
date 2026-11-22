@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Öğretim Denetçisi (ogretim-denetci): alanını tanıyan öğretim materyali ölçeği (8 boyut × 0–2 = 16). 0 jeton, ağ yok.
+"""Sınaç: alanını tanıyan öğretim materyali ölçeği (8 boyut × 0–2 = 16). 0 jeton, ağ yok.
 
 Belgenin ALANINI (dil, tıp, diş hekimliği, matematik, fen, tarih, coğrafya, sosyal bilgiler, genel) ve BİÇİMİNİ
 (sözel / görsel) tespit eder; her alanda çalışan ortak çekirdeğe o alanın kontrollerini ekler. Profiller:
