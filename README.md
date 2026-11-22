@@ -126,7 +126,8 @@ Python 3.9+, yalnız standart kütüphane, ağ yok. PDF ölçümü için isteğe
   - `test_ozellikler.py` (38): gerçek üretilmiş PDF'lerle yazı boyu, vektör çizim, boş sayfa, PDF içeriği; `--duzelt`, kodlama, susturma, maskeleme, ReDoS;
   - `test_karsi_ornekler.py`: 211 karşı örnek.
 
-  GitHub Actions bu testleri Python 3.9 ve 3.12'de çalıştırır.
+  GitHub Actions bu testleri Python 3.10 ve 3.13'te çalıştırır (Ubuntu 26.04 imajında 3.9 yok); Python 3.9.6'da yerelde
+  sınandı.
 - **Bağımsız inceleme** (22 Kasım 2026): GPT-6.1 Sol ve Qwen4 Max Preview, v1.0'ı yüksek eforla ve salt okunur
   inceledi.
   - Raporlardaki karşı örneklerden 32'si betikte çalıştırıldı ve 32'si de gerçek çıktı.
@@ -168,6 +169,7 @@ Ayrıntılar: [`docs/kanitlar.md`](docs/kanitlar.md), ölçek ve karar modeli [`
 | Sürüm | Tarih | Değişiklik |
 |---|---|---|
 | v1.0.0 | 22 Kas 2026 | İlk yayın. Durulaç'ın `+ogretim` kipinden (v1.7–1.9) ayrı beceri olarak çıkarıldı, Sınaç adını aldı |
+| v2.0.1 | 22 Kas 2026 | CI: Python 3.10 ve 3.13 (GitHub Ubuntu 26.04 imajında 3.9 yok); kod değişmedi |
 | v2.0.0 | 22 Kas 2026 | GPT-6.1 Sol, Qwen4 Max, Fable 5.2, Gemini 4 Argon (iki tur) ve GPT-6.2 Astra (iki tur) incelemeleri sonrası. Değişiklikler aşağıda |
 
 v2.0.0'daki değişiklikler:
