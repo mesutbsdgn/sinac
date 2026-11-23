@@ -1,0 +1,431 @@
+[
+  {
+    "dosya": "p-tr01-yenidogan-sepsis-tedavisi.md",
+    "dil": "tr",
+    "alan": "tip",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "K vitamini profilaksisi (,5 mg IM tek doz)",
+        "tur": "doz_yazimi"
+      },
+      {
+        "satir_metni": "(q6h) bölündüğünde her uygulamada 220 mg IV",
+        "tur": "doz_hesabi"
+      },
+      {
+        "satir_metni": "ara kontrol öncesi **4,0 mg/kg** dozuna çıkılmaz.",
+        "tur": "doz_yazimi"
+      }
+    ],
+    "hata": [],
+    "tuzak": [
+      "Kordon kan gazında pH 7,0 altı ve baz açığı 12,0 mmol/L",
+      "| 3,0 kg (Term, 1. gün) | Ampisilin | 100 mg/kg/gün",
+      "| 2,5 kg (35 hf, 1. gün) | Gentamisin | 4 mg/kg (q24h)",
+      "Yanlış: 5,0 mg; doğru: 5 mg (sondaki sıfır"
+    ],
+    "not": "Yenidoğan sepsisinde iki cümleli yanlış q6h hesabı, parantez içi baştaki sıfırsız doz ve kalın sondaki sıfırı sınar."
+  },
+  {
+    "dosya": "p-tr02-palyatif-bakim-opioid-titrasyonu.md",
+    "dil": "tr",
+    "alan": "hemsirelik",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "2 mcg/kg IV fentanil bolus istendiğinde **1,2 mg**",
+        "tur": "doz_hesabi"
+      },
+      {
+        "satir_metni": "64 yaşındaki Mehmet Karahan (Protokol No: 2026-4418)",
+        "tur": "hasta_kimligi"
+      },
+      {
+        "satir_metni": "hasta kimlik numarası olarak 10000000146 kaydedilir.",
+        "tur": "tc_no"
+      }
+    ],
+    "hata": [],
+    "tuzak": [
+      "VAS 7,0 üzeri şiddetli ağrıyı, solunum hızının dakikada",
+      "70 kg ağırlığındaki bir hastada 0,1 mg/kg IV morfin",
+      "Hasta D., düzenli oral morfinle ağrı skorunu"
+    ],
+    "not": "Palyatif hemşirelikte mcg-mg 10 kat dönüşüm hatası, protokol nolu hasta kimliği ve TC test yer tutucusunu sınar."
+  },
+  {
+    "dosya": "p-tr03-onkoloji-destek-antiemetik.md",
+    "dil": "tr",
+    "alan": "eczacilik",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "tuzak": [
+      "| Ondansetron (IV) | 60 kg | 0,15 mg/kg | 9 mg",
+      "metoklopramid 0,6 mg/kg/gün (q8h, günde 3 doz)",
+      "sıfır kuralı: \",5 mg\" yazmayın; her zaman \"0,5 mg\"",
+      "Hasta B. (54 yaşında) kemoterapi öncesi açlık glukozu"
+    ],
+    "not": "Temiz onkoloji eczacılığı notunda doğru q8h doz, 4 g/gün tavanı, öğretici sıfır kuralı, anonim vaka ve doğru lab dönüşümünü sınar."
+  },
+  {
+    "dosya": "p-tr04-anestezi-oncesi-hazirlik.md",
+    "dil": "tr",
+    "alan": "tip",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "Selin Demirci (D.T. 14.03.1979), laparoskopik",
+        "tur": "hasta_kimligi"
+      },
+      {
+        "satir_metni": "kimlik teyidi alanında 10000000146 bilgisi yer almaktadır.",
+        "tur": "tc_no"
+      },
+      {
+        "satir_metni": "| Serum Kreatinin | 1,5 mg/dL | 112,0 µmol/L |",
+        "tur": "lab_donusum"
+      }
+    ],
+    "hata": [],
+    "tuzak": [
+      "William T. G. Morton'un 1846'da henüz 27 yaşındayken",
+      "ağız açıklığının 4,0 cm ve tiromental mesafenin 6,0 cm",
+      "80 kg bir erişkinde pre-op midazolam 0,05 mg/kg IV",
+      "| Açlık Glukozu | 126 mg/dL | 7,0 mmol/L |"
+    ],
+    "not": "Preoperatif notta doğum tarihli hasta kimliği, TC test yer tutucusu ve tablo içi yanlış kreatinin dönüşümünü tarihî kişi tuzağıyla birlikte sınar."
+  },
+  {
+    "dosya": "p-tr05-nefro-elektrolit-dengesi.md",
+    "dil": "tr",
+    "alan": "beslenme",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "tuzak": [
+      "en fazla 2 g/gün, sıvı dengesi için idrar pH 6,0",
+      "| Serum Kreatinin | 2,0 mg/dL | 176,8 µmol/L |",
+      "| Total Kolesterol | 193,35 mg/dL | 5,0 mmol/L |",
+      "Hasta K. (61 yaşında, 70 kg) diyaliz öncesi evre 4 KBH"
+    ],
+    "not": "Temiz nefroloji beslenme notunda dört doğru lab birim dönüşümü, anonim vaka ve doğru g/kg protein hesabıyla yanlış pozitifleri sınar."
+  },
+  {
+    "dosya": "p-tr06-ortopedi-acl-rehabilitasyon.md",
+    "dil": "tr",
+    "alan": "fizyoterapi",
+    "karar": "karar için denetim eksik",
+    "engel": [],
+    "hata": [],
+    "tuzak": [
+      "tam ekstansiyon (0,0 derece) ve en az 90,0 derece",
+      "Bay T. (24 yaşında amatör futbolcu) ilk hafta analjezik",
+      "60 derece/sn hızda ekstansör tork 180,0 Nm ölçülmüştür"
+    ],
+    "not": "Frontmatter denetim satırı eksik temiz fizyoterapi notunda kararın 'denetim eksik' çıkmasını ve doz dışı ondalıkların elenmesini sınar."
+  },
+  {
+    "dosya": "p-tr07-veteriner-kopek-diyabet-ketoasidoz.md",
+    "dil": "tr",
+    "alan": "veteriner",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "Başvuru kan şekeri 360 mg/dL (26,5 mmol/L) ölçülerek",
+        "tur": "lab_donusum"
+      },
+      {
+        "satir_metni": "pompaya 12 mL/saat (1,2 ünite/saat) girilir.",
+        "tur": "doz_hesabi"
+      }
+    ],
+    "hata": [],
+    "tuzak": [
+      "venöz kan gazında pH 7,0 altı şiddetli asidemiyi",
+      "serum kreatinin 1,5 mg/dL (132,6 µmol/L) olarak",
+      "10 kg'lık köpekte ampisilin 20 mg/kg IV (200 mg, q8h)",
+      "subkutan orta etkili insülin 0,5 ünite/kg dozundan 5 ünite"
+    ],
+    "not": "Veteriner DKA notunda 10 kg'lık köpekte iki cümleli yanlış insülin mL/saat hızını ve düzyazıda yanlış glukoz dönüşümünü sınar."
+  },
+  {
+    "dosya": "p-tr08-astrometri-yildiz-paralaksi.md",
+    "dil": "tr",
+    "alan": "fizik",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "tuzak": [
+      "Friedrich Bessel, 54 yaşındayken 1838 yılında 61 Cygni",
+      "yıldızın uzaklığı 5,0 pc, referans taban uzunluğu",
+      "5,0 N ölçekli kalibrasyon ağırlığı değil, 0,50 nm"
+    ],
+    "not": "Temiz astrofizik notunda alan tahminini (fizik), tarihî astronom biyografisini ve fizik birimli ondalıkları (5,0 pc; 5,0 N) sınar."
+  },
+  {
+    "dosya": "p-tr09-kent-sosyolojisi-soylulastirma.md",
+    "dil": "tr",
+    "alan": "sosyal",
+    "karar": "yayına engel var",
+    "engel": [],
+    "hata": [
+      {
+        "satir_metni": "Sermaye dönüşümü sürecinde yerel kоnut stokunun",
+        "tur": "kiril"
+      },
+      {
+        "satir_metni": "TODO: 2020 sonrası İstanbul Balat ve Karaköy kira",
+        "tur": "todo"
+      }
+    ],
+    "tuzak": [
+      "sosyolog Ruth Glass, 52 yaşındayken Londra'nın işçi",
+      "ortalama hane büyüklüğü 3,0 kişi, kira-gelir oranı"
+    ],
+    "not": "Sağlık dışı sosyoloji belgesinde Kiril benzer harf (kоnut) ve TODO taslak işareti nedeniyle 'yayına engel var' kararını sınar."
+  },
+  {
+    "dosya": "p-tr10-mimarlik-tarihi-erken-osmanli.md",
+    "dil": "tr",
+    "alan": "mimarlik",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "tuzak": [
+      "ana kubbe çapı yaklaşık 12,0 m, almaşık duvar kalınlığı",
+      "| Bursa Hüdavendigar Cami | 1366–1385 | 10,0 m |",
+      "başmimarı Mimar Sinan, 98 yaşında vefat edene kadar"
+    ],
+    "not": "Temiz mimarlık tarihi notunda yapı ölçü ondalıklarını (12,0 m; 10,0 m) ve tarihî mimar biyografisini sınar."
+  },
+  {
+    "dosya": "p-tr11-mikroiktisat-tekelci-rekabet.md",
+    "dil": "tr",
+    "alan": "iktisat",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "tuzak": [
+      "Edward Chamberlin, 34 yaşındayken 1933'te yayımladığı",
+      "birim başına en fazla 2,0 TL seviyesinde tutulur.",
+      "fiyat 15,0 TL, ortalama toplam maliyet 15,0 TL ve"
+    ],
+    "not": "Temiz mikroiktisat notunda iktisatçı biyografisini ve parasal/esneklik ondalıklarının (15,0 TL; -2,0) yanlış alarm üretmemesini sınar."
+  },
+  {
+    "dosya": "p-en01-neonatal-hypoglycemia-nicu.md",
+    "dil": "en",
+    "alan": "hemsirelik",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "| Critical Hypoglycemia (<4 h) | 36 mg/dL | 3.1 mmol/L |",
+        "tur": "lab_donusum"
+      },
+      {
+        "satir_metni": "prepare glucagon .5 mg IM/IV as a bridge while",
+        "tur": "doz_yazimi"
+      }
+    ],
+    "hata": [],
+    "tuzak": [
+      "| Target Pre-Feed Threshold (>24 h) | 54 mg/dL | 3.0 mmol/L",
+      "For a 3.5 kg newborn, a 2 mL/kg bolus of D10W",
+      "Never write .5 mg or 5.0 mg on neonatal charts;"
+    ],
+    "not": "İngilizce yenidoğan hemşireliği notunda tabloda yanlış glukoz dönüşümü ile madde içi '.5 mg' hatasını öğretici kural satırıyla birlikte sınar."
+  },
+  {
+    "dosya": "p-en02-forensic-toxicology-autopsy.md",
+    "dil": "en",
+    "alan": "tip",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "Arthur Pendelton, a 52-year-old male (Case File",
+        "tur": "hasta_kimligi"
+      }
+    ],
+    "hata": [
+      {
+        "satir_metni": "FIXME: Insert updated femoral-to-cardiac ratio table",
+        "tur": "todo"
+      }
+    ],
+    "tuzak": [
+      "Mathieu Orfila, who died at age 65 after establishing",
+      "Vitreous humor exhibits stable pH 7.0 postmortem",
+      "vitreous glucose reading of 216 mg/dL (12.0 mmol/L)"
+    ],
+    "not": "Adli tıp notunda ad-yaş-dosya no içeren hasta kimliğini ve FIXME işaretini, tarihî toksikolog ve doğru vitröz glukoz dönüşümüyle sınar."
+  },
+  {
+    "dosya": "p-en03-infectious-disease-endocarditis.md",
+    "dil": "en",
+    "alan": "eczacilik",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "tuzak": [
+      "Sir William Osler delivered his landmark Gulstonian",
+      "| Gentamicin (synergy) | 70 kg | 3 mg/kg/day (q8h) |",
+      "Patient R. is a 48-year-old male weighing 80 kg with",
+      "calculated initial dose is 1,000 mg IV. When enterococcal",
+      "confirmed serum creatinine at 1.0 mg/dL (88.4 µmol/L)."
+    ],
+    "not": "Temiz enfeksiyon eczacılığı notunda İngilizce binlik ayırıcı (1,000 mg), doğru q6h/q8h/q12h dozları, anonim vaka ve tarihî hekimi sınar."
+  },
+  {
+    "dosya": "p-en04-emergency-heparin-pe.md",
+    "dil": "en",
+    "alan": "acil",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "80 units/kg IV bolus protocol, the resident orders 5,400",
+        "tur": "doz_hesabi"
+      },
+      {
+        "satir_metni": "| Rescue sedation (if intubated) | Midazolam IV | 2.0 mg |",
+        "tur": "doz_yazimi"
+      }
+    ],
+    "hata": [],
+    "tuzak": [
+      "systolic blood pressure below 90.0 mmHg and arterial",
+      "| 75 kg | 80 units/kg bolus | 6,000 units |",
+      "Never write 2.0 mg (wrong) or .5 mg (wrong) on ED"
+    ],
+    "not": "Acil tıp PE notunda iki satıra bölünmüş yanlış heparin units/kg bolus hesabını ve tablo hücresindeki '2.0 mg' sondaki sıfırını sınar."
+  },
+  {
+    "dosya": "p-en05-endocrinology-dka-lab.md",
+    "dil": "en",
+    "alan": "tip",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "administer **4.0 mg** IV ondansetron before transitioning",
+        "tur": "doz_yazimi"
+      },
+      {
+        "satir_metni": "| Serum Triglycerides | 354 mg/dL | 5.2 mmol/L |",
+        "tur": "lab_donusum"
+      }
+    ],
+    "hata": [],
+    "tuzak": [
+      "continuous regular insulin at 0.1 units/kg/h equals 7",
+      "bedside glucose falls to 216 mg/dL (12.0 mmol/L), add",
+      "| Serum Creatinine | 1.5 mg/dL | 132.6 µmol/L |",
+      "| Total Cholesterol | 193.35 mg/dL | 5.0 mmol/L |"
+    ],
+    "not": "Endokrinoloji DKA notunda kalın '**4.0 mg**' hatası ve tablodaki yanlış trigliserit dönüşümünü doğru insülin/glukoz/kreatinin/kolesterolle sınar."
+  },
+  {
+    "dosya": "p-en06-pediatric-dental-sedation.md",
+    "dil": "en",
+    "alan": "dis",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "tuzak": [
+      "27-gauge needle with 2.0 cm penetration depth for",
+      "| 20 kg child | 2% Lidocaine with epinephrine |",
+      "Patient C. (7 years old, 25 kg), acetaminophen 60 mg/kg/day",
+      "oral amoxicillin 45 mg/kg/day divided q8h for a 20 kg"
+    ],
+    "not": "Temiz pediatrik diş hekimliği notunda doğru lokal anestezik tavanları, q6h/q8h antibiyotik-analjezik hesapları ve '1,500 mg' binlik ayırıcıyı sınar."
+  },
+  {
+    "dosya": "p-en07-clinical-psych-bipolar-lithium.md",
+    "dil": "en",
+    "alan": "psikoloji",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "Elena Vasquez (DOB 09/17/1988), a 38-year-old outpatient",
+        "tur": "hasta_kimligi"
+      }
+    ],
+    "hata": [
+      {
+        "satir_metni": "Cognitive-behavioral thеrapy modules emphasize sleep",
+        "tur": "kiril"
+      }
+    ],
+    "tuzak": [
+      "Emil Kraepelin, at age 43 in 1899, distinguished",
+      "Client A. maintained stable mood logs while her",
+      "Young Mania Rating Scale score above 12.0 points"
+    ],
+    "not": "Klinik psikoloji notunda DOB içeren hasta kimliği ve İngilizce sözcükteki Kiril 'е' (thеrapy) hatasını anonim vaka ve serum lityum değerleriyle sınar."
+  },
+  {
+    "dosya": "p-en08-probability-bayesian-inference.md",
+    "dil": "en",
+    "alan": "istatistik",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "tuzak": [
+      "Reverend Thomas Bayes, who passed away at age 59 in 1761",
+      "Beta(2.0, 2.0) prior with mean 0.50, observing 620",
+      "Under a null hypothesis p = .5, the two-sided p-value"
+    ],
+    "not": "Temiz istatistik notunda p = .5 / .01 istatistik notasyonunun, Beta(2.0, 2.0) parametrelerinin ve Thomas Bayes biyografisinin yanlış alarm vermemesini sınar."
+  },
+  {
+    "dosya": "p-en09-network-protocols-tcp-congestion.md",
+    "dil": "en",
+    "alan": "bilgisayar",
+    "karar": "karar için denetim eksik",
+    "engel": [],
+    "hata": [],
+    "tuzak": [
+      "Van Jacobson, then 38 years old in 1988, introduced",
+      "On a 10.0 Gbps link with 50.0 ms round-trip time"
+    ],
+    "not": "Frontmatter 'denetim:' alanı boş bırakılmış temiz bilgisayar ağları notunda 'karar için denetim eksik' çıktısını sınar."
+  },
+  {
+    "dosya": "p-en10-structural-mechanics-beams.md",
+    "dil": "en",
+    "alan": "muhendislik",
+    "karar": "yayına engel var",
+    "engel": [],
+    "hata": [
+      {
+        "satir_metni": "unbalanced mоment is distributed proportionally to",
+        "tur": "kiril"
+      },
+      {
+        "satir_metni": "non-prismatic haunched spans: ??? (verify table values",
+        "tur": "todo"
+      }
+    ],
+    "tuzak": [
+      "Hardy Cross, aged 45 in 1930, published the iterative",
+      "checked against a 5.0 N scale model test in the",
+      "A 6.0 m span carrying a uniform load of 12.0 kN/m"
+    ],
+    "not": "Yapı mekaniği notunda '???' taslak işareti ve Kiril 'о' (mоment) hatasını, mühendislik ondalıkları (5.0 N; 12.0 kN/m) eşliğinde sınar."
+  },
+  {
+    "dosya": "p-en11-environmental-chemistry-ph.md",
+    "dil": "en",
+    "alan": "kimya",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "tuzak": [
+      "Svante Arrhenius, at age 37 in 1896, calculated how",
+      "Pure water at 25.0 °C sits at neutral pH 7.0, whereas",
+      "add 5.0 mL aliquots of 0.10 M HCl until the sample",
+      "elevate dissolved CO2 past 1,000 ppm without altering"
+    ],
+    "not": "Temiz çevre kimyası notunda pH 7.0, 5.0 mL titrant, 0.10 M HCl, 1,000 ppm ve Svante Arrhenius biyografisinin yanlış alarm üretmemesini sınar."
+  }
+]

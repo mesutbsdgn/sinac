@@ -1,7 +1,7 @@
 ---
 name: sinac
 description: "Sınaç — ders notu, konu anlatımı, rehber, çalışma kâğıdı, ezber/kelime listesi ve öğrenci PDF'ini (Türkçe ya da İngilizce) kanıta dayalı 8 boyutlu ölçekle denetler (doğruluk, hedef uyumu, seviye, ezber ve kavrama, okunaklılık, sıra ve akış, kendini sınama, verimlilik) ve üç durumlu karar verir (yayına engel var / denetim eksik / uygun), bulguları satır numarasıyla gösterir. Belgenin dilini, bilim dalını (32 alan: tıp ve 7 sağlık dalı, psikoloji, matematik, fen, mühendislik, bilgisayar, hukuk, iktisat, tarih, ilahiyat, edebiyat, yabancı dil…) ve biçimini kendisi tanır. Sağlıkta doz yazımı (5,0 mg), doz hesabı, ISMP kısaltmaları, hasta kimliği ve TC no alandan bağımsız denetlenir. Audits Turkish or English study notes and teaching PDFs: use when asked to check, audit or score lecture notes or a vocabulary list; 'ders notumu denetle', 'bu PDF öğretir mi', 'Sınaç'."
-version: "2.1.0"
+version: "2.1.1"
 metadata:
   author: mesutbsdgn
   tags: [education, teaching-materials, medical-education, quality-check, turkish]

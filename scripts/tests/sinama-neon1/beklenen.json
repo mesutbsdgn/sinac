@@ -1,0 +1,441 @@
+[
+  {
+    "dosya": "n-tr01-pediatrik-antibiyotik.md",
+    "dil": "tr",
+    "alan": "tip",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "(en fazla ,5 mg intramüsküler adrenalin)",
+        "tur": "doz_yazimi"
+      },
+      {
+        "satir_metni": "| 20 kg | Amoksisilin 90 mg/kg/gün (q12h) | 450 mg / doz |",
+        "tur": "doz_hesabi"
+      }
+    ],
+    "hata": [],
+    "tuzak": [
+      "Hasta B. (4 yaşında, 16 kg) için günlük toplam doz 480 mg",
+      "Yanlış yazım olan 5,0 mg veya ,25 mg ifadelerini asla",
+      "yetişkinlerde en fazla 4 g/gün tavanını aşmamalıdır.",
+      "| 12 kg | Amoksisilin 90 mg/kg/gün (q12h) | 540 mg / doz |"
+    ],
+    "not": "Tablo hücresinde bölünmüş günlük doz hatası ve parantez içinde sıfırsız ondalık; öğretici yazım, tavan doz ve doğru bölünmüş doz tuzakları."
+  },
+  {
+    "dosya": "n-tr02-heparin-insulin-protokolu.md",
+    "dil": "tr",
+    "alan": "hemsirelik",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "80 ünite/kg olarak hesaplandığında hastaya **4800 ünite**",
+        "tur": "doz_hesabi"
+      },
+      {
+        "satir_metni": "Kan şekeri 216 mg/dL (21,6 mmol/L) ölçüldüğünde insülin",
+        "tur": "lab_donusum"
+      },
+      {
+        "satir_metni": "bazal insülin dozu **6,0 ünite** SC olarak yeniden",
+        "tur": "doz_yazimi"
+      }
+    ],
+    "hata": [],
+    "tuzak": [
+      "Florence Nightingale (1820–1910), 34 yaşındayken",
+      "18 ünite/kg/saat heparin idame infüzyonu saatte 1260 ünite",
+      "144 mg/dL (8,0 mmol/L) ile 180 mg/dL (10,0 mmol/L)"
+    ],
+    "not": "İki cümleye bölünmüş ünite/kg heparin hesabı, düzyazıda glukoz dönüşümü, kalın/karma dilde sondaki sıfır; tarihî kişi ve doğru infüzyon/glukoz tuzakları."
+  },
+  {
+    "dosya": "n-tr03-acil-toksikoloji-vakalari.md",
+    "dil": "tr",
+    "alan": "acil",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "Vaka 1: 47 yaşındaki Mehmet Karahan (d.t. 14.03.1979)",
+        "tur": "hasta_kimligi"
+      },
+      {
+        "satir_metni": "hasta kimlik numarası 10000000146 olarak işlendi ve kayıt",
+        "tur": "tc_no"
+      }
+    ],
+    "hata": [
+      {
+        "satir_metni": "N-asetilsistein yükleme dоzu 150 mg/kg olup 200 mL",
+        "tur": "kiril"
+      }
+    ],
+    "tuzak": [
+      "70 kg bir yetişkinde 150 mg/kg N-asetilsistein yükleme",
+      "Başvuru serum kreatinin düzeyi 1,5 mg/dL (132,6 µmol/L)",
+      "Vaka 2: Hasta M. (29 yaş, kadın), 12 saat önce yüksek doz"
+    ],
+    "not": "Yaştan sonra ad + doğum tarihi ile hasta kimliği, 10000000146 ve Kiril harfli sözcük; doğru NAC hesabı, doğru kreatinin dönüşümü ve anonim vaka tuzakları."
+  },
+  {
+    "dosya": "n-tr04-kopek-kedi-anestezi.md",
+    "dil": "tr",
+    "alan": "veteriner",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "10 kg'lık köpek hastada deksmedetomidin 5 mcg/kg IV",
+        "tur": "doz_hesabi"
+      },
+      {
+        "satir_metni": "Lidokain sabit hızlı infüzyonu (CRI) 2 mg/kg/saat",
+        "tur": "doz_hesabi"
+      }
+    ],
+    "hata": [],
+    "tuzak": [
+      "12 kg bir köpekte propofol indüksiyon dozu 4 mg/kg IV",
+      "4 kg ağırlığındaki bir kedide meloksikam başlangıç dozu",
+      "10 kg köpekte genellikle 7,0 mm iç çaplı tüp seçilir"
+    ],
+    "not": "10 kg'lık köpekte mcg/mg 10 kat dönüşüm hatası ve ardışık iki satıra bölünmüş mg/kg/saat CRI hatası; doğru kedi/köpek dozları ve mm ölçü tuzağı."
+  },
+  {
+    "dosya": "n-tr05-klinik-eczacilik-etkilesim.md",
+    "dil": "tr",
+    "alan": "eczacilik",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "tuzak": [
+      "Oswald Schmiedeberg (1838–1921), 34 yaşında Strasbourg",
+      "100 anti-Xa ünite/kg günde iki kez uygulandığında tek doz",
+      "ISMP kurallarına göre reçetede \"5,0 mg\" yerine \"5 mg\"",
+      "| Serum Kreatinin | 2 mg/dL | 176,8 µmol/L | × 88,4 |",
+      "| Total Kolesterol | 200 mg/dL | 5,17 mmol/L | ÷ 38,67 |"
+    ],
+    "not": "Temiz eczacılık notu: tarihî kişi, doğru ünite/kg hesabı, ISMP öğretici yazım satırı ve tabloda doğru biyokimya dönüşümleri."
+  },
+  {
+    "dosya": "n-tr06-diyabet-tip2-beslenme.md",
+    "dil": "tr",
+    "alan": "beslenme",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "tuzak": [
+      "75 kg birey için günlük 0,8 g/kg protein hedefi 60 g/gün",
+      "| Açlık Plazma Glukozu | 126 mg/dL | 7,0 mmol/L |",
+      "| Serum Trigliserit | 177 mg/dL | 2,0 mmol/L |",
+      "Örnek olgu: Bay K. (54 yaş, BKİ 29,4 kg/m²) günde üç ana"
+    ],
+    "not": "Temiz beslenme notu: tabloda doğru glukoz/trigliserit dönüşümleri ve .0 lab değerleri, doğru g/kg protein hesabı ve anonim Bay K. vakası."
+  },
+  {
+    "dosya": "n-tr07-dis-hekimligi-lokal-anestezi.md",
+    "dil": "tr",
+    "alan": "dis",
+    "karar": "karar için denetim eksik",
+    "engel": [],
+    "hata": [],
+    "tuzak": [
+      "60 kg sağlıklı bir yetişkinde adrenalinli lidokain için",
+      "solüsyonun pH 5,0 düzeyinde olması dokuda geçici yanma",
+      "Kartuş hacmini \",5 mL\" veya \"2,0 mL\" şeklinde değil"
+    ],
+    "not": "Frontmatter'da denetim satırı olmayan temiz diş hekimliği notu; doğru maksimum doz, pH/cm ondalıkları ve öğretici yazım satırı tuzakları."
+  },
+  {
+    "dosya": "n-tr08-bdt-anksiyete-notu.md",
+    "dil": "tr",
+    "alan": "psikoloji",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "Zeynep Arslan (34 yaşında, protokol no: PSI-2026-418)",
+        "tur": "hasta_kimligi"
+      }
+    ],
+    "hata": [
+      {
+        "satir_metni": "tablosu eklenecek — TODO: ölçek kaynakçası güncellenecek.",
+        "tur": "todo"
+      }
+    ],
+    "tuzak": [
+      "Aaron T. Beck (1921–2021), 46 yaşındayken depresyonun",
+      "Karşılaştırmalı olgu olan Hasta D., 12 haftalık program"
+    ],
+    "not": "Ad yaştan önce + protokol no biçiminde hasta kimliği ve TODO işareti; tarihî kuramcı biyografisi ve anonim Hasta D. tuzakları."
+  },
+  {
+    "dosya": "n-tr09-newton-mekanigi-dinamik.md",
+    "dil": "tr",
+    "alan": "fizik",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "tuzak": [
+      "Isaac Newton (1643–1727), 44 yaşındayken Philosophiae",
+      "Kütlesi 2,0 kg olan bir bloğa yatay sürtünmesiz düzlemde",
+      "Dinamometre okuması laboratuvar föyüne 12,0 N ± 0,1 N",
+      "eğik düzlem üzerinde 3,0 s boyunca kayarak 9,0 m yol alır."
+    ],
+    "not": "Temiz fizik notu: 5,0 N ve 2,0 kg gibi doz olmayan anlamlı rakamlı ondalıklar ile tarihî bilim insanı biyografisi tuzakları."
+  },
+  {
+    "dosya": "n-tr10-osmanli-tanzimat-reformlari.md",
+    "dil": "tr",
+    "alan": "tarih",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "tuzak": [
+      "Mustafa Reşid Paşa, 39 yaşındayken Gülhane Parkı'nda",
+      "Ahmet Cevdet Paşa (1822–1895), Mecelle-i Ahkâm-ı Adliyye",
+      "bazı eyaletlerde vergi tahsilat oranı %65,0 dolayında"
+    ],
+    "not": "Temiz tarih notu: ad + yaş taşıyan tarihî şahsiyetler ve yüzdelik ondalık (%65,0) tuzakları."
+  },
+  {
+    "dosya": "n-tr11-veri-yapilari-hash-tablolari.md",
+    "dil": "tr",
+    "alan": "bilgisayar",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "birincil anahtar olarak 10000000146 değeri hash fonksiyonuna",
+        "tur": "tc_no"
+      }
+    ],
+    "hata": [
+      {
+        "satir_metni": "ikinci hash fonksiyonunun asal modül ispatı ??? burada",
+        "tur": "todo"
+      }
+    ],
+    "tuzak": [
+      "Donald Knuth (d. 1938), 35 yaşındayken The Art of Computer",
+      "yeniden boyutlandırma yapılır; hedef kapasite 2,0 katına"
+    ],
+    "not": "Sağlık dışı bilgisayar belgesinde 10000000146 ve ??? taslak işareti; tarihî bilgisayar bilimci ve 2,0 katı ondalık tuzakları."
+  },
+  {
+    "dosya": "n-en01-pediatric-antibiotic-dosing.md",
+    "dil": "en",
+    "alan": "tip",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "18 kg child prescribed clindamycin at 40 mg/kg/day",
+        "tur": "doz_hesabi"
+      },
+      {
+        "satir_metni": "| Ceftriaxone 100 mg/kg/day (q12h) | 2.0 g per dose max |",
+        "tur": "doz_yazimi"
+      }
+    ],
+    "hata": [],
+    "tuzak": [
+      "24 kg child treated with ampicillin 200 mg/kg/day divided",
+      "weighing 50 kg receive amoxicillin 1,000 mg orally every",
+      "not to exceed a maximum of 4 g/day in adolescents and",
+      "Never write .5 mg or 5.0 mg on pediatric orders; always"
+    ],
+    "not": "Cümle ortasında q6h bölünmüş doz hatası ve tabloda 2.0 g; İngilizce 1,000 mg binlik ayırıcı, iki cümlelik doğru hesap, tavan doz ve öğretici yazım tuzakları."
+  },
+  {
+    "dosya": "n-en02-icu-heparin-infusion.md",
+    "dil": "en",
+    "alan": "hemsirelik",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "tuzak": [
+      "Case study: Patient R. (64-year-old male, 75 kg) was",
+      "80 units/kg IV bolus is 6,000 units, followed by 18",
+      "Never write trailing zeros such as 5.0 units or naked",
+      "arterial blood gas pH 7.40 and aPTT ratio 2.0 before"
+    ],
+    "not": "Temiz yoğun bakım hemşireliği notu: doğru units/kg ve mL/hr heparin hesapları, binlik ayırıcı, öğretici yazım, pH/cm/aPTT ve anonim vaka tuzakları."
+  },
+  {
+    "dosya": "n-en03-lipid-renal-lab-panel.md",
+    "dil": "en",
+    "alan": "eczacilik",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "| Total Cholesterol | 240 mg/dL | 13.33 mmol/L | High",
+        "tur": "lab_donusum"
+      },
+      {
+        "satir_metni": "serum creatinine rose to 2.5 mg/dL (110.5 µmol/L),",
+        "tur": "lab_donusum"
+      },
+      {
+        "satir_metni": "rosuvastatin 10 mg daily and add colchicine .5 mg daily",
+        "tur": "doz_yazimi"
+      }
+    ],
+    "hata": [],
+    "tuzak": [
+      "| Fasting Plasma Glucose | 108 mg/dL | 6.0 mmol/L |",
+      "| Fasting Triglycerides | 177 mg/dL | 2.0 mmol/L |",
+      "enrolled patients on niacin 1,000 mg daily as comparator"
+    ],
+    "not": "Tabloda yanlış kolesterol dönüşümü, düzyazıda yanlış kreatinin dönüşümü ve maddede .5 mg; tabloda doğru glukoz/trigliserit dönüşümleri ve 1,000 mg tuzağı."
+  },
+  {
+    "dosya": "n-en04-emergency-stroke-triage.md",
+    "dil": "en",
+    "alan": "acil",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "A 63-year-old woman, Clara Henderson, arrived 55 minutes",
+        "tur": "hasta_kimligi"
+      },
+      {
+        "satir_metni": "Standard alteplase dosing at 0.9 mg/kg yields a total",
+        "tur": "doz_hesabi"
+      }
+    ],
+    "hata": [
+      {
+        "satir_metni": "below 185 mmHg before initiating thrombolytic therаpy.",
+        "tur": "kiril"
+      }
+    ],
+    "tuzak": [
+      "exclude hypoglycemia below 54 mg/dL (3.0 mmol/L).",
+      "For an 80 kg patient receiving alteplase 0.9 mg/kg, the",
+      "Control vignette: Patient T. (71-year-old man) presented"
+    ],
+    "not": "İngilizce hasta kimliği, iki cümleye bölünmüş yanlış alteplaz hesabı ve Kiril harfli sözcük; doğru alteplaz/glukoz ve anonim vaka tuzakları."
+  },
+  {
+    "dosya": "n-en05-cardiac-rehab-physiotherapy.md",
+    "dil": "en",
+    "alan": "fizyoterapi",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "tuzak": [
+      "Case example: Mr. K., a 59-year-old post-CABG patient,",
+      "treadmill ambulation at 3.0 km/h and 2.0% grade",
+      "capillary glucose exceeds 252 mg/dL (14.0 mmol/L) with"
+    ],
+    "not": "Temiz fizyoterapi notu: anonim Mr. K. vakası, doz olmayan km/h-MET-cm ondalıkları ve doğru glukoz dönüşümleri."
+  },
+  {
+    "dosya": "n-en06-veterinary-fluid-therapy.md",
+    "dil": "en",
+    "alan": "veteriner",
+    "karar": "karar için denetim eksik",
+    "engel": [],
+    "hata": [],
+    "tuzak": [
+      "A 10 kg dog with 6% dehydration requires a replacement",
+      "Administer maropitant 1 mg/kg SC to a 15 kg dog, giving",
+      "serum creatinine from 3.0 mg/dL (265.2 µmol/L) to 1.5"
+    ],
+    "not": "Frontmatter'da denetim alanı boş bırakılmış temiz veteriner notu; doğru 10 kg köpek sıvı/mL/hr hesabı, doğru maropitant dozu ve doğru kreatinin dönüşümü."
+  },
+  {
+    "dosya": "n-en07-psychopharmacology-case-notes.md",
+    "dil": "en",
+    "alan": "psikoloji",
+    "karar": "yayına engel var",
+    "engel": [
+      {
+        "satir_metni": "David Mercer, DOB 09/18/1984 (Chart #MH-88412), reported",
+        "tur": "hasta_kimligi"
+      },
+      {
+        "satir_metni": "or added lorazepam (1.0 mg PRN).",
+        "tur": "doz_yazimi"
+      }
+    ],
+    "hata": [
+      {
+        "satir_metni": "FIXME: Insert updated APA ethical guidelines reference",
+        "tur": "todo"
+      }
+    ],
+    "tuzak": [
+      "John Cade (1912–1980) published his landmark lithium",
+      "serum lithium concentration typically falls between 0.6",
+      "Valproate extended-release dosing frequently reaches 1,000"
+    ],
+    "not": "Doğum tarihi ve dosya no ile hasta kimliği, parantez içinde 1.0 mg ve FIXME işareti; tarihî kişi, serum lityum 1.0 mmol/L ve 1,000 mg tuzakları."
+  },
+  {
+    "dosya": "n-en08-acid-base-titration-lab.md",
+    "dil": "en",
+    "alan": "kimya",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "tuzak": [
+      "Søren Sørensen (1868–1939) introduced the pH scale at age",
+      "equivalence point of HCl and NaOH at 25.0 °C, the",
+      "magnetic stir bar clearance at 4.0 cm below the glass",
+      "| 7.20 | 7.0 | 1.0 mol/L |"
+    ],
+    "not": "Temiz kimya notu: tarihî kimyager biyografisi ve pH 7.0, 25.0 °C, 4.0 cm, 1.0 mol/L gibi doz olmayan ondalık tuzakları."
+  },
+  {
+    "dosya": "n-en09-hypothesis-testing-anova.md",
+    "dil": "en",
+    "alan": "istatistik",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "tuzak": [
+      "Ronald A. Fisher (1890–1962) developed the analysis of",
+      "an observed statistic of F = 4.0 exceeds the critical",
+      "Simulation runs used 1,000 bootstrap resamples per",
+      "standard deviations differ markedly (e.g., SD = 2.0"
+    ],
+    "not": "Temiz istatistik notu: tarihî istatistikçi, F = 4.0 ve SD = 2.0 ondalıkları ile 1,000 binlik ayırıcı tuzakları."
+  },
+  {
+    "dosya": "n-en10-english-conditionals-grammar.md",
+    "dil": "en",
+    "alan": "dil",
+    "karar": "tanımlı kapsamda uygun",
+    "engel": [],
+    "hata": [],
+    "tuzak": [
+      "If water cools to 0.0 °C at standard pressure, it",
+      "If Sarah misses the 8:00 train, she will arrive 30",
+      "Common learner mistake: \"If I would have known earlier,"
+    ],
+    "not": "Temiz yabancı dil öğretimi notu: 0.0 °C bilimsel olgu, hasta olmayan diyalog adı ve dilbilgisi hata örneği tuzakları."
+  },
+  {
+    "dosya": "n-en11-contract-law-remedies.md",
+    "dil": "en",
+    "alan": "hukuk",
+    "karar": "yayına engel var",
+    "engel": [],
+    "hata": [
+      {
+        "satir_metni": "Expectation damages aim to place the injured pаrty in",
+        "tur": "kiril"
+      },
+      {
+        "satir_metni": "under UCC § 2-718 (TODO: add penalty-clause distinction",
+        "tur": "todo"
+      }
+    ],
+    "tuzak": [
+      "In Hadley v. Baxendale (1854), Baron Alderson (aged 67)",
+      "Seller breaches a contract worth 1,000 USD and cover",
+      "Hypothetical: Buyer A contracts with Supplier B for 500"
+    ],
+    "not": "Sağlık dışı hukuk belgesinde Kiril harfli sözcük ve TODO işareti; tarihî yargıç (ad + yaş), 1,000 USD ve anonim taraf tuzakları."
+  }
+]

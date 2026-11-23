@@ -6,7 +6,7 @@
 
 ### Ders notunu sınar: doğru mu, öğretir mi, yayınlanabilir mi?
 
-![Lisans](https://img.shields.io/badge/lisans-kullanım%20hakkı-lightgrey) ![Biçim](https://img.shields.io/badge/bi%C3%A7im-Claude%20skill-8A63D2) ![Model](https://img.shields.io/badge/model-ba%C4%9F%C4%B1ms%C4%B1z-brightgreen) ![Dil](https://img.shields.io/badge/dil-T%C3%BCrk%C3%A7e%20%2B%20English-e30a17) ![Testler](https://img.shields.io/badge/testler-190%20test%20%2B%20211%20kar%C5%9F%C4%B1%20%C3%B6rnek-brightgreen) ![test](https://github.com/mesutbsdgn/sinac/actions/workflows/test.yml/badge.svg)
+![Lisans](https://img.shields.io/badge/lisans-kullanım%20hakkı-lightgrey) ![Biçim](https://img.shields.io/badge/bi%C3%A7im-Claude%20skill-8A63D2) ![Model](https://img.shields.io/badge/model-ba%C4%9F%C4%B1ms%C4%B1z-brightgreen) ![Dil](https://img.shields.io/badge/dil-T%C3%BCrk%C3%A7e%20%2B%20English-e30a17) ![Testler](https://img.shields.io/badge/testler-261%20test%20%2B%20211%20kar%C5%9F%C4%B1%20%C3%B6rnek-brightgreen) ![test](https://github.com/mesutbsdgn/sinac/actions/workflows/test.yml/badge.svg)
 
 </div>
 
@@ -251,6 +251,36 @@ grup doğru v2.0.1'de 22 (tr 14, en 8), v2.1.0'da 38 (tr 19, en 19). Görülmemi
 "genel" 19'dan 5'e indi. ENGEL artan belge yok; v2.0.1'deki tek yanlış ENGEL (kurgu karakterin doğum tarihi) gitti.
 Hız: 1,9 MB gerçek belge yaklaşık 4,4 sn'den 3,2 sn'ye indi; kısa not yaklaşık 0,2 sn.
 
+### v2.1.1 sınaması ve düzeltmesi (23 Kasım 2026)
+
+v2.1.0 yayımlandıktan sonra yeni yazılmış belgelerle sınandı ve zayıf çıktı: taze bir ajanın yazdığı 22 belgede beklenen
+22 ağır bulgunun 11'i kaçtı, 5 belgede yanlış ENGEL çıktı. v2.1.1 bu bulguları düzeltir. Düzeltme dört turda yapıldı;
+her turun ardından **o ana kadar hiç görülmemiş** yeni bir küme ölçüldü. Aşağıdaki "ilk geçiş" sütunu, o kümenin kod
+ona göre düzeltilmeden önceki sonucudur ve asıl genelleme ölçüsüdür.
+
+| Küme (22'şer belge, 11 tr + 11 en) | Yazan | Beklenen ENGEL/HATA | v2.1.0: kaçan / yanlış ENGEL (belge) | Düzeltme sırasında ilk geçiş | v2.1.1 son |
+|---|---|---|---|---|---|
+| `tests/sinama-sonnet` (sınama raporunun asıl kümesi) | Sonnet 5.5 | 22 | 11 / 5 (5) | geliştirme kümesi | 0 / 0 |
+| `tests/sinama-claude` (15 karşı örnek belgesi) | Claude | 11 | 4 / 4 (3) | geliştirme kümesi | 0 / 0 |
+| `tests/sinama-neon1` | Gemini 4 Neon | 27 | 9 / 0 | 1. turdan sonra 2 / 2 (2) | 0 / 0 |
+| `tests/sinama-sonnet2` | Sonnet 5.5 | 21 | 10 / 3 (3) | 2. turdan sonra 5 / 5 (4) | 0 / 0 |
+| `tests/sinama-neon2` | Gemini 4 Neon | 25 | 9 / 2 (2) | 3. turdan sonra 1 / 2 (1) | 0 / 0 |
+
+Dürüstlük notları:
+
+- "v2.1.1 son" sütunundaki sıfırlar genelleme kanıtı değildir: her küme ilk geçişten sonra açık bulmak için kullanıldı ve
+  artık regresyon kümesidir. Son görülmemiş kümede ilk geçişte 25 beklenen bulgunun 1'i kaçtı ve 1 belgede yanlış ENGEL
+  çıktı; yeni bir belgede benzer oranda hata beklenmelidir.
+- İkinci turda yeni doz kuralı doğru hesapları hata saydı (yanlış ENGEL 3 → 4 belge); üçüncü ve dördüncü turda düzeltildi.
+- Dördüncü turdan sonra Claude'un yazdığı 12 yeni cümlenin 2'sinde açık çıktı (kısa metinde `6,000 units` binlik virgülü;
+  "each 6-hour infusion" etiketi); ikisi de düzeltildi ve teste eklendi.
+- Sınamayı Sınaç'ı geliştiren oturum yürüttü; tam bağımsız değildir. Belgeleri kodu görmeyen ajanlar yazdı, beklentiler
+  betik çalışmadan önce SHA-256 ile kilitlendi.
+- Fransızca derlem (368 gerçek ders notu): ENGEL'i artan belge 0, kararı değişen belge 0, alanı `dil`den çıkan belge 0.
+- Hız: tek satırda ikinci dereceden büyüme giderildi (56 KB'lik tek satır 20 sn → 0,65 sn; 80 KB'lik boşluksuz sözcük
+  27,8 sn → 0,49 sn). 370 KB – 0,9 MB arası dört yapay yığın girdisi hâlâ 2,4–5,6 sn sürer; 1,9 MB'lik gerçek ders notu
+  yaklaşık 3,2 sn (değişmedi).
+
 ## Kullanım
 
 ```bash
@@ -278,7 +308,7 @@ Python 3.9+, yalnız standart kütüphane, ağ yok. PDF ölçümü için isteğe
 
 ## Nasıl sınandı
 
-**Testler:** 190 test (211 karşı örnek ve 3 altın küme dahil), hepsi geçiyor.
+**Testler:** 261 test (211 karşı örnek ve 8 altın/sınama kümesi dahil), hepsi geçiyor.
 
 | Dosya | Sayı | Kapsam |
 |---|---|---|
@@ -286,7 +316,8 @@ Python 3.9+, yalnız standart kütüphane, ağ yok. PDF ölçümü için isteğe
 | `test_ozellikler.py` | 38 test | Gerçek üretilmiş PDF'lerle yazı boyu, vektör çizim, boş sayfa, PDF içeriği; `--duzelt`, kodlama, susturma, maskeleme, ReDoS |
 | `test_f3.py` | 89 test | Birim dil tahmini, dile duyarlı eşleştirme, sözlük, alan grupları, yeni kurallar |
 | `test_karsi_ornekler.py` | 1 test, 211 karşı örnek | Regresyon kümesi |
-| `test_altin.py` | 1 test, 3 altın küme, 75 belge | Karar, kaçan ENGEL ve yanlış ENGEL kilitli |
+| `test_sinama.py` | 71 test | v2.1.1: ünite dozları, düzyazı ve tablo doz hesabı, lab eşleme, hasta kimliği, öğretici örnek, hız |
+| `test_altin.py` | 1 test, 8 küme, 178 belge | Karar, kaçan ENGEL ve yanlış ENGEL kilitli |
 
 GitHub Actions bu testleri Python 3.10 ve 3.13'te çalıştırır (Ubuntu 26.04 imajında 3.9 yok); Python 3.9.6'da yerelde sınandı.
 
@@ -328,6 +359,7 @@ Sınaç dil sadeleştirmez; o iş kardeş becerisi [Durulaç](https://github.com
 - Tıbbi, eczacılık, veteriner ya da hukuki görüş değildir.
 - Alan tespiti sözlük tabanlıdır; sağlık içi alt alanda (hemşirelik, eczacılık, tıp) ve karma belgede yanılabilir. `alan:` ya da `--alan` ile düzeltilir.
 - İngilizce desteği alan tespitini ve sağlık güvenlik kurallarını kapsar; uyarı ve öneri mesajları Türkçedir.
+- Doz hesabı ve lab dönüşümü kuralları yapıya bakar (kilo + kiloya göre doz + sonuç; aynı analitin iki birimli değeri) ama her cümle kalıbını yakalamaz: son görülmemiş kümede 25 bulgunun 1'i kaçtı, 1 belgede yanlış ENGEL çıktı. Derişim (mg/mL) ve bölme aritmetiği denetlenmez. Bulgu yokluğu hesabın doğru olduğunu göstermez.
 - **Açık iş:** regresyon ve altın kümeleri modellerin yazdığı belgelerden oluşuyor; bağımsız öğretmen ve uzmanların etiketlediği gerçek ders notlarından bir altın küme henüz yok.
 - **Ölçme geçerliği sınanmadı:** 8 boyutun öğretim kalitesini ayırt ettiği öğretmen değerlendirmesi ve öğrenci sonuçlarıyla sınanmadı; toplam puan yalnız göstergedir.
 
@@ -337,6 +369,7 @@ Sınaç dil sadeleştirmez; o iş kardeş becerisi [Durulaç](https://github.com
 |---|---|---|
 | v1.0.0 | 22 Kas 2026 | İlk yayın. Durulaç'ın `+ogretim` kipinden (v1.7–1.9) ayrı beceri olarak çıkarıldı, Sınaç adını aldı |
 | v2.1.0 | 22 Kas 2026 | Dile duyarlı alan tespiti (Türkçe ve İngilizce), alan grupları, yeni sağlık kuralları. Değişiklikler aşağıda |
+| v2.1.1 | 23 Kas 2026 | Sınama bulgularının düzeltmesi: ünite/kg dozları, düzyazıda ve tabloda doz hesabı, lab dönüşümü eşlemesi, hasta kimliği varyantları, tarihî kişi ve öğretici örnek yanlış ENGEL'leri, hız. Ölçüm: [v2.1.1 sınaması](#v211-sınaması-ve-düzeltmesi-23-kasım-2026) |
 | v2.0.1 | 22 Kas 2026 | CI: Python 3.10 ve 3.13 (GitHub Ubuntu 26.04 imajında 3.9 yok); kod değişmedi |
 | v2.0.0 | 22 Kas 2026 | GPT-6.1 Sol, Qwen4 Max, Fable 5.2, Gemini 4 Argon (iki tur) ve GPT-6.2 Astra (iki tur) incelemeleri sonrası. Değişiklikler aşağıda |
 

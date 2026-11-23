@@ -1,0 +1,411 @@
+[
+ {
+  "dosya": "s-tr01-cocuk-antipiretik-dozu.md",
+  "dil": "tr",
+  "alan": "hemsirelik",
+  "karar": "tanımlı kapsamda uygun",
+  "engel": [],
+  "hata": [],
+  "tuzak": [
+   "Yanlış yazım: 2,0 mL ve ,5 mL",
+   "Hasta A (18 aylık, 12 kg)",
+   "hiçbir koşulda 4 g/gün'ü aşmamalıdır"
+  ],
+  "not": "Doğru hesaplı çocuk dozları temiz belgede; yanlış yazımı öğreten satır, anonim vaka ve günlük tavan yanlış alarm vermemeli."
+ },
+ {
+  "dosya": "s-tr02-yogun-bakim-infuzyon.md",
+  "dil": "tr",
+  "alan": "tip",
+  "karar": "yayına engel var",
+  "engel": [
+   {
+    "satir_metni": "18 ünite/kg/saat × 80 kg = 1.200 ünite/saat",
+    "tur": "doz_hesabi"
+   },
+   {
+    "satir_metni": "Fentanil bolus 50,0 mcg",
+    "tur": "doz_yazimi"
+   }
+  ],
+  "hata": [],
+  "tuzak": [
+   "Hasta A, 80 kg, septik şok",
+   "laktat düzeyinin 2,0 mmol/L altına",
+   "en fazla 4 g/gün ile sınırlıdır"
+  ],
+  "not": "Tabloda ünite/kg/saat çarpım hatası ve kalın yazıda sondaki sıfırlı doz; öteki infüzyon hızları doğru."
+ },
+ {
+  "dosya": "s-tr03-farmakokinetik-majistral.md",
+  "dil": "tr",
+  "alan": "eczacilik",
+  "karar": "yayına engel var",
+  "engel": [
+   {
+    "satir_metni": "Klonidin HCl | ,1 mg/kapsül",
+    "tur": "doz_yazimi"
+   }
+  ],
+  "hata": [
+   {
+    "satir_metni": "Yükleme dоzu ve idame dozu",
+    "tur": "kiril"
+   }
+  ],
+  "tuzak": [
+   "(ör. t½ = 4,0 saat)",
+   "pH 7,0 olacak şekilde",
+   "yetişkin için en fazla 4 g/gün"
+  ],
+  "not": "Tablo hücresinde baştaki sıfırsız ondalık ve başlıkta Kiril 'о'; farmakokinetik hesaplar doğru, pH/yarı ömür ondalıkları tuzak."
+ },
+ {
+  "dosya": "s-tr04-anafilaksi-acil-vaka.md",
+  "dil": "tr",
+  "alan": "acil",
+  "karar": "yayına engel var",
+  "engel": [
+   {
+    "satir_metni": "Merve Tanrıverdi, 31 yaşında kadın",
+    "tur": "hasta_kimligi"
+   },
+   {
+    "satir_metni": "Adrenalin 0,01 mg/kg ile 0,3 mg IM verildi",
+    "tur": "doz_hesabi"
+   }
+  ],
+  "hata": [],
+  "tuzak": [
+   "Hasta A, 8 yaşında",
+   "Bay K., 35 yaşında",
+   "metilprednizolon 1 mg/kg; 30 kg'lık çocukta 30 mg"
+  ],
+  "not": "Vakada gerçek görünen ad-yaş-dosya no ve 22 kg çocukta yanlış adrenalin mg'ı; anonim vakalar ve doğru dozlar tuzak."
+ },
+ {
+  "dosya": "s-tr05-veteriner-doz-hesabi.md",
+  "dil": "tr",
+  "alan": "veteriner",
+  "karar": "tanımlı kapsamda uygun",
+  "engel": [],
+  "hata": [],
+  "tuzak": [
+   "Yanlış yazım örneği: ,5 mg; doğru yazım: 0,5 mg",
+   "sahibi Bay K.",
+   "500 × 1,1 | 550 mg"
+  ],
+  "not": "Köpek, kedi ve at için doğru hesaplı mg/kg dozları; yanlış yazım öğretimi ve anonim sahip temiz sayılmalı."
+ },
+ {
+  "dosya": "s-tr06-lab-si-donusumu.md",
+  "dil": "tr",
+  "alan": "tip",
+  "karar": "yayına engel var",
+  "engel": [
+   {
+    "satir_metni": "Kreatinin 0,9 mg/dL | 62 µmol/L",
+    "tur": "lab_donusum"
+   },
+   {
+    "satir_metni": "Toplam kolesterol 240 mg/dL, 8,2 mmol/L",
+    "tur": "lab_donusum"
+   }
+  ],
+  "hata": [],
+  "tuzak": [
+   "Laktat 2,0 mmol/L ve üzeri",
+   "Potasyum 5,0 mmol/L üst sınırdır",
+   "126 ÷ 18 | 7 mmol/L",
+   "Bay M., açlık glukozu"
+  ],
+  "not": "Biri tabloda biri düzyazıda iki yanlış SI dönüşümü (doğrusu 80 µmol/L ve 6,2 mmol/L); doğru dönüşümler ve lab ondalıkları tuzak."
+ },
+ {
+  "dosya": "s-tr07-psikoloji-vaka-sunumu.md",
+  "dil": "tr",
+  "alan": "psikoloji",
+  "karar": "yayına engel var",
+  "engel": [
+   {
+    "satir_metni": "Gizem Tunçdemir (d. 14.03.1996)",
+    "tur": "hasta_kimligi"
+   },
+   {
+    "satir_metni": "TC kimlik no: 10000000146",
+    "tur": "tc_no"
+   }
+  ],
+  "hata": [],
+  "tuzak": [
+   "Danışan K. (28 yaşında)",
+   "23 yaşındaki Jean Piaget"
+  ],
+  "not": "Vaka taslağında ad + doğum tarihi + protokol no ve TC no kalmış; kodlu danışan ve tarihî kişi (Piaget) tuzak."
+ },
+ {
+  "dosya": "s-tr08-fizik-olcum-kuvvet.md",
+  "dil": "tr",
+  "alan": "fizik",
+  "karar": "tanımlı kapsamda uygun",
+  "engel": [],
+  "hata": [],
+  "tuzak": [
+   "2,0 kg × 2,5 m/s² = 5,0 N",
+   "5,0 cm olarak okundu",
+   "5,0 kg'lık cisim için g = 9,8 m/s²",
+   "5,0 N | 2 | Ondalık"
+  ],
+  "not": "Anlamlı basamak öğreten fizik notunda 5,0 N, 5,0 cm, 5,0 kg gibi sondaki sıfırlar doz sayılmamalı."
+ },
+ {
+  "dosya": "s-tr09-kimya-molarite.md",
+  "dil": "tr",
+  "alan": "kimya",
+  "karar": "tanımlı kapsamda uygun",
+  "engel": [],
+  "hata": [],
+  "tuzak": [
+   "0,5 mol ÷ 1 L | 0,5 M",
+   "nötrdür: pH 7,0",
+   "25,0 mL'lik 0,1 M HCl"
+  ],
+  "not": "Molarite, pH 7,0 ve 25,0 mL pipet hacmi gibi doz olmayan ondalıklar; 'mL' birimli 25,0 yanlış alarm riski taşır."
+ },
+ {
+  "dosya": "s-tr10-python-ortalama-arama.md",
+  "dil": "tr",
+  "alan": "bilgisayar",
+  "karar": "karar için denetim eksik",
+  "engel": [],
+  "hata": [],
+  "tuzak": [
+   "agirlik = .5",
+   "esik = .75"
+  ],
+  "not": "Kod bloklu belge: denetim satırı boş olduğu için 'denetim eksik' beklenir; koddaki başı noktalı ondalıklar doz değildir."
+ },
+ {
+  "dosya": "s-tr11-hukuk-haksiz-fiil.md",
+  "dil": "tr",
+  "alan": "hukuk",
+  "karar": "tanımlı kapsamda uygun",
+  "engel": [],
+  "hata": [],
+  "tuzak": [
+   "Bay K., 58 yaşında bir bisiklet sürücüsüydü",
+   "47 yaşındaki Ahmed Cevdet Paşa",
+   "50.000 × 0,24 × 6 ÷ 12 = 6.000 TL"
+  ],
+  "not": "Hukuk notunda anonim 'Bay K., 58 yaşında' ve tarihî kişi yaşı hasta kimliği sayılmamalı; faiz hesabı doğru."
+ },
+ {
+  "dosya": "s-en01-iv-prep-dilution.md",
+  "dil": "en",
+  "alan": "hemsirelik",
+  "karar": "yayına engel var",
+  "engel": [
+   {
+    "satir_metni": "a 15 kg child that is 1,200 mg/day",
+    "tur": "doz_hesabi"
+   },
+   {
+    "satir_metni": "digoxin .25 mg IV push over 5 minutes",
+    "tur": "doz_yazimi"
+   }
+  ],
+  "hata": [],
+  "tuzak": [
+   "write 0.75 mg, never .75 mg",
+   "Do not add a trailing zero: 5 mg, not 5.0 mg",
+   "acetaminophen 1,000 mg PO every 6 hours",
+   "Patient A, a 6-year-old"
+  ],
+  "not": "Bölünmüş günlük doz çarpımı yanlış (doğrusu 1,500) ve madde listesinde baştaki sıfırsız ondalık; yanlış yazımı öğreten satırlar ve 1,000 mg tuzak."
+ },
+ {
+  "dosya": "s-en02-dental-local-anesthetic.md",
+  "dil": "en",
+  "alan": "dis",
+  "karar": "tanımlı kapsamda uygun",
+  "engel": [],
+  "hata": [],
+  "tuzak": [
+   "A bare .25 mg invites a tenfold error",
+   "Write concentrations as \"2%\"",
+   "Patient A, a 9-year-old weighing 18 kg",
+   "Lidocaine (plain) | 4.4 mg/kg | 300 mg"
+  ],
+  "not": "Lokal anestezik azami doz hesapları doğru; yanlış yazımı öğreten satır ve anonim çocuk vaka temiz sayılmalı."
+ },
+ {
+  "dosya": "s-en03-exercise-prescription.md",
+  "dil": "en",
+  "alan": "fizyoterapi",
+  "karar": "tanımlı kapsamda uygun",
+  "engel": [],
+  "hata": [],
+  "tuzak": [
+   "Knee flexion of 120.0 degrees",
+   "a speed of 1.0 m/s",
+   "a 5.0 kg dumbbell",
+   "a 5.0 cm platform",
+   "Mr. L., 62"
+  ],
+  "not": "İlaçsız egzersiz reçetesinde açı, hız, kuvvet ondalıkları ve anonim 'Mr. L., 62' ENGEL üretmemeli."
+ },
+ {
+  "dosya": "s-en04-nutrition-energy-protein.md",
+  "dil": "en",
+  "alan": "beslenme",
+  "karar": "yayına engel var",
+  "engel": [
+   {
+    "satir_metni": "Marcus Whitfield, a 52-year-old man",
+    "tur": "hasta_kimligi"
+   },
+   {
+    "satir_metni": "folic acid 1.0 mg daily",
+    "tur": "doz_yazimi"
+   }
+  ],
+  "hata": [],
+  "tuzak": [
+   "is BMI 25.0 kg/m²",
+   "1,500 mg/day",
+   "Patient A, a 30-year-old athlete"
+  ],
+  "not": "Beslenme vakasında gerçek görünen ad-yaş ve vitamin dozunda sondaki sıfır; BMI 25.0 ve 1,500 mg sodyum tuzak."
+ },
+ {
+  "dosya": "s-en05-dka-insulin-infusion.md",
+  "dil": "en",
+  "alan": "tip",
+  "karar": "yayına engel var",
+  "engel": [
+   {
+    "satir_metni": "for a 70 kg adult that is 9 units/hour",
+    "tur": "doz_hesabi"
+   },
+   {
+    "satir_metni": "360 mg/dL | 22 mmol/L",
+    "tur": "lab_donusum"
+   }
+  ],
+  "hata": [],
+  "tuzak": [
+   "A pH of 7.0 is therefore the boundary",
+   "serum potassium of 5.0 mmol/L",
+   "Patient A, 24 years old and 70 kg",
+   "250 mg/dL | 13.9 mmol/L"
+  ],
+  "not": "Insülin ünite/kg/saat çarpımı yanlış (doğrusu 7) ve glukoz 360 mg/dL = 20 mmol/L yerine 22 yazılmış; pH 7.0 ve K 5.0 ondalıkları tuzak."
+ },
+ {
+  "dosya": "s-en06-trial-statistics.md",
+  "dil": "en",
+  "alan": "istatistik",
+  "karar": "yayına engel var",
+  "engel": [
+   {
+    "satir_metni": "Daniel Okafor | 1978-03-11",
+    "tur": "hasta_kimligi"
+   },
+   {
+    "satir_metni": "a 60 kg participant therefore took 200 mg/day",
+    "tur": "doz_hesabi"
+   }
+  ],
+  "hata": [],
+  "tuzak": [
+   "Many guidelines treat a reduction of 5.0 mmHg",
+   "a trial with 1,000 participants",
+   "Participant A in the safety table"
+  ],
+  "not": "Ham veri tablosunda ad + doğum tarihi sızmış ve 3 mg/kg/gün × 60 kg yanlış (doğrusu 180); istatistik hesapları doğru."
+ },
+ {
+  "dosya": "s-en07-congress-of-vienna.md",
+  "dil": "en",
+  "alan": "tarih",
+  "karar": "tanımlı kapsamda uygun",
+  "engel": [],
+  "hata": [],
+  "tuzak": [
+   "58-year-old Louis XVIII",
+   "The 60-year-old Talleyrand",
+   "45-year-old Duke of Wellington"
+  ],
+  "not": "Tarihî kişilerin ad + yaş ifadeleri (58-year-old Louis XVIII) hasta kimliği sayılmamalı."
+ },
+ {
+  "dosya": "s-en08-elasticity-multiplier.md",
+  "dil": "en",
+  "alan": "iktisat",
+  "karar": "tanımlı kapsamda uygun",
+  "engel": [],
+  "hata": [],
+  "tuzak": [
+   "nominal rate of 5.0% and inflation of 2.0%",
+   "the 52-year-old economist",
+   "the real rate is about 3.0%"
+  ],
+  "not": "İktisat notunda yüzde ondalıkları ve Keynes'in yaşı ENGEL üretmemeli."
+ },
+ {
+  "dosya": "s-en09-library-notice.md",
+  "dil": "en",
+  "alan": "genel",
+  "karar": "karar için denetim eksik",
+  "engel": [],
+  "hata": [],
+  "tuzak": [
+   "kept at 21.0 °C"
+  ],
+  "not": "Kısa genel duyuruda denetim satırı yok; hata yok ama karar 'denetim eksik' olmalı."
+ },
+ {
+  "dosya": "s-en10-french-market-words.md",
+  "dil": "en",
+  "alan": "dil",
+  "karar": "yayına engel var",
+  "engel": [],
+  "hata": [
+   {
+    "satir_metni": "la bоulangerie | bakery",
+    "tur": "kiril"
+   },
+   {
+    "satir_metni": "le pаin | bread",
+    "tur": "kiril"
+   }
+  ],
+  "tuzak": [
+   "Madame Roche, 58 ans",
+   "baguette costs 1,20 €"
+  ],
+  "not": "Fransızca kelime listesinde iki Latin sözcüğün içinde Kiril 'о' ve 'а'; diyalogdaki 'Madame Roche, 58 ans' hasta değildir."
+ },
+ {
+  "dosya": "s-en11-complexity-hash-maps.md",
+  "dil": "en",
+  "alan": "bilgisayar",
+  "karar": "yayına engel var",
+  "engel": [],
+  "hata": [
+   {
+    "satir_metni": "TODO: add the amortized-analysis proof",
+    "tur": "todo"
+   },
+   {
+    "satir_metni": "Merge sort | ???",
+    "tur": "todo"
+   }
+  ],
+  "tuzak": [
+   "MAX_LOAD = .75",
+   "timeout=5.0"
+  ],
+  "not": "Düzyazıda TODO ve tablo hücresinde ??? taslak işareti; koddaki .75 ve 5.0 doz değildir."
+ }
+]

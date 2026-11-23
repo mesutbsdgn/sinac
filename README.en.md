@@ -6,7 +6,7 @@
 
 ### Tests your study notes: are they correct, do they teach, are they fit to publish?
 
-![License](https://img.shields.io/badge/license-usage%20rights-lightgrey) ![Format](https://img.shields.io/badge/format-Claude%20skill-8A63D2) ![Model](https://img.shields.io/badge/model-independent-brightgreen) ![Language](https://img.shields.io/badge/language-T%C3%BCrk%C3%A7e%20%2B%20English-e30a17) ![Tests](https://img.shields.io/badge/tests-190%20tests%20%2B%20211%20counterexamples-brightgreen) ![test](https://github.com/mesutbsdgn/sinac/actions/workflows/test.yml/badge.svg)
+![License](https://img.shields.io/badge/license-usage%20rights-lightgrey) ![Format](https://img.shields.io/badge/format-Claude%20skill-8A63D2) ![Model](https://img.shields.io/badge/model-independent-brightgreen) ![Language](https://img.shields.io/badge/language-T%C3%BCrk%C3%A7e%20%2B%20English-e30a17) ![Tests](https://img.shields.io/badge/tests-261%20tests%20%2B%20211%20counterexamples-brightgreen) ![test](https://github.com/mesutbsdgn/sinac/actions/workflows/test.yml/badge.svg)
 
 </div>
 
@@ -276,6 +276,30 @@ went from 340 to 357, and "general" from 19 to 5. No document gained a blocker, 
 fictional character's date of birth) is gone. Speed: a 1.9 MB real document went from about 4.4 s to about 3.2 s; a short
 note takes about 0.2 s.
 
+### v2.1.1 test and fix (23 November 2026)
+
+After release, v2.1.0 was tested on newly written documents and did poorly: in 22 documents written by a fresh agent,
+11 of the 22 expected serious findings were missed and 5 documents got a false ENGEL (blocker). v2.1.1 fixes these.
+The fix took four rounds; after each round a set **never seen before** was measured. The "first pass" column is the
+result on that set before the code was adjusted to it, and is the real measure of generalisation.
+
+| Set (22 docs each, 11 tr + 11 en) | Written by | Expected ENGEL/HATA | v2.1.0: missed / false ENGEL (docs) | First pass during the fix | v2.1.1 final |
+|---|---|---|---|---|---|
+| `tests/sinama-sonnet` (main set of the test report) | Sonnet 5.5 | 22 | 11 / 5 (5) | development set | 0 / 0 |
+| `tests/sinama-claude` (15 counterexample docs) | Claude | 11 | 4 / 4 (3) | development set | 0 / 0 |
+| `tests/sinama-neon1` | Gemini 4 Neon | 27 | 9 / 0 | after round 1: 2 / 2 (2) | 0 / 0 |
+| `tests/sinama-sonnet2` | Sonnet 5.5 | 21 | 10 / 3 (3) | after round 2: 5 / 5 (4) | 0 / 0 |
+| `tests/sinama-neon2` | Gemini 4 Neon | 25 | 9 / 2 (2) | after round 3: 1 / 2 (1) | 0 / 0 |
+
+Honesty notes: the zeros in the last column are not evidence of generalisation, because every set was used to find gaps
+after its first pass and is now a regression set. On the last unseen set the first pass missed 1 of 25 expected findings
+and gave a false ENGEL in 1 document; expect a similar error rate on a new document. In round 2 the new dose rule
+flagged correct calculations (fixed in rounds 3 and 4). The test was run by the session that develops Sınaç, so it is
+not fully independent; the documents were written by agents that never saw the code, and expectations were locked with
+SHA-256 before the script ran. French corpus (368 real notes): 0 documents with more ENGELs, 0 changed verdicts.
+Speed: quadratic growth on a single long line is gone (56 KB line 20 s → 0.65 s); four synthetic 370 KB – 0.9 MB stress
+inputs still take 2.4–5.6 s; the real 1.9 MB note takes about 3.2 s (unchanged).
+
 ## Usage
 
 ```bash
@@ -305,7 +329,7 @@ Python 3.9+, standard library only, no network. For PDF measurement, optional po
 
 ## How it was tested
 
-**Tests:** 190 tests (including 211 counterexamples and 3 gold sets), all passing.
+**Tests:** 261 tests (including 211 counterexamples and 8 gold/test sets, 178 documents), all passing.
 
 | File | Count | Scope |
 |---|---|---|
@@ -313,7 +337,8 @@ Python 3.9+, standard library only, no network. For PDF measurement, optional po
 | `test_ozellikler.py` | 38 tests | Real generated PDFs: font size, vector drawing, blank page, PDF content; `--duzelt` (fix), encoding, silencing, masking, ReDoS |
 | `test_f3.py` | 89 tests | Unit language guess, language-aware matching, lexicon, field groups, new rules |
 | `test_karsi_ornekler.py` | 1 test, 211 counterexamples | Regression set |
-| `test_altin.py` | 1 test, 3 gold sets, 75 documents | Verdict, missed BLOCKER and false BLOCKER are locked |
+| `test_sinama.py` | 71 tests | v2.1.1: unit doses, dose arithmetic in prose and tables, lab pairing, patient identity, teaching examples, speed |
+| `test_altin.py` | 1 test, 8 sets, 178 documents | Verdict, missed BLOCKER and false BLOCKER are locked |
 
 GitHub Actions runs these tests on Python 3.10 and 3.13 (the Ubuntu 26.04 image has no 3.9); it was also tested locally on
 Python 3.9.6.
@@ -374,6 +399,7 @@ explanation, then Sınaç measures.
 
 | Version | Date | Change |
 |---|---|---|
+| v2.1.1 | 23 Nov 2026 | Fixes from the test report: unit/kg doses, dose arithmetic in prose and tables, lab-conversion pairing, patient-identity variants, false ENGELs on historical figures and teaching examples, speed. See "v2.1.1 test and fix" |
 | v2.1.0 | 22 Nov 2026 | Language-aware field detection (Turkish and English), field groups, new health rules. Changes below |
 | v2.0.1 | 22 Nov 2026 | CI: Python 3.10 and 3.13 (the GitHub Ubuntu 26.04 image has no 3.9); code unchanged |
 | v2.0.0 | 22 Nov 2026 | After the GPT-6.1 Sol, Qwen4 Max, Fable 5.2, Gemini 4 Argon (two rounds) and GPT-6.2 Astra (two rounds) reviews. See the Turkish README for the change list |

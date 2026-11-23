@@ -1,0 +1,236 @@
+[
+ {
+  "dosya": "k-tr01-latex-doz-hesabi.md",
+  "dil": "tr",
+  "alan": "tip",
+  "karar": "yayına engel var",
+  "engel": [
+   {
+    "satir_metni": "20\\,\\text{kg} \\times 15",
+    "tur": "doz_hesabi"
+   }
+  ],
+  "hata": [],
+  "tuzak": [
+   "12\\,\\text{kg} \\times 10"
+  ],
+  "not": "LaTeX içinde yanlış çarpım (20×15=300, 450 yazılmış)"
+ },
+ {
+  "dosya": "k-tr02-satira-tasan-doz.md",
+  "dil": "tr",
+  "alan": "tip",
+  "karar": "yayına engel var",
+  "engel": [
+   {
+    "satir_metni": "günde iki kez 600 mg",
+    "tur": "doz_hesabi"
+   }
+  ],
+  "hata": [],
+  "tuzak": [],
+  "not": "kilo ve mg/kg bir satırda, sonuç sonraki satırda (18×25=450, 600 yazılmış)"
+ },
+ {
+  "dosya": "k-tr03-tablo-kalin-karisik-satir.md",
+  "dil": "tr",
+  "alan": "acil",
+  "karar": "yayına engel var",
+  "engel": [
+   {
+    "satir_metni": "en az **,5 mg** değil",
+    "tur": "doz_yazimi"
+   },
+   {
+    "satir_metni": "12 kg çocuk için 60 mg",
+    "tur": "doz_hesabi"
+   }
+  ],
+  "hata": [],
+  "tuzak": [
+   "15 kg çocuk için 0,2 mg/kg ile 3 mg"
+  ],
+  "not": "tabloda kalın ,5 mg; İngilizce-Türkçe karışık satırda 0.5×12=6 yerine 60"
+ },
+ {
+  "dosya": "k-tr04-binlik-nokta.md",
+  "dil": "tr",
+  "alan": "eczacilik",
+  "karar": "tanımlı kapsamda uygun",
+  "engel": [],
+  "hata": [],
+  "tuzak": [
+   "500–1.000 mg",
+   "4.000 mg (4 g)",
+   "10.000 mg",
+   "7.500 mg"
+  ],
+  "not": "Türkçe binlik nokta doz yazımı hatası sayılmamalı"
+ },
+ {
+  "dosya": "k-tr05-mcg-mg-donusum.md",
+  "dil": "tr",
+  "alan": "tip",
+  "karar": "yayına engel var",
+  "engel": [
+   {
+    "satir_metni": "350 mcg/dk = 3,5 mg/dk",
+    "tur": "doz_hesabi"
+   }
+  ],
+  "hata": [],
+  "tuzak": [
+   "70 × 5 = 350 mcg/dk"
+  ],
+  "not": "mcg→mg 10 kat hata; ilan edilen kapsamın sınırında (tartışmalı olabilir)"
+ },
+ {
+  "dosya": "k-tr06-genel-duyuru.md",
+  "dil": "tr",
+  "alan": "genel",
+  "karar": "tanımlı kapsamda uygun",
+  "engel": [],
+  "hata": [],
+  "tuzak": [],
+  "not": "gündelik metin genel kalmalı"
+ },
+ {
+  "dosya": "k-tr07-ogretici-yanlis-ornek.md",
+  "dil": "tr",
+  "alan": "hemsirelik",
+  "karar": "tanımlı kapsamda uygun",
+  "engel": [],
+  "hata": [],
+  "tuzak": [
+   "dozu 5,0 mg biçiminde yazmak",
+   "| ,5 mg | ✗"
+  ],
+  "not": "öğretici yanlış örnek varyantları ENGEL olmamalı"
+ },
+ {
+  "dosya": "k-tr08-kimlik-varyantlari.md",
+  "dil": "tr",
+  "alan": "hemsirelik",
+  "karar": "yayına engel var",
+  "engel": [
+   {
+    "satir_metni": "Mehmet Karaca, 67 y, E.",
+    "tur": "hasta_kimligi"
+   },
+   {
+    "satir_metni": "Ad Soyad: Zeynep Aksoy",
+    "tur": "hasta_kimligi"
+   }
+  ],
+  "hata": [],
+  "tuzak": [],
+  "not": "ad-soyad + yaş kısa biçim ve alan etiketli biçim"
+ },
+ {
+  "dosya": "k-en01-prose-dose.md",
+  "dil": "en",
+  "alan": "tip",
+  "karar": "yayına engel var",
+  "engel": [
+   {
+    "satir_metni": "each dose is therefore 420 mg",
+    "tur": "doz_hesabi"
+   }
+  ],
+  "hata": [],
+  "tuzak": [
+   "Each dose is 225 mg"
+  ],
+  "not": "24×10=240, 420 yazılmış"
+ },
+ {
+  "dosya": "k-en02-heparin-units.md",
+  "dil": "en",
+  "alan": "hemsirelik",
+  "karar": "yayına engel var",
+  "engel": [
+   {
+    "satir_metni": "1,620 units/h",
+    "tur": "doz_hesabi"
+   }
+  ],
+  "hata": [],
+  "tuzak": [
+   "25,000 units in 250 mL"
+  ],
+  "not": "ünite/kg/saat: 80×18=1.440, 1.620 yazılmış"
+ },
+ {
+  "dosya": "k-en03-teaching-and-real.md",
+  "dil": "en",
+  "alan": "eczacilik",
+  "karar": "yayına engel var",
+  "engel": [
+   {
+    "satir_metni": "Give morphine 2.0 mg IV now",
+    "tur": "doz_yazimi"
+   }
+  ],
+  "hata": [],
+  "tuzak": [
+   "5.0 mg can be misread",
+   "| .5 mg | ✗"
+  ],
+  "not": "öğretici satırlar geçmeli, gerçek order yakalanmalı"
+ },
+ {
+  "dosya": "k-en04-biography.md",
+  "dil": "en",
+  "alan": "tarih",
+  "karar": "tanımlı kapsamda uygun",
+  "engel": [],
+  "hata": [],
+  "tuzak": [
+   "aged 66, of aplastic anaemia",
+   "a 34-year-old nurse"
+  ],
+  "not": "tarihî kişi + yaş + hastalık hasta kimliği değildir"
+ },
+ {
+  "dosya": "k-en05-lab-parenthetical.md",
+  "dil": "en",
+  "alan": "tip",
+  "karar": "yayına engel var",
+  "engel": [
+   {
+    "satir_metni": "300 mg/dL (7.8 mmol/L)",
+    "tur": "lab_donusum"
+   }
+  ],
+  "hata": [],
+  "tuzak": [
+   "160 mg/dL (4.1 mmol/L)",
+   "or about 133 µmol/L"
+  ],
+  "not": "parantezli dönüşüm: 300/88,5=3,4"
+ },
+ {
+  "dosya": "k-en06-physics-sigfig.md",
+  "dil": "en",
+  "alan": "fizik",
+  "karar": "tanımlı kapsamda uygun",
+  "engel": [],
+  "hata": [],
+  "tuzak": [
+   "5.0 N",
+   "0.50 g of salt",
+   ".5 m"
+  ],
+  "not": "fizik ondalıkları doz değildir"
+ },
+ {
+  "dosya": "k-en07-general-memo.md",
+  "dil": "en",
+  "alan": "genel",
+  "karar": "tanımlı kapsamda uygun",
+  "engel": [],
+  "hata": [],
+  "tuzak": [],
+  "not": "gündelik İngilizce metin genel kalmalı"
+ }
+]

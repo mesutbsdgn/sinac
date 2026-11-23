@@ -24,9 +24,11 @@ PDF ölçümü için poppler `pdftotext`, `pdfimages` (boş sayfa için `pdftopp
 """
 from __future__ import annotations
 
+import bisect
 import collections
 import functools
 import html
+import itertools
 import json
 import re
 import shutil
@@ -55,6 +57,7 @@ BOS_SAYFA = 0.06                       # metin alt sınırı bundan azsa: metins
 MUREKKEP_ESIK = 0.002                  # düşük çözünürlüklü çizimde boyalı piksel oranı bundan azsa: gerçekten boş
 YARIM_SAYFA, YARIM_ORAN = 0.40, 0.20   # metin alt sınırı %40'tan az olan sayfaların oranı %20'yi aşarsa (son sayfa hariç)
 SAYFA_UYARI = 16                       # sayfa_tavan yoksa: 16+ sayfa gerekçe ister
+ALFABE_SATIR_TAVAN = 10                # karışık alfabe: en çok bu kadar satır ayrı bildirilir, fazlası '+N satır daha'
 TERIM_ESIK = 12                        # dil: dil bilgisi terimi sayısı
 HEDEF_DISI_ESIK = 8                    # dil: hedef dışı açıklama dili sözcüğü
 OKUNUS_UZUN, OKUNUS_UZUN_ORAN = 16, 0.15
@@ -71,6 +74,8 @@ GORSEL_SAYFA_ORAN = 0.5
 DUZELT_PUNTO_ALT, DUZELT_PUNTO = 8.5, "9"
 KILAVUZ_YAS = 5                        # yerel tarama politikası (NHMRC: geleneksel kılavuz ~5 yılda gözden geçirilir)
 KILAVUZ_YAS_YILLIK = 1                 # her yıl güncellenen raporlar (GINA, GOLD, ADA Standards): bir sürüm geride
+TABLO_SUTUN_TAVAN = 64                 # tablo satırında bakılan en çok sütun (geniş tabloda doğrusal süre; aşılırsa tablo_genis notu düşülür)
+ESLESME_TAVAN = 200                    # bir satırda/cümlede bir kural için bakılan en çok eşleşme (çok uzun satırda doğrusal süre; aşılırsa not düşülür)
 ARITMETIK_TOLERANS = 0.03              # doz/dönüşüm hesabında kabul edilen göreli fark
 
 SAGLIK_ALANLAR = {"tip", "dis", "hemsirelik", "eczacilik", "veteriner", "beslenme", "fizyoterapi", "acil", "psikoloji"}
@@ -116,6 +121,7 @@ BENZER_YUNAN = {"ο": "o", "α": "a", "ε": "e", "ι": "i", "ν": "v", "ρ": "p"
 LATIN = re.compile(r"[A-Za-zÀ-ɏ]")
 SOZCUK = re.compile(r"[^\W\d_]+(?:['’][^\W\d_]+)?")
 MIKRO_BIRIM = re.compile(r"^[μµ][a-zA-Z]{1,3}$")
+YER_TUTUCU_JETON = re.compile(r"(?<![\w?+\-−×*/=<>])(?<![+\-−×*/=<>]\s)\?{3,}(?![\w?])(?!\s*[+\-−×*/=<>])")
 YER_TUTUCU = re.compile(r"^\s*(?:[-*]\s*)?(?:TODO|FIXME|XXX)\b|\b(?:TODO|FIXME)\s*[:：]|^\s*\?{3,}\s*$|\[\s*\?{3,}\s*\]", re.M)
 SINAMA_GUCLU = re.compile(r"kendini\s+(?:dene|sına|test)|cevap\s+anahtar|boşluk\s+doldur|bakmadan|kapat(?:ıp|arak)"
                           r"|dilsiz\s+harita|vaka\s+sorusu|\bprova", re.I)
@@ -257,9 +263,17 @@ SI_MAKRO = [("\\micro\\gram", "mcg"), ("\\milli\\gram", "mg"), ("\\kilo\\gram", 
             ("\\milli\\liter", "mL"), ("\\micro\\litre", "µL"), ("\\gram", "g"), ("\\litre", "L"), ("\\liter", "L")]
 
 
+# Bu işaretlerden hiçbiri yoksa satır_hazirla'nın biçim temizliği satırı değiştirmez (yalnız boşluk sıkıştırma kalır)
+SATIR_OZEL = re.compile(r"[\\$<>\[\]_*|&~{}`\u00a0\u2009\u202f\u2212]|https?:|^\s{0,3}>")
+
+
 def satir_hazirla(g: str) -> str:
     """Tek satırın görünen metni: NFKC, HTML varlıkları, bağlantı, etiket, LaTeX, Markdown biçim işaretleri."""
     g = unicodedata.normalize("NFKC", html.unescape(g)).translate(ALT_SIMGE)
+    if not SATIR_OZEL.search(g):                   # düz düzyazı satırı: biçim temizleme desenlerinin hiçbiri uygulanamaz (hızlı yol)
+        if re.match(r"^\s*(?:\|\s*)?:?-{3,}", g):
+            return ""
+        return re.sub(r"[ \t]+", " ", g).strip()
     g = g.replace("\u00a0", " ").replace("\u2009", " ").replace("\u202f", " ").replace("\u2212", "-")
     g = re.sub(r"!\[([^\]\n]{0,300})\]\([^)\n]{0,500}\)", r"\1", g)
     g = re.sub(r"\[([^\]\n]{0,300})\]\([^)\n]{0,500}\)", r"\1", g)
@@ -279,7 +293,7 @@ def satir_hazirla(g: str) -> str:
     g = re.sub(r"_{3,}", " [BOŞLUK] ", g)
     g = g.replace("**", "").replace("__", "")
     g = re.sub(r"(?<![\w*])[*_](?=\S)([^*_\n]{1,300}?)(?<=\S)[*_](?![\w*])", r"\1", g)
-    if re.match(r"^\s*\|?\s*:?-{3,}", g):
+    if re.match(r"^\s*(?:\|\s*)?:?-{3,}", g):
         return ""
     g = g.replace("|", " ")
     return re.sub(r"[ \t]+", " ", g).strip()
@@ -331,6 +345,21 @@ def _borusuz_tablo(satirlar: list[dict]) -> list[dict]:
     return yeni
 
 
+@functools.lru_cache(maxsize=8192)
+def _hucre_hazirla(h: str) -> str:
+    return satir_hazirla(h)
+
+
+def tablo_ayristir(satirlar: list[dict]) -> list[dict]:
+    """Kod dışı Markdown tablo blokları, hücreleri bir kez hazırlanmış olarak: [{blok, hucreler, ayirici}] (tüm tablo kuralları paylaşır)."""
+    cikti = []
+    for blok in _tablo_bloklari(satirlar):
+        hucreler = [[_hucre_hazirla(h) for h in s["ham"].strip().strip("|").split("|", TABLO_SUTUN_TAVAN)[:TABLO_SUTUN_TAVAN]] for s in blok]
+        ayirici = [j for j, h in enumerate(hucreler) if all(re.fullmatch(r":?-{3,}:?|", x.strip()) for x in h)]
+        cikti.append({"blok": blok, "hucreler": hucreler, "ayirici": ayirici})
+    return cikti
+
+
 def tablolar(satirlar: list[dict]) -> list[dict]:
     """Markdown tablolarını 'başlık: değer' satırlarına çevirir (anahtar–değer tablosu ve başlıklı sütun).
     Başlığında birim olan sütunun hücresine birim eklenir: '| Doz (mg) |' + '| 5,0 |' → 'Doz (mg): 5,0 mg'."""
@@ -344,7 +373,7 @@ def tablolar(satirlar: list[dict]) -> list[dict]:
         while i < len(satirlar) and satirlar[i]["ham"].lstrip().startswith("|"):
             blok.append(satirlar[i])
             i += 1
-        hucreler = [[satir_hazirla(h) for h in s["ham"].strip().strip("|").split("|")] for s in blok]
+        hucreler = [[_hucre_hazirla(h) for h in s["ham"].strip().strip("|").split("|", TABLO_SUTUN_TAVAN)[:TABLO_SUTUN_TAVAN]] for s in blok]
         ayirici = [j for j, h in enumerate(hucreler) if all(re.fullmatch(r":?-{3,}:?|", x.strip()) for x in h)]
         baslik = hucreler[0] if ayirici and ayirici[0] == 1 else None
         for j, (s, h) in enumerate(zip(blok, hucreler)):
@@ -361,6 +390,22 @@ def tablolar(satirlar: list[dict]) -> list[dict]:
                         satir = f"{h[0]} {baslik[k]}: {deger}{ek}"
                         cikti.append({"no": s["no"], "tam": satir, "gor": satir, "kod": False})
     return cikti
+
+
+def tablo_ogretici_haritasi(tbl: list[dict]) -> dict:
+    """{satır no: bayrak}: tabloda satırda ✗ ✘ ❌ / unsafe / wrong / yanlış / hatalı / avoid varsa ya da sütun başlığı Yanlış/Wrong/Unsafe/Avoid ise
+    o satırdaki hücreler yanlış yazım ÖĞRETİYOR sayılır (ham satır ve sütun-değer satırı için)."""
+    harita = {}
+    for tb in tbl:
+        blok, hucreler, ayirici = tb["blok"], tb["hucreler"], tb["ayirici"]
+        baslik = hucreler[0] if ayirici and ayirici[0] == 1 else []
+        baslik_bayrak = any(OGR_TABLO_BASLIK.search(h) for h in baslik)
+        for j, (s, h) in enumerate(zip(blok, hucreler)):
+            if j in ayirici or (baslik and j == 0):
+                continue
+            if baslik_bayrak or any(OGR_TABLO_HUCRE.search(x) for x in h):
+                harita[s["no"]] = True
+    return harita
 
 
 def hazirla(govde: str) -> tuple[str, str]:
@@ -420,6 +465,31 @@ def sayi(s: str) -> float:
 
 
 # ── PDF ölçümü ──
+# Oranı ölçülmüş yazı tipi aileleri (kutu yüksekliği / punto): standart 14'ün üç ailesi. Belgedeki yazı tiplerinin hepsi bunlardan biriyse
+# punto tahmini yalnız o ailelerin oran aralığından yapılır (daha dar); biri bilinmiyorsa genel aralık (KUTU_ORAN_ALT–UST) kullanılır.
+YAZI_ORANLARI = [(re.compile(r"^(?:[A-Z]{6}\+)?Helvetica", re.I), 0.925), (re.compile(r"^(?:[A-Z]{6}\+)?Times", re.I), 0.900),
+                 (re.compile(r"^(?:[A-Z]{6}\+)?Courier", re.I), 0.786)]
+ORAN_PAYI = 0.01        # kutu iki ondalığa yuvarlanır; ±%1 pay
+
+
+def pdf_yazi_orani(pdf: Path):
+    """(alt, üst) kutu/punto oranı ya da None (pdffonts yok, yazı tipi yok ya da bilinmeyen aile var)."""
+    if not shutil.which("pdffonts"):
+        return None
+    r = subprocess.run(["pdffonts", str(pdf)], capture_output=True, text=True)
+    if r.returncode != 0:
+        return None
+    adlar = [satir.split()[0] for satir in r.stdout.splitlines()[2:] if satir.split()]
+    if not adlar:
+        return None
+    oranlar = []
+    for ad in adlar:
+        bulunan = [o_ for desen, o_ in YAZI_ORANLARI if desen.match(ad)]
+        if not bulunan:
+            return None
+        oranlar.append(bulunan[0])
+    return min(oranlar), max(oranlar)
+
 def _murekkep(pdf: Path, sayfa: int) -> float | None:
     if not shutil.which("pdftoppm"):
         return None
@@ -462,7 +532,7 @@ def pdf_olc(pdf: Path) -> dict | None:
             murekkep[i] = _murekkep(pdf, i)
     kutu = round(statistics.median(yukseklik), 2) if yukseklik else 0.0
     return {"sayfa": len(sayfalar), "kutu": kutu, "doluluk": doluluk, "kelime": kelime, "murekkep": murekkep,
-            "metin_var": any(kelime)}
+            "metin_var": any(kelime), "oran": pdf_yazi_orani(pdf)}
 
 
 # ── Alan ve biçim tespiti ──
@@ -740,6 +810,12 @@ def _say_kisaltma(dz: _Dizin, s: str) -> int:
 
 
 # (profil anahtarı, dizin, tür: S tek sözcük ağırlık 1 · O öbek ağırlık 2 · K kısaltma ağırlık 1, sayım işlevi)
+# Genel klinik laboratuvar sözcükleri beslenmeyi ayırt etmez (tıp notu beslenme sanılıyordu); diyet/porsiyon/kalori/besin sözcükleri tam ağırlıkta kalır
+GENEL_LAB_SOZCUK = {"glukoz", "kolesterol", "trigliserit", "lipid", "glikoz", "triglyceride", "cholesterol", "glucose", "fasting",
+                    "blood glucose response", "kilo"}     # 'kilo': dozun kiloya göre yazıldığı her notta geçer
+GENEL_LAB_AGIRLIK = 0.25
+DOZ_YOGUNLUK = re.compile(r"(?<![\d.,])\d[\d.,]*\s*(?:mg|mcg|µg|μg|ünite|units?|IU|İÜ)(?![A-Za-z])|\bmg\s*/\s*kg\b")
+FR_EN_AZ_KELIME, FR_ORAN = 15, 0.25
 SOZLUK_LISTELERI = (("sozcukler", "tr", "S", _say_tr), ("obekler", "tr", "O", _say_tr),
                     ("sozcukler_en", "en", "S", _say_en), ("obekler_en", "en", "O", _say_en),
                     ("kisaltmalar", "tum", "K", _say_kisaltma),
@@ -758,6 +834,7 @@ def alan_puanlari(gor: str, profil: dict, birimler: list[dict] | None = None) ->
     diz = _diziler(birimler)
     agirlik = {a: _agirliklar(profil, a) for a, _, _, _ in SOZLUK_LISTELERI}
     puanlar, kanit = {}, {}
+    genel_lab_katki = 0.0
     for ad in alan_adlari(profil):
         p = profil[ad]
         if not any(p.get(a) for a, _, _, _ in SOZLUK_LISTELERI):
@@ -778,14 +855,39 @@ def alan_puanlari(gor: str, profil: dict, birimler: list[dict] | None = None) ->
                     e[0] += n
         toplam = 0.0
         for (tur, s), (n, w) in etiket.items():
-            toplam += min(n, ALAN_SOZCUK_TAVAN) * w * (2 if tur == "O" else 1)
+            katki = min(n, ALAN_SOZCUK_TAVAN) * w * (2 if tur == "O" else 1)
+            if ad == "beslenme" and s in GENEL_LAB_SOZCUK:
+                genel_lab_katki += katki * (1 - GENEL_LAB_AGIRLIK)   # glukoz/kolesterol/lipid genel klinik lab sözcüğüdür: beslenmeyi ayırt etmez
+                katki *= GENEL_LAB_AGIRLIK
+            toplam += katki
         puanlar[ad], kanit[ad] = round(toplam, 2), [s for _, s in etiket]
+    if genel_lab_katki and "tip" in puanlar and genel_lab_katki >= 1:
+        puanlar["tip"] = round(puanlar["tip"] + 0.5 * genel_lab_katki, 2)    # ... ama sağlık grubuna işarettir: tıp notuna yarısı yazılır
+        kanit.setdefault("tip", []).append("genel klinik lab sözcükleri")
     okunus = len(OKUNUS.findall(gor2))
     kt = tr_kucuk(gor2)
     _, sik = dil_tahmin(kt)
     puanlar["dil"] = round(puanlar.get("dil", 0) + 3 * okunus + (6 if re.search(r"\bokunuş", kt) else 0)
                            + (min(sik, 30) // 3 if okunus else 0), 2)   # sözlük puanı + okunuş işareti
     kanit["dil"] = kanit.get("dil", []) + ([f"{okunus} okunuş /…/"] if okunus else [])
+    # (S9) Doz/reçete yazımı dersi: ilaç adı + doz birimi yoğunluğu sağlık işaretidir (en yüksek puanlı sağlık alanına eklenir)
+    gorunen = gor[:60000]                           # çok büyük belgede doğrusal süre: ilk 60 KB yeter (yoğunluk ölçüsü)
+    doz_n, ilac_n = len(DOZ_YOGUNLUK.findall(gorunen)), len(ILAC_ADI.findall(gorunen))
+    if (doz_n >= 3 and (ilac_n >= 1 or len(DOZ_BAGLAM.findall(gorunen)) >= 2)) or doz_n >= 6:
+        saglik_ = [a for a in puanlar if a in SAGLIK_ALANLAR]
+        if saglik_:
+            hedef = max(saglik_, key=lambda a: puanlar[a])
+            puanlar[hedef] = round(puanlar[hedef] + min(doz_n, 10) * 0.5 + min(ilac_n, 5), 2)
+            kanit.setdefault(hedef, []).append("doz yoğunluğu")
+    # (S9) Birimlerin kayda değer kısmı (≥ %25) hedef dil (Fransızca) ise ya da belge Fransızca sözcük listesi ise: dil
+    if birimler:
+        toplam_k = sum(b["kelime"] for b in birimler if b["dil"] in BASKIN_DILLER)
+        fr_k = sum(b["kelime"] for b in birimler if b["dil"] == "fr")
+        if toplam_k and fr_k >= FR_EN_AZ_KELIME and fr_k / toplam_k >= FR_ORAN:
+            digerler = [v for a, v in puanlar.items() if a != "dil"]
+            if puanlar["dil"] <= max(digerler, default=0):
+                puanlar["dil"] = round(max(digerler, default=0) + 1, 2)
+                kanit["dil"] = kanit.get("dil", []) + [f"hedef dil birimleri %{round(100 * fr_k / toplam_k)}"]
     return puanlar, kanit
 
 
@@ -813,8 +915,10 @@ def alan_tespit(meta: dict, gor: str, profil: dict, alan: str | None = None, bir
     aile_kok = ust or en
     altlar = [(a, puanlar.get(a, 0)) for a in alan_adlari(profil) if profil[a].get("ust") == aile_kok]
     if altlar and en == aile_kok:
-        alt, pa = max(altlar, key=lambda x: x[1])
-        if pa >= ALT_ALAN_EN_AZ and pa >= ALT_ALAN_ORAN * p1:
+        # Beslenme alt alanı yalnız genel klinik lab sözcükleriyle (glukoz, kolesterol, lipid…) doğmaz: diyet/porsiyon/kalori/besin kanıtı ister
+        altlar_ = [(a, p_) for a, p_ in altlar if not (a == "beslenme" and all(k in GENEL_LAB_SOZCUK for k in kanit.get(a, [])))]
+        alt, pa = max(altlar_, key=lambda x: x[1]) if altlar_ else (None, 0)
+        if alt and pa >= ALT_ALAN_EN_AZ and pa >= ALT_ALAN_ORAN * p1:
             en, p1 = alt, max(pa, ALAN_EN_AZ)
     aile = {aile_kok} | {a for a, _ in altlar}
     rakipler = [(a, p) for a, p in sira if a not in aile and a != en]
@@ -928,7 +1032,7 @@ DUZEY_BAGLAM = re.compile(r"düzey|seviye|çukur|pik|level|ölçül|sonuç|değe
 BESIN_BAGLAM = re.compile(r"lif|protein|karbonhidrat|yağ|şeker|tuz|porsiyon|besin|gıda|fiber|sodyum alımı|kcal|enerji"
                           r"|vitamin|mineral|folat|bulunur|içerir|içeriği", re.I)
 SIVI_OLCUM = re.compile(r"idrar|çıkış|diürez|drenaj|balans|kayb|urine output", re.I)
-BINLIK = r"\d{1,3}(?:\.\d{3})+(?![.,]?\d)"
+BINLIK = r"[1-9]\d{0,2}(?:\.\d{3})+(?![.,]?\d)"        # 0.050 binlik değil (baştaki sıfır)
 ARALIK_EK = r"(?:\s*(?:[-–—/]|,\s|\b(?:ve|veya|ya da|ile|or|and|to)\b)\s*\d+(?:[.,]\d+)?)*\s*"
 SONDAKI_SIFIR = re.compile(r"(?<![\d.,])(?!" + BINLIK + r")\d+[.,]0+(?!\d)" + ARALIK_EK + ILAC_BIRIM + LAB_PAYDA)
 ARALIK_SIFIR = re.compile(r"(?<![\d.,])\d+[.,]0+\s*(?:veya|ya da|ile|or)\s*\d+(?:[.,]\d+)?\s*" + ILAC_BIRIM + LAB_PAYDA)
@@ -960,8 +1064,15 @@ OGR_KESIN = re.compile(
     r"|\bsondaki\s+sıfır\w*|\btrailing\s+zero\w*"
     r"|\b(?:do\s*not|don['’]t|never|should\s+not\s+be|must\s+not\s+be)\s+(?:be\s+)?(?:write|written|use|used)\b"
     r"|\b(?:yazılmaz|yazılmamalı\w*|yazmayın\w*|yazılmasın)\b", re.I)
-OGR_ZAYIF = re.compile(r"\b(?:yanlış|yanlis|hatalı|wrong|incorrect|avoid)\b(?!\s*değil)", re.I)
-OGR_YAZIM_IZI = re.compile(r"trailing|\bzeros?\b|sıfır|\bwrit(?:e|ten|ing)\b|notation|\bformat\b|yazım|yazılış", re.I)
+OGR_ZAYIF = re.compile(r"\b(?:yanlış|yanlis|hatalı|wrong|incorrect|avoid|hata|hatası|errors?|mistakes?)\b(?!\s*değil)", re.I)
+OGR_YAZIM_IZI = re.compile(r"trailing|\bzeros?\b|sıfır|\bwrit(?:e|ten|ing)\b|notation|\bformat\b|yazım|yazılış|yazmak|yazma\b|biçim|gösterim|şekilde yaz",
+                           re.I)
+# Aynı satırda sorunlu yazımın düzeltilmiş hâli ve bir olumsuzlama/uyarı sözcüğü ('write 0.75 mg, never .75 mg')
+OGR_UYARI_SOZ = re.compile(r"\b(?:never|always|do\s+not|don['’]t|avoid|must|should|errors?|mistakes?|misread|misinterpret\w*|tenfold|ten-fold|"
+                           r"wrong|incorrect|unsafe|confus\w*|asla|her\s+zaman|kaçın\w*|yazma\w*|yazılmaz|yazılmamalı\w*|yanlış|hata\w*|"
+                           r"karıştır\w*|10\s+kat|on\s+kat)\b", re.I)
+OGR_TABLO_HUCRE = re.compile(r"[✗✘❌]|\b(?:unsafe|wrong|incorrect|avoid|yanlış|yanlis|hatalı|hatali|asla)\b|\bdo\s+not\b|\bdon['’]t\b", re.I)
+OGR_TABLO_BASLIK = re.compile(r"^\W*(?:yanlış|yanlis|hatalı|hatali|wrong|incorrect|unsafe|avoid|bad|kötü|kaçınılacak)\b|[✗✘❌]", re.I)
 OGR_ARA = re.compile(r"ardından|sonra|\bthen\b|\bama\b|\bancak\b|\bbut\b|\bhowever\b", re.I)
 OGR_TIRNAK = re.compile(r'"[^"\n]*"|“[^”\n]*”|«[^»\n]*»|‘[^’\n]*’|(?<![\w])\'[^\'\n]*\'(?!\w)')
 
@@ -984,6 +1095,56 @@ def ogretici_ek(t: str, b: str) -> bool:
         if kesin or tirnakta or OGR_YAZIM_IZI.search(t):
             return True
     return False
+
+
+def ogr_duzeltilmis(cumleler_: list[str], i: int, b: str) -> bool:
+    """b (sorunlu yazım, örn. '.75 mg', '5,0 mg') i. yan cümlede; aynı birimde düzeltilmiş hâli (0,75 mg / 5 mg) aynı ya da komşu yan cümlede
+    geçiyor ve b'nin ya da düzeltilmiş hâlin cümlesinde bir olumsuzlama/uyarı sözcüğü varsa öğreticidir."""
+    sayilar = re.findall(r"[.,]?\d+(?:[.,]\d+)?", b)
+    birim = re.search(r"([A-Za-zµμ]+)\s*$", b)
+    if not sayilar or not birim:
+        return False
+    b1 = sayilar[0]
+    try:
+        v = float(b1.replace(",", "."))
+    except ValueError:
+        return False
+    for j in range(max(0, i - 1), min(len(cumleler_), i + 2)):
+        if re.search(r"\bnot\b|\bdeğil\b|\binstead\b|\byerine\b", cumleler_[i] + " " + cumleler_[j], re.I) and sifir_esdegeri(cumleler_[j], b):
+            return True                                # 'Write 50 mcg, not 0.050 mg': başka birimdeki eşdeğer + olumsuzlama
+        if not (OGR_UYARI_SOZ.search(cumleler_[i]) or OGR_UYARI_SOZ.search(cumleler_[j])):
+            continue
+        for m in re.finditer(r"(?<![\d.,])(\d+(?:[.,]\d+)?)\s*" + re.escape(birim.group(1)) + r"(?![A-Za-z])", cumleler_[j]):
+            if m.group(1) == b1 or m.group(0).strip() == b.strip():
+                continue
+            try:
+                if abs(float(m.group(1).replace(",", ".")) - v) < 1e-9:
+                    return True
+            except ValueError:
+                pass
+    return False
+
+
+def sifir_esdegeri(satir: str, b: str) -> str | None:
+    """b ('0,050 mg') sondaki sıfırlı; aynı satırda aynı miktarın başka birimdeki eşdeğeri ('50 mcg') var mı: o metni döner."""
+    m = re.match(r"(\d+[.,]\d*)\s*(mg|g|mcg|µg|μg)\b", b)
+    if not m:
+        return None
+    try:
+        v = float(m.group(1).replace(",", "."))
+    except ValueError:
+        return None
+    kat = {"g": 1e6, "mg": 1e3, "mcg": 1.0, "µg": 1.0, "μg": 1.0}
+    for q in re.finditer(r"(?<![\d.,])(\d+(?:[.,]\d+)?)\s*(mg|g|mcg|µg|μg)\b", satir):
+        if q.group(2) == m.group(2) or q.group(0) == b:
+            continue
+        try:
+            w = float(q.group(1).replace(",", "."))
+        except ValueError:
+            continue
+        if abs(w * kat[q.group(2)] - v * kat[m.group(2)]) <= 1e-6 * max(1.0, v * kat[m.group(2)]):
+            return q.group(0)
+    return None
 
 
 def ogretici_mi(t: str, b: str) -> bool:
@@ -1051,9 +1212,10 @@ def k_tip_doz_yazimi(c, ekle):
             continue
         satir_ilac = _ilac_satiri(st0["tam"])
         en_satir = satir_dili(c, st0["no"]) == "en"
-        for t in yan_cumleler(st0["tam"]):
-            if en_satir:
-                t = en_binlik_sil(t)          # '1,000 mg' İngilizce satırda 1000 mg: sondaki sıfır/virgül kuralı uygulanmaz
+        yan_liste = yan_cumleler(st0["tam"])
+        if en_satir:
+            yan_liste = [en_binlik_sil(x) for x in yan_liste]   # '1,000 mg' İngilizce satırda 1000 mg: sondaki sıfır/virgül kuralı uygulanmaz
+        for yan_i, t in enumerate(yan_liste):
             if not ONDALIK_IZI.search(t):
                 continue
             st = {"no": st0["no"], "tam": t}
@@ -1071,13 +1233,18 @@ def k_tip_doz_yazimi(c, ekle):
             if ilac and not BESIN_BAGLAM.search(t):
                 bul += [m.group(0) for m in SONDAKI_SIFIR_G.finditer(t)]
             for b in dict.fromkeys(bul):
-                if ogretici_mi(t, b):
+                if ogretici_mi(t, b) or st0.get("ogretici") or ogr_duzeltilmis(yan_liste, yan_i, b):
                     ekle("Doğruluk", "UYARI", f"Yanlış doz yazımı öğretici örnek olarak işaretli ({b})",
                          "Doğrusunun hemen yanında olduğundan emin ol", ornek=b, satir=st["no"])
                 else:
                     ekle("Doğruluk", "ENGEL", f"Doz yazımında sondaki sıfır ya da baştaki sıfırsız ondalık ({b})",
                          "5,0 mg → 5 mg; ,5 mg → 0,5 mg. Virgül görülmezse 10 kat doz hatası (ISMP)", ornek=b, satir=st["no"])
             for m in ([] if HAZIRLAMA.search(t) else ONDALIK_SONU_SIFIR.finditer(t)):
+                esdeger = sifir_esdegeri(st0["tam"], m.group(0))
+                if esdeger and not (ogretici_mi(t, m.group(0)) or st0.get("ogretici") or ogr_duzeltilmis(yan_liste, yan_i, m.group(0))):
+                    ekle("Doğruluk", "ENGEL", f"Doz yazımında sondaki sıfır ({m.group(0)}); aynı satırda eşdeğeri var ({esdeger}): küçük birimle yaz",
+                         "0,050 mg → 50 mcg (ya da 0,05 mg): sondaki sıfır 10 kat doz hatasına yol açar (ISMP)", ornek=m.group(0), satir=st["no"])
+                    continue
                 ekle("Doğruluk", "UYARI", f"Ondalık kısmın sonunda sıfır ({m.group(0)})",
                      "0,50 mg → 0,5 mg yazmak daha güvenli (ISMP kuralı tam sayı dozlar için; bu kullanım belirsiz)",
                      ornek=m.group(0), satir=st["no"])
@@ -1132,7 +1299,7 @@ def k_saglik_kisaltma_ek(c, ekle):
 
 # g ve U yalnız ilaç/doz bağlamlı yan cümlede: "5G ağı", "2g NaCl tartılır" gibi fen satırları sayılmaz (g küçük harf).
 BITISIK_DOZ_EK = re.compile(r"(?<![\w.,])\d+(?:[.,]\d+)?(?:g|U|mEq)(?![\w/])")
-BITISIK_DOZ = re.compile(r"(?<![\w.,])\d+(?:[.,]\d+)?(?:mg|mcg|mL|ml|ünite|IU)\b|[a-zçğıöşüA-ZÇĞİÖŞÜ]{3,}\d+(?:[.,]\d+)?\s*(?:mg|mcg|mL)\b")
+BITISIK_DOZ = re.compile(r"(?<![\w.,])\d+(?:[.,]\d+)?(?:mg|mcg|mL|ml|ünite|IU)\b|(?<![a-zçğıöşüA-ZÇĞİÖŞÜ])[a-zçğıöşüA-ZÇĞİÖŞÜ]{3,}\d+(?:[.,]\d+)?\s*(?:mg|mcg|mL)\b")
 
 
 def k_saglik_bosluk(c, ekle):
@@ -1160,14 +1327,22 @@ ZAMAN = re.compile(r"günde|günlük|/\s*gün|her\s+\d+\s*saat|saatte\s+bir|doz\
 def k_doz_kg_belirsiz(c, ekle):
     for st in tarama_satirlari(c):
         for cm in cumleler(st["tam"]):
-            for m in MGKG.finditer(cm):
+            zaman_var = None                          # cümle başına bir kez (her eşleşmede yeniden taramak karesel süreydi)
+            for sira, m in enumerate(MGKG.finditer(cm)):
+                if sira >= ESLESME_TAVAN:
+                    ekle("Doğruluk", "UYARI", f"Satır çok uzun: ilk {ESLESME_TAVAN} kiloya göre doz bakıldı, sonrası taranmadı",
+                         "Satırı böl", ornek=m.group(0), satir=st["no"])
+                    break
                 ek_birim = (m.group(1) or "").lower()
                 if ek_birim == "d":
                     ekle("Doğruluk", "UYARI", f"'mg/kg/d': d gün mü doz mu belirsiz ({m.group(0)})",
                          "'mg/kg/gün' ya da 'mg/kg/doz' diye açık yaz", ornek=m.group(0), satir=st["no"])
-                elif not ek_birim and not ZAMAN.search(cm):
-                    ekle("Doğruluk", "UYARI", f"Kiloya göre doz zaman birimi belirsiz ({m.group(0)})",
-                         "'mg/kg/gün' mü 'mg/kg/doz' mu yaz; sıklığı ve en yüksek dozu ekle", ornek=m.group(0), satir=st["no"])
+                elif not ek_birim:
+                    if zaman_var is None:
+                        zaman_var = bool(ZAMAN.search(cm))
+                    if not zaman_var:
+                        ekle("Doğruluk", "UYARI", f"Kiloya göre doz zaman birimi belirsiz ({m.group(0)})",
+                             "'mg/kg/gün' mü 'mg/kg/doz' mu yaz; sıklığı ve en yüksek dozu ekle", ornek=m.group(0), satir=st["no"])
 
 
 SAYI = r"(?<![\d.,])(\d+(?:[.,]\d+)*)"   # yalnız sayının başından: uzun rakam dizisinde karesel süre olmasın
@@ -1180,8 +1355,9 @@ KG_HESAP = [re.compile(SAYI + r"\s*kg\s*[×x*·]\s*" + SAYI + r"\s*" + DOZ_B + r
 DERISIM = re.compile(SAYI + r"\s*mg\s*/\s*(?:" + SAYI + r"\s*)?mL", re.I)   # '8 mg/mL' = 8 mg / 1 mL
 HACIM_HESAP = re.compile(SAYI + r"\s*mg\s*(?:=|→|için|karşılığı)\s*" + SAYI + r"\s*mL", re.I)
 SEYRELTME = re.compile(r"\s*(?:%\s*[\d.,]+\s*)?(?:SF|serum|izotonik|dekstroz|NaCl|içine|içinde|ile\s+sulandır|ile\s+seyrelt|sıvı)", re.I)
-BIRIM_KAT = {"g": 1e6, "mg": 1e3, "mcg": 1.0, "µg": 1.0, "μg": 1.0}
-BIRIM_DONUSUM = re.compile(SAYI + r"\s*(g|mg|mcg|µg|μg)\s*=\s*" + SAYI + r"\s*(g|mg|mcg|µg|μg)\b")
+BIRIM_KAT = {"g": 1e6, "mg": 1e3, "mcg": 1.0, "µg": 1.0, "μg": 1.0, "ng": 1e-3}
+BIRIM_DONUSUM = re.compile(SAYI + r"\s*(g|mg|mcg|µg|μg|ng)(?![A-Za-z])((?:\s{0,2}/\s{0,2}[A-Za-zçğıöşü²0-9]{1,8})?)\s*(?:=|≈|eşittir|equals?)\s*"
+                           + SAYI + r"\s*(g|mg|mcg|µg|μg|ng)(?![A-Za-z])((?:\s{0,2}/\s{0,2}[A-Za-zçğıöşü²0-9]{1,8})?)")
 
 
 def _yakin(a: float, b: float) -> bool:
@@ -1222,16 +1398,17 @@ HACIM_B = {"ml"}
 
 
 KILO_BASLIK = re.compile(r"(?<![/\w])kg\b(?!\s*/)|\b(?:weight|ağırlık|kilo|vücut ağırlığı)\b", re.I)
-PERKG_BIRIM = re.compile(r"(mg|mcg|µg|μg|g|ünite|units?|iu|u)\s*/\s*kg\b", re.I)
-PERKG_HUCRE = re.compile(r"^(mg|mcg|µg|μg|g|ünite|units?|iu|u)\s*/\s*kg\b", re.I)
+PERKG_BIRIM = re.compile(r"(mg|mcg|µg|μg|g|ünite|units?|iu|iü|u)\s*/\s*kg\b", re.I)
+PERKG_HUCRE = re.compile(r"^(mg|mcg|µg|μg|g|ünite|units?|iu|iü|u)\s*/\s*kg\b", re.I)
 DOZ_BASLIK = re.compile(r"\b(?:doz|dose|dosage|dosis)\b", re.I)
-DOZ_BASLIK_BIRIM = re.compile(r"\(\s*(mg|mcg|µg|μg|g)\s*\)", re.I)
+DOZ_BASLIK_BIRIM = re.compile(r"\(\s*(mg|mcg|µg|μg|g|ünite|units?|iu|iü|u)(?:\s*/\s*(?:h|hr|saat|sa|dk|min|gün|day|doz|dose))?\s*\)", re.I)
+ZAMAN_BASLIK = re.compile(r"/\s*(h|hr|saat|sa|dk|min|gün|day|doz|dose)\b\s*(?:\)|$)", re.I)
 DOZ_DISLA = re.compile(r"\b(?:max|maks|maksimum|maximum|azami|tavan|ceiling|limit|volume|hacim|hız|rate|ml)\b|en fazla|en çok|üst sınır",
                        re.I)
 GUNLUK_IZ = re.compile(r"/\s*(?:gün|day|24)|\bgünlük|\bdaily|\bper day|\bgünde|\btoplam|\btotal", re.I)
 HUCRE_SAYI = re.compile(r"^[~≈]?\s*(\d[\d.,]*)\s*(.*)$")
 DOZ_BIRIM_ADI = {"mg": "mg", "mcg": "mcg", "µg": "µg", "μg": "µg", "g": "g", "ünite": "ünite", "unit": "ünite",
-                 "units": "ünite", "iu": "ünite", "u": "ünite"}
+                 "units": "ünite", "iu": "ünite", "iü": "ünite", "u": "ünite"}
 
 
 def _tablo_bloklari(satirlar: list[dict]) -> list[list[dict]]:
@@ -1262,9 +1439,8 @@ def tablo_doz_hatalari(c) -> list[tuple]:
     göre doz (mg/kg ...; başlıkta ya da hücrede), biri doz (mg/mcg; başlıkta ya da hücrede) olan tabloda her veri
     satırı hesaplanır. Belirsizse (birden çok aday sütun, günlük/doz başına uyuşmazlığı, aralık hücre) satır/tablo atlanır."""
     hatalar = []
-    for blok in _tablo_bloklari(c["satirlar"]):
-        hucreler = [[satir_hazirla(h) for h in s["ham"].strip().strip("|").split("|")] for s in blok]
-        ayirici = [j for j, h in enumerate(hucreler) if all(re.fullmatch(r":?-{3,}:?|", x.strip()) for x in h)]
+    for tb in c["tbl"]:
+        blok, hucreler, ayirici = tb["blok"], tb["hucreler"], tb["ayirici"]
         if not ayirici or ayirici[0] != 1:
             continue
         baslik = hucreler[0]
@@ -1289,6 +1465,9 @@ def tablo_doz_hatalari(c) -> list[tuple]:
         kk, pk, dk = kilo[0], perkg[0], doz[0]
         if bool(GUNLUK_IZ.search(baslik[pk])) != bool(GUNLUK_IZ.search(baslik[dk])):
             continue
+        zp, zd = ZAMAN_BASLIK.search(baslik[pk]), ZAMAN_BASLIK.search(baslik[dk])
+        if bool(zp) != bool(zd) or (zp and Y_ZAMAN.get(zp.group(1).lower(), zp.group(1).lower()) != Y_ZAMAN.get(zd.group(1).lower(), zd.group(1).lower())):
+            continue                      # oran saatlik/dakikalık, sonuç değil (ya da tersi): başka büyüklük
         b_birim = PERKG_BIRIM.search(baslik[pk])
         d_birim = DOZ_BASLIK_BIRIM.search(baslik[dk])
         for s, h in veri:
@@ -1299,6 +1478,8 @@ def tablo_doz_hatalari(c) -> list[tuple]:
             d_ = _hucre_oku(h[dk])
             if not (k_ and p_ and d_) or k_[1].lower() not in ("", "kg"):
                 continue
+            if re.search(r"\d|\bper\b|günlük|daily|once|q\d|\bhr\b", d_[1] + " " + p_[1], re.I) or re.search(r"\(\s*q\d+h|günde|daily", h[pk] + " " + h[dk], re.I):
+                continue                      # sıklık/etiketli ya da ikinci sonuçlu hücre: satır motoru (kg_yapisal) etiketine göre denetler
             pm = PERKG_HUCRE.match(p_[1])
             u1 = DOZ_BIRIM_ADI.get((pm.group(1) if pm else (b_birim.group(1) if b_birim else "")).lower())
             dm = re.match(r"^(mg|mcg|µg|μg|g|ünite|units?|iu|u)\b", d_[1], re.I)
@@ -1391,8 +1572,528 @@ def kg_duzyazi(t: str, nok: bool, en: bool):
     return None if uyar() else (ifade, dogru, "UYARI")
 
 
+# ── Yapısal doz hesabı (v2.1.1): bir birimde kilo + kiloya göre doz + sonuç doz ──
+# Birim = paragraf (satır sonları birleşik), liste maddesi ya da tablo satırı. Bağlaç/ipucu sözcüğü aranmaz: yapı aranır.
+# İpucu yalnız belirsizliği giderir (ENGEL mi UYARI mı). Belirsizse (iki kilo, iki oran, iki ilaç) ENGEL verilmez.
+Y_BIRIM = {"g": ("kutle", 1e6), "mg": ("kutle", 1e3), "mcg": ("kutle", 1.0), "µg": ("kutle", 1.0), "μg": ("kutle", 1.0),
+           "ug": ("kutle", 1.0), "ng": ("kutle", 1e-3), "ünite": ("unite", 1.0), "unite": ("unite", 1.0), "unit": ("unite", 1.0),
+           "units": ("unite", 1.0), "u": ("unite", 1.0), "iu": ("unite", 1.0), "iü": ("unite", 1.0), "meq": ("meq", 1.0),
+           "mmol": ("mmol", 1.0), "ml": ("hacim", 1.0)}
+Y_SAYI = r"\d+(?:[.,]\d+)*"
+Y_ZAMAN = {"h": "saat", "hr": "saat", "hrs": "saat", "hour": "saat", "hours": "saat", "saat": "saat", "sa": "saat",
+           "min": "dk", "dk": "dk", "dak": "dk", "minute": "dk", "minutes": "dk", "dakika": "dk",
+           "gün": "gun", "gun": "gun", "day": "gun", "24h": "gun", "24": "gun", "24saat": "gun",
+           "doz": "doz", "dose": "doz", "dozda": "doz"}
+Y_KAN = re.compile(r"(?<![\w.,])(" + Y_SAYI + r")\s*[-]?\s*(?:kg|kilogram|kilo)(?![\w/²])", re.I)
+Y_MIKTAR = re.compile(
+    r"(?<![\w.,])(?P<s1>" + Y_SAYI + r")(?:\s*(?P<ar>[-–—]|\bto\b)\s*(?P<s2>" + Y_SAYI + r"))?\s*"
+    r"(?P<b>(?i:mcg|µg|μg|ug|mg|ng|mEq|mmol|mL|IU|İÜ|ünite|unite|units?)|g|U)(?![A-Za-zÇĞİÖŞÜçğıöşü])"
+    r"(?P<pay>(?:\s{0,2}/\s{0,2}[A-Za-zçğıöşüÇĞİÖŞÜ²0-9]{1,12}){0,2}(?:\s+per\s+[A-Za-z]{2,8})?)")
+Y_PAY = re.compile(r"/\s*([A-Za-zçğıöşüÇĞİÖŞÜ²0-9]+)|\bper\s+([A-Za-z]+)", re.I)
+Y_TAVAN_ON = re.compile(KG_TAVAN.pattern + r"|\bmax\b", re.I)
+Y_GUC = re.compile(r"^[\s'’-]{0,3}(?:l[ıiuü]k\b|tablet|tab\b|tabs\b|capsule|cap\b|caps\b|kapsül|ampul|ampoule|vial|flakon|şurup|syrup|"
+                   r"süspansiyon|suspension|patch|yama|damla|drops?|sachet|saşe|suppository|fitil|strength|gücünde)", re.I)
+Y_GUC_ON = re.compile(r"(?:tablets?|capsules?|vials?|ampoules?|kapsül|tablet|flakon|ampul)\s*(?:of|gücü|strength|:)?\s*$|strength\s*(?:of|:)?\s*$", re.I)
+Y_SEYRELTME = re.compile(r"^\s*(?:in|into|içinde|içine|ile|diluted\s+in|added\s+to|dissolved\s+in|mixed\s+with)\s+\d[\d.,]*\s*(?:mL|ml|L\b|litre)", re.I)
+Y_GUNLUK_ON = re.compile(r"(?:günlük|daily|per\s+day|a\s+day)\W{0,12}$", re.I)
+Y_ROL_ON = re.compile(r"(?:each|every|per|single|her|tek)\s+(?:[\w-]+\s+){0,2}?(?:dose|doz|infusion|injection|bolus|administration|infüzyon|enjeksiyon|uygulama)\w*\W{0,12}(?:[^\W\d]+\W{1,12}){0,3}$"
+                      r"|(?:doz|dose)\s+başına\W{0,8}$|(?:her\s+doz\w*)\W{0,12}$", re.I)
+Y_SAAT_ON = re.compile(r"(?:\bsaatte|saat\s+başına|\bper\s+hour|\ban\s+hour|\beach\s+hour|\bhourly|\bsaatlik)\W{0,6}$", re.I)
+Y_SAAT_SON = re.compile(r"^\s*(?:per\s+hour|an\s+hour|hourly|saatte)\b", re.I)
+Y_DK_ON = re.compile(r"(?:\bdakikada|\bper\s+minute|\ba\s+minute|\bdakikalık)\W{0,6}$", re.I)
+Y_DK_SON = re.compile(r"^\s*(?:per\s+minute|a\s+minute|dakikada)\b", re.I)
+Y_ROL_SON = re.compile(r"^\s*(?:per\s+dose|each\s+dose|per\s+administration|(?:her\s+)?doz\s+başına|her\s+dozda|/\s*doz|/\s*dose)", re.I)
+Y_GUN_SON = re.compile(r"^\s*(?:per\s+day|a\s+day|daily|each\s+day|günlük|toplam\s+günlük|/\s*gün|/\s*day)", re.I)
+Y_IPUCU_ON = re.compile(r"(?:\b(?:give|gives|giving|given|administer\w*|dose|doz\w*|total|toplam|calculated|hesapl\w*|ver\w*|uygula\w*|"
+                        r"therefore|thus|that\s+is|so|olur|eder)\b)\W{0,12}(?:\w+\W{0,12}){0,2}$", re.I)
+Y_IPUCU_SON = re.compile(r"^\W{0,4}(?:\w+\s+){0,3}(?:ver\w*|uygula\w*|hesapl\w*|give\w*|administer\w*|olarak|iv\b|im\b|po\b|sc\b|oral)", re.I)
+Y_SIKLIK = [
+    (re.compile(r"\bq\.?\s?(\d{1,2})\s?h\b", re.I), lambda m: 24 / int(m.group(1)) if int(m.group(1)) else None),
+    (re.compile(r"(?:her|every)\s+(\d{1,2})\s*(?:saat|hours?|h)\b", re.I), lambda m: 24 / int(m.group(1)) if int(m.group(1)) else None),
+    (re.compile(r"\b(\d{1,2})\s*saatte\s+bir", re.I), lambda m: 24 / int(m.group(1)) if int(m.group(1)) else None),
+    (re.compile(r"günde\s+(\d{1,2})\s*(?:kez|defa|kere|doz|öğün)", re.I), lambda m: int(m.group(1))),
+    (re.compile(r"günde\s+(bir|iki|üç|dört|beş|altı)\s*(?:kez|defa|kere|doz|öğün)", re.I),
+     lambda m: {"bir": 1, "iki": 2, "üç": 3, "dört": 4, "beş": 5, "altı": 6}[m.group(1).lower()]),
+    (re.compile(r"\b(once|twice|three\s+times|four\s+times)\s+(?:a\s+day|daily|per\s+day)", re.I),
+     lambda m: {"once": 1, "twice": 2, "three times": 3, "four times": 4}[re.sub(r"\s+", " ", m.group(1).lower())]),
+    (re.compile(r"\b(?:divided|split)\s+(?:in|into)\s+(\d)\s+(?:equal\s+)?doses?", re.I), lambda m: int(m.group(1))),
+    (re.compile(r"\b(?:bölünerek|bölünmüş)\s+(\d)\s+doz", re.I), lambda m: int(m.group(1))),
+    (re.compile(r"\b(qd|od)\b", re.I), lambda m: 1), (re.compile(r"\bbid\b", re.I), lambda m: 2),
+    (re.compile(r"\btid\b", re.I), lambda m: 3), (re.compile(r"\bqid\b", re.I), lambda m: 4),
+]
+Y_N_IZINLI = (1, 2, 3, 4, 6, 8, 12)
+Y_DOZ_SOZU = re.compile(r"\b(?:doz|dose|dosage|dosis)\w*", re.I)
+Y_CUMLE_SINIR = re.compile(r"(?<=[.!?;])\s+(?=[A-ZÇĞİÖŞÜ0-9(])")
+Y_METIN_TAVAN = 30000               # kg_yapisal bir birimin en çok bu kadar karakterine bakar
+Y_SINIR = 40                       # bir birimde bakılan en çok kilo/oran/doz sayısı (çok uzun satırda doğrusal süre)
+
+
+def _y_ay(s: str, nok: bool, en: bool) -> list[float]:
+    try:
+        ay = sayi_adaylari(s, nok, en)
+        # satırın dili kısa metinde yanlış tahmin edilebilir: '6,000' hem 6 hem 6000 olabilir; ENGEL ancak ikisi de tutmazsa
+        if not en and re.fullmatch(r"[1-9]\d{0,2}(?:,\d{3})+", s.strip()):
+            ay = ay + [float(s.strip().replace(",", ""))]
+        return ay
+    except ValueError:
+        return []
+
+
+def _y_birim(b: str):
+    b = b.replace("İ", "i").lower().replace("μ", "µ")
+    return Y_BIRIM.get(b)
+
+
+def _y_pay(metin: str):
+    """Paydadan (perkg, zaman, belirsiz, yogun): zaman 'saat'/'dk'/'gun'/'doz'/None; belirsiz: 'mg/kg/d'; yogun: mg/mL."""
+    perkg, zaman, belirsiz, yogun, taninmayan = False, None, False, False, False
+    for m in Y_PAY.finditer(metin):
+        t = (m.group(1) or m.group(2) or "").lower()
+        if t == "kg":
+            perkg = True
+        elif t == "d":
+            belirsiz = True
+        elif t in Y_ZAMAN:
+            zaman = Y_ZAMAN[t]
+        elif t in ("ml", "dl", "l", "m2", "m²", "cm2", "cm²", "mm", "tablet", "tab"):
+            yogun = True
+        else:
+            taninmayan = True
+    return perkg, zaman, belirsiz, yogun, taninmayan
+
+
+def y_miktarlar(t: str, nok: bool, en: bool):
+    """Birimdeki kilolar, kiloya göre oranlar ve aday doz miktarları. (kilolar, oranlar, adaylar, belirsiz_mi, kesildi_mi)"""
+    kilolar, oranlar, adaylar, belirsiz, kesildi = [], [], [], False, False
+    for i, m in enumerate(Y_KAN.finditer(t)):
+        if i >= Y_SINIR:
+            kesildi = True
+            break
+        kilolar.append({"bas": m.start(1), "son": m.end(), "ay": _y_ay(m.group(1), nok, en), "s": m.group(1)})
+    for i, m in enumerate(Y_MIKTAR.finditer(t)):
+        if i >= 4 * Y_SINIR:
+            kesildi = True
+            break
+        b = _y_birim(m.group("b"))
+        if not b:
+            continue
+        perkg, zaman, bel, yogun, tanimayan = _y_pay(m.group("pay") or "")
+        aralik = bool(m.group("ar"))
+        q = {"bas": m.start(), "son": m.end(), "aile": b[0], "kat": b[1], "birim": m.group("b").replace("İ", "i").lower().replace("μ", "µ"),
+             "ay": _y_ay(m.group("s1"), nok, en), "ay2": _y_ay(m.group("s2"), nok, en) if aralik else None,
+             "perkg": perkg, "zaman": zaman, "yogun": yogun, "tanimayan": tanimayan, "ham": m.group(0).strip(),
+             "tarih": bool(re.match(r"\d{1,2}\s*[-–]\s*\d{1,2}", m.group(0)) and not m.group("pay"))}
+        if bel and perkg:
+            belirsiz = True
+            continue
+        if not q["ay"]:
+            continue
+        if perkg and not yogun:
+            oranlar.append(q)
+        elif not perkg and not yogun and not tanimayan:
+            adaylar.append(q)
+    return kilolar, oranlar, adaylar, belirsiz, kesildi
+
+
+def _y_ilac_konumlari(t: str):
+    cikti = []
+    for i, m in enumerate(ILAC_ADI.finditer(t)):
+        if i >= 40:
+            break
+        cikti.append((m.start(), m.end(), re.sub(r"[ıİI]", "i", m.group(0)).lower()[:6]))
+    return cikti
+
+
+def _y_en_yakin_ilac(konumlar, bas: int, son: int):
+    en, fark = None, 10 ** 9
+    for b, s, ad in konumlar:
+        d = bas - s if s <= bas else (b - son if b >= son else 0)
+        if d < fark:
+            en, fark = ad, d
+    return en if fark <= 160 else None
+
+
+def _y_tavan(t: str, q) -> bool:
+    onceki, sonraki = t[max(0, q["bas"] - 80):q["bas"]], t[q["son"]:q["son"] + 60]
+    for tm in Y_TAVAN_ON.finditer(onceki):
+        ara = onceki[tm.end():]
+        if len(ara) <= 40 and not re.search(r"\d|[,;]|\b(?:give|ver\w*|uygula\w*)\b", ara):
+            return True
+    return bool(KG_TAVAN_SONRA.match(sonraki))
+
+
+def _y_sayi_say(t: str, q) -> bool:
+    """Aralık ('10–15 mg') ya da tarih/başka sayıya bitişik mi."""
+    return bool(q["ay2"]) or bool(re.search(r"\d\s*[-–—]\s*$", t[max(0, q["bas"] - 6):q["bas"]]))
+
+
+def _y_rol(t: str, q) -> str | None:
+    """Adayın rolü: payda ya da çevre sözcükle 'saat' / 'dk' / 'gun' / 'doz' / None."""
+    if q["zaman"]:
+        return q["zaman"]
+    onceki, sonraki = t[max(0, q["bas"] - 60):q["bas"]], t[q["son"]:q["son"] + 40]
+    if Y_SAAT_ON.search(onceki) or Y_SAAT_SON.match(sonraki):
+        return "saat"
+    if Y_DK_ON.search(onceki) or Y_DK_SON.match(sonraki):
+        return "dk"
+    if Y_ROL_SON.match(sonraki):
+        return "doz"
+    if Y_GUN_SON.match(sonraki) or Y_GUNLUK_ON.search(onceki):
+        return "gun"
+    if Y_ROL_ON.search(onceki):
+        return "doz"
+    return None
+
+
+def y_siklik(t: str) -> float | None:
+    for desen, f in Y_SIKLIK:
+        m = desen.search(t)
+        if m:
+            try:
+                n = f(m)
+            except (ValueError, KeyError, ZeroDivisionError):
+                continue
+            if n and 1 <= n <= 24:
+                return n
+    return None
+
+
+def _y_beklenen(w: float, r, rq, rol: str | None, n_siklik, gunluk_sozu: bool):
+    """Oran r (sayı), oran miktarı rq, adayın rolü → kabul edilen sonuç değerleri [(değer, tolerans_kat)] (oranın birimi cinsinden)."""
+    zr = rq["zaman"]
+    temel = w * r
+    if zr in ("saat", "dk"):
+        return [temel] if rol == zr else None
+    if zr == "gun" or (zr is None and gunluk_sozu):
+        if rol == "gun":
+            return [temel]
+        if rol == "doz":
+            return [temel / n for n in ([n_siklik] if n_siklik else Y_N_IZINLI)]
+        if rol is None:
+            return [temel / n for n in ([n_siklik] if n_siklik else Y_N_IZINLI)] + ([temel] if n_siklik else [])
+        return None
+    if zr == "doz":
+        if rol in ("doz", None):
+            return [temel]
+        if rol == "gun" and n_siklik:
+            return [temel * n_siklik]
+        return None
+    # zaman paydası yok, günlük sözü yok: doz başına varsayılır
+    if rol in ("doz", None):
+        return [temel] + ([temel / n_siklik] if n_siklik and n_siklik > 1 else [])
+    if rol == "gun" and n_siklik:
+        return [temel * n_siklik]
+    return None
+
+
+def _y_tekil(liste, anahtar):
+    gor, cikti = set(), []
+    for x in liste:
+        k = anahtar(x)
+        if k not in gor:
+            gor.add(k)
+            cikti.append(x)
+    return cikti
+
+
+Y_SORU = re.compile(r"\?\s*$|\bkaç\b|\bhow\s+(?:many|much)\b|hesaplay\w*|\bcalculate\b|\bbulunuz\b|\bfind\s+the\b", re.I)
+
+
+def _y_soru_cumlesi(t: str, a, siniri: list) -> bool:
+    """Aday, soru/alıştırma cümlesinde mi ('doz kaç mg'dır?', 'Calculate …'): soru sonuç vermez."""
+    i = bisect.bisect_right(siniri, a["bas"])
+    bas = siniri[i - 1] if i else 0
+    son = siniri[i] if i < len(siniri) else len(t)
+    return bool(Y_SORU.search(t[bas:son]))
+
+
+def kg_yapisal(t: str, nok: bool, en: bool):
+    """Bir birimin doz hesabı. [(ifade, doğrusu, düzey, konum)] ya da None (yapı yok / belirsiz). Düzey: ENGEL | UYARI.
+    Her aday sonuç için kendi oranı ve kilosu seçilir: aday ile ≤ 2 cümle uzaklıktaki, tercihen adaydan ÖNCEKİ (yoksa sonraki)
+    kilo ve oran. O kümede iki farklı kilo ya da oran varsa, aralıklı oran varsa ya da 'mg/kg/d' gibi payda belirsizse sessiz kalınır."""
+    if not re.search(r"(?i)kg", t):
+        return None
+    t = t[:Y_METIN_TAVAN]                              # çok uzun tek satırda doğrusal süre (aşım k_doz_aritmetigi'nde not düşülür)
+    kilolar, oranlar, adaylar, belirsiz, kesildi = y_miktarlar(t, nok, en)
+    if belirsiz or not kilolar or not oranlar:
+        return None
+    for k in kilolar:                                 # aralıklı kilo ('10-12 kg')
+        if re.search(r"\d\s*[-–—]\s*$", t[max(0, k["bas"] - 4):k["bas"]]) or re.match(r"\s*[-–—]\s*\d", t[k["son"]:k["son"] + 4]):
+            return None
+    ilaclar = _y_ilac_konumlari(t)
+    ilac_sayisi = len({a for _, _, a in ilaclar})
+    siniri = [m.end() for m in Y_CUMLE_SINIR.finditer(t)]
+    for x in kilolar + oranlar + adaylar:
+        x["c"] = bisect.bisect_right(siniri, x["bas"])    # cümle numarası (bir kez)
+    cumle_no = lambda poz: bisect.bisect_right(siniri, poz)      # noqa: E731
+    siklik = y_siklik(t)
+    gunluk_sozu = bool(KG_GUNLUK.search(t)) and not siklik   # sıklık (q12h, günde iki kez) verilmişse paydasız oran doz başınadır
+    uygun = []                                        # aday elemesi: oran/kilo sayıları, tavan, tablet gücü, seyreltme, aralık
+    for a in adaylar:
+        if _y_sayi_say(t, a):
+            continue
+        if any(a["bas"] < k["son"] and a["son"] > k["bas"] for k in kilolar) or \
+                any(a["bas"] < r["son"] and a["son"] > r["bas"] for r in oranlar):
+            continue
+        if _y_tavan(t, a) or _y_soru_cumlesi(t, a, siniri):
+            continue
+        sonraki, onceki = t[a["son"]:a["son"] + 30], t[max(0, a["bas"] - 30):a["bas"]]
+        if Y_GUC.match(sonraki) or Y_GUC_ON.search(onceki) or Y_SEYRELTME.match(sonraki):
+            continue
+        uygun.append(a)
+    elenen = []
+    for i, a in enumerate(uygun):                     # '1,2 mg (1200 mcg)': parantezli eşdeğer ayrı aday değildir
+        if i and uygun[i - 1]["aile"] == a["aile"] and uygun[i - 1]["birim"] != a["birim"] and re.search(r"\(\s*[≈=]?\s*$", t[max(0, a["bas"] - 6):a["bas"]]) \
+                and t[uygun[i - 1]["son"]:a["bas"]].strip() in ("(", "(≈", "(=") and \
+                any(_yakin(x * uygun[i - 1]["kat"], y * a["kat"]) for x in uygun[i - 1]["ay"] for y in a["ay"]):
+            elenen.append(a)
+    uygun = [a for a in uygun if a not in elenen]
+
+    def yakin_kume(liste, a, ayni_aile=None):
+        """a'ya ≤ 2 cümle uzaklıktaki öğeler; önce a'dan önce gelenler, yoksa sonrakiler."""
+        ca = a["c"]
+        yakin = [x for x in liste if abs(x["c"] - ca) <= 2 and (ayni_aile is None or x["aile"] == ayni_aile)]
+        once = [x for x in yakin if x["bas"] < a["bas"]]
+        return once or yakin
+
+    sonuclar = []
+    for a in uygun:
+        rs = [r for r in oranlar if r["perkg"] and r["aile"] == a["aile"] and r["c"] == a["c"]] or \
+            yakin_kume([r for r in oranlar if r["perkg"]], a, a["aile"])      # önce adayla aynı cümledeki oran
+        if not rs:
+            continue
+        ilac_net = ilac_sayisi <= 1                   # ilaç eşleşmesi belirsiz mi (iki ilaç adı, ilaç bulunamadı)
+        if ilac_sayisi > 1:                           # iki ilaç adı: sonuç, ilacı oranın ilacıyla aynı olana bağlanır
+            ia = _y_en_yakin_ilac(ilaclar, a["bas"], a["son"])
+            rs = [r for r in rs if ia is None or _y_en_yakin_ilac(ilaclar, r["bas"], r["son"]) in (ia, None)]
+            if not rs:
+                continue
+            ilac_net = ia is not None and all(_y_en_yakin_ilac(ilaclar, r["bas"], r["son"]) == ia for r in rs)
+        rt = _y_tekil(rs, lambda x: (tuple(x["ay"]), tuple(x["ay2"] or ()), x["birim"], x["zaman"]))
+        if len(rt) > 1 or rt[0]["ay2"]:
+            continue                                  # iki farklı oran ya da aralıklı oran: sessiz
+        r = rt[0]
+        ks = [k_ for k_ in kilolar if k_["c"] == r["c"]] or [k_ for k_ in kilolar if k_["c"] == a["c"]] or \
+            yakin_kume(kilolar, r) or yakin_kume(kilolar, a)               # kilo: önce oranın, sonra adayın kendi cümlesi; yoksa önceki cümle
+        kt = _y_tekil(ks, lambda x: tuple(x["ay"]))
+        if not kt or len(kt) > 1:
+            continue                                  # kilo yok ya da iki farklı kilo: sessiz
+        k = kt[0]
+        rol = _y_rol(t, a)
+        ipucu = bool(Y_IPUCU_ON.search(t[max(0, a["bas"] - 70):a["bas"]]) or Y_IPUCU_SON.match(t[a["son"]:a["son"] + 40]))
+        beklenenler = []
+        for w in k["ay"]:
+            for rv in r["ay"]:
+                bek = _y_beklenen(w, rv, r, rol, siklik, gunluk_sozu)
+                if bek is not None:
+                    beklenenler.append((bek, w))
+        if not beklenenler:
+            continue
+        tutan = any(_yakin(b * r["kat"], d * a["kat"]) for bek, _w in beklenenler for b in bek for d in a["ay"])
+        sonuclar.append({"a": a, "r": r, "rol": rol, "ipucu": ipucu, "tutan": tutan, "bek": beklenenler, "ilac_net": ilac_net})
+    if not sonuclar:
+        return None
+    cikti = []
+    for x in sonuclar:
+        if x["tutan"]:
+            continue
+        a, r, rol = x["a"], x["r"], x["rol"]
+        acik = rol is not None
+        ayni_oran = [y for y in sonuclar if y["r"] is r]              # aynı orana bağlı adaylar (başka cümledeki oran/kilo karışmaz)
+        tutanlar = [y for y in ayni_oran if y["tutan"]]
+        etiketsiz = [y for y in ayni_oran if y["rol"] is None]
+        if tutanlar and (not acik or any(y["rol"] == rol for y in tutanlar)):
+            continue                                  # aynı etiketli aday beklenene eşit: hesap doğru, kalan sayılar başka şeydir
+        doz_sozu = bool(Y_DOZ_SOZU.search(t[max(0, r["bas"] - 40):r["son"] + 30]) or Y_DOZ_SOZU.search(t[max(0, a["bas"] - 40):a["bas"] + 8]))
+        acik = acik or doz_sozu
+        kesin = (acik or len(etiketsiz) == 1) and x["ilac_net"]      # birden çok etiketsiz aday: UYARI
+        bek, w = x["bek"][0]
+        if kesin and not acik and r["zaman"] is None:
+            # oranda da sonuçta da zaman bilgisi yok: %20'ye kadar sapma yuvarlama/uygulama dozu olabilir (UYARI), ötesi ENGEL
+            sapma = min(abs(d * a["kat"] - b_ * r["kat"]) / max(abs(b_ * r["kat"]), 1e-9)      # beklenene göre sapma
+                        for b1, _w in x["bek"] for b_ in b1 for d in a["ay"])
+            if sapma <= 0.20:
+                kesin = False
+        deger = bek[0] * r["kat"] / a["kat"]
+        gunluk_not = ""
+        if len(bek) > 1 and (r["zaman"] == "gun" or gunluk_sozu) and rol is None:
+            gunluk_not = " (günlük toplam; bölünmüşse ÷2/3/4/6)"
+        dogru = f"{deger:g} {a['birim']}" + (f"/{rol}" if rol in ("saat", "dk") else "") + gunluk_not
+        ifade = f"{w:g} kg × {r['ham']} → {a['ham']}"
+        cikti.append((ifade, dogru, "ENGEL" if kesin else "UYARI", a["bas"]))
+    return cikti
+
+
+# Kiloya göre doz ('18 ünite/kg/saat', '5 mcg/kg/dk') ya da kütle birimi dönüşümü ('500 mg = 5 g') tek başına risk taramasını açar
+RISK_ORAN = re.compile(r"\d\s*(?:mg|mcg|µg|μg|ng|mEq|mmol|ünite|units?|IU|İÜ|U)(?![A-Za-z])\s*/\s*kg\b"
+                       r"|\d\s*(?:mg|mcg|µg|μg|g)(?:\s*/\s*[A-Za-z]{1,6})?\s*=\s*\d[\d.,]*\s*(?:mg|mcg|µg|μg|g)(?![A-Za-z])")
+LISTE_MADDE = re.compile(r"^\s*(?:[-*+•]|\d+[.)])\s+")
+
+
+BIRIM_KARAKTER_TAVAN = 1500       # bir paragraf birimi bu kadar karakteri geçerse yeni birime bölünür (çok satırlı dev paragrafta doğrusal süre)
+
+
+def doz_birimleri(c) -> list[dict]:
+    """Birim = paragraf (boş satırla ayrılan; satır sonları birleştirilir), liste maddesi, tablo satırı ya da başlık.
+    {'nolar': [satır numaraları], 'bas': [her satırın birleşik metindeki başlangıcı], 'tam': birleşik metin (İngilizce
+    satırlarda binlik virgül silinmiş), 'tablo': bool, 'liste': bool}. Kod bloğu satırı birim değildir.
+    Paragraf BIRIM_KARAKTER_TAVAN karakteri aşarsa satır sınırında bölünür (not: pencere dışına taşan hesap eşleşmez)."""
+    if c.get("_dz") is not None:
+        return c["_dz"]
+    cikti, cur = [], None
+
+    def kapat():
+        nonlocal cur
+        if cur:
+            cur["tam"] = " ".join(cur.pop("parca"))
+            cikti.append(cur)
+        cur = None
+
+    def yeni_birim(tablo=False, liste=False, baslik=False):
+        return {"nolar": [], "bas": [], "parca": [], "uzun": 0, "tablo": tablo, "liste": liste, "baslik": baslik}
+
+    def ekle_satir(b, no, t):
+        b["bas"].append(b["uzun"] + (1 if b["parca"] else 0))
+        b["uzun"] += len(t) + (1 if b["parca"] else 0)
+        b["nolar"].append(no)
+        b["parca"].append(t)
+    for x in _borusuz_tablo(c["satirlar"]):
+        t, ham = x["tam"], x["ham"]
+        if not ham.strip() or not t:
+            kapat()
+            continue
+        if x["kod"]:
+            kapat()                                   # kod bloğundaki satır birim değildir (eski tarama yine görür)
+            continue
+        if satir_dili(c, x["no"]) == "en":
+            t = en_binlik_sil(t)
+        if ham.lstrip().startswith("|") or ham.lstrip().startswith("#"):
+            kapat()
+            b = yeni_birim(tablo=ham.lstrip().startswith("|"), baslik=ham.lstrip().startswith("#"))
+            ekle_satir(b, x["no"], t)
+            b["tam"] = b.pop("parca")[0]
+            cikti.append(b)
+            continue
+        if cur is None or LISTE_MADDE.match(ham) or cur["uzun"] > BIRIM_KARAKTER_TAVAN:
+            kapat()
+            cur = yeni_birim(liste=bool(LISTE_MADDE.match(ham)))
+        ekle_satir(cur, x["no"], t)
+    kapat()
+    for b in cikti:
+        b.pop("uzun", None)
+    c["_dz"] = cikti
+    return cikti
+
+
+def liste_bloklari(c) -> list[dict]:
+    """Bitişik (araya boş satır girmemiş) en çok 8 liste maddesi tek blok sayılır: kilo, oran ve sonuç ayrı maddelerde olabilir."""
+    cikti, cur = [], []
+
+    def kapat():
+        nonlocal cur
+        if len(cur) >= 2:
+            blok = {"nolar": [], "bas": [], "tam": "", "tablo": False, "liste": True, "baslik": False}
+            for x in cur:
+                taban = len(blok["tam"]) + (1 if blok["tam"] else 0)
+                blok["bas"] += [taban + y for y in x["bas"]]
+                blok["nolar"] += x["nolar"]
+                blok["tam"] = (blok["tam"] + " " + x["tam"]) if blok["tam"] else x["tam"]
+            cikti.append(blok)
+        cur = []
+    for b in doz_birimleri(c):
+        if b["liste"] and cur and cur[-1]["nolar"][-1] + 1 == b["nolar"][0] and len(cur) < 8:
+            cur.append(b)
+        else:
+            kapat()
+            if b["liste"]:
+                cur.append(b)
+    kapat()
+    return cikti
+
+
+def onceki_birimle_birlesik(c) -> list[dict]:
+    """Oran + sonuç var ama kilo yok: hemen önceki liste maddesi (araya başlık/boş satır girmemiş) tek kilo taşıyorsa ikisi birlikte
+    bir birim sayılır (kilo bir önceki maddede)."""
+    cikti, onceki = [], None
+    for b in doz_birimleri(c):
+        if onceki and b["liste"] and onceki["liste"] and onceki["nolar"][-1] + 1 == b["nolar"][0] \
+                and not re.search(r"(?i)\d\s*kg(?![\w/])", b["tam"]) and re.search(r"(?i)kg", b["tam"]):
+            kilolar = {x.group(1) for x in Y_KAN.finditer(onceki["tam"])}
+            if len(kilolar) == 1 and not Y_MIKTAR_PERKG.search(onceki["tam"]):
+                taban = len(onceki["tam"]) + 1
+                cikti.append({"nolar": onceki["nolar"] + b["nolar"], "bas": onceki["bas"] + [taban + y for y in b["bas"]],
+                              "tam": onceki["tam"] + " " + b["tam"], "tablo": False, "liste": True, "baslik": False,
+                              "ilk_yeni": taban})
+        onceki = b if b["liste"] else None
+    return cikti
+
+
+Y_MIKTAR_PERKG = re.compile(r"/\s*kg\b", re.I)
+
+
+Y_TAVAN_BASLIK = re.compile(r"\(\s*(?:max|maks|maksimum|maximum|tavan|azami|up\s+to|en\s+fazla)\.?\s*[:=]?\s*(" + Y_SAYI + r")", re.I)
+Y_HUCRE_SAYI = re.compile(r"^[~≈]?\s*(" + Y_SAYI + r")\s*([^\d]*)$")
+
+
+def tablo_baslik_oran_hatalari(c) -> list[tuple]:
+    """Sütun başlığında oran (ve tavan) olan tablo: 'Bolus 60 units/kg (max 4,000)' | hücre = sonuç. Beklenen = min(kilo × oran, tavan);
+    hücrede '(capped)/(tavan)' notu olabilir. Kilo sütunu tek ve başlığında kg/weight/ağırlık olmalı."""
+    hatalar = []
+    for tb in c["tbl"]:
+        blok, hucreler, ayirici = tb["blok"], tb["hucreler"], tb["ayirici"]
+        if not ayirici or ayirici[0] != 1:
+            continue
+        baslik = hucreler[0]
+        kilo = [k for k, b in enumerate(baslik) if KILO_BASLIK.search(b) and not Y_MIKTAR_PERKG.search(b)]
+        sutunlar = []
+        for k, b in enumerate(baslik):
+            m = Y_MIKTAR.search(b)
+            if not m or k in kilo:
+                continue
+            perkg, zaman, bel, yogun, _t = _y_pay(m.group("pay") or "")
+            bil = _y_birim(m.group("b"))
+            if not (perkg and bil) or bel or m.group("ar"):
+                continue
+            tav = Y_TAVAN_BASLIK.search(b)
+            sutunlar.append((k, m, bil, tav))
+        if len(kilo) != 1 or not sutunlar:
+            continue
+        en = satir_dili(c, blok[0]["no"]) == "en"
+        for j, (s_, h) in enumerate(zip(blok, hucreler)):
+            if j < 2 or j in ayirici or kilo[0] >= len(h):
+                continue
+            wm = Y_HUCRE_SAYI.match(h[kilo[0]].strip())
+            if not wm or not re.search(r"(?i)kg", wm.group(2)) and wm.group(2).strip():
+                continue
+            for k, m, bil, tav in sutunlar:
+                if k >= len(h):
+                    continue
+                hm = Y_HUCRE_SAYI_UC.match(h[k].strip())
+                if not hm:
+                    continue
+                w, r_, v = sayi_dil(wm.group(1), en), sayi_dil(m.group("s1"), en), sayi_dil(hm.group(1), en)
+                bek = w * r_
+                if tav:
+                    bek = min(bek, sayi_dil(tav.group(1), en))
+                hucre_b = _y_birim_ilk(hm.group(2))
+                kat = (hucre_b[1] if hucre_b and hucre_b[0] == bil[0] else bil[1]) / bil[1]
+                if not _yakin(bek * bil[1], v * kat * bil[1]):
+                    hatalar.append((f"{h[kilo[0]].strip()} × {m.group(0).strip()}{' (max ' + tav.group(1) + ')' if tav else ''} → {h[k].strip()}",
+                                    f"{bek:g}", s_["no"]))
+    return hatalar
+
+
+Y_HUCRE_SAYI_UC = re.compile(r"^[~≈]?\s*(" + Y_SAYI + r")\s*([A-Za-zµμ/İÜ]*)")
+
+
+def _y_birim_ilk(metin: str):
+    m = re.match(r"\s*(mcg|µg|μg|mg|ng|g|ünite|units?|IU|U)\b", metin or "", re.I)
+    return _y_birim(m.group(1)) if m else None
+
+
 def k_doz_aritmetigi(c, ekle):
     son_derisim, son_no = None, None
+    rapor_satir: set = set()
     nok = bool(ONDALIK_NOKTA.search(c["tam"]))
     for st in tarama_satirlari(c):
         t = st["tam"]
@@ -1437,22 +2138,55 @@ def k_doz_aritmetigi(c, ekle):
         son_no = st["no"] if (derisimler or son_no is None or st["no"] != (son_no or 0) + 1) else son_no
         if derisimler:
             son_no = st["no"]
-        for m in BIRIM_DONUSUM.finditer(t):
-            ba, bb = m.group(2), m.group(4)
-            ad = [sayi_adaylari_(m.group(1)), sayi_adaylari_(m.group(3))]
+        for m in list(BIRIM_DONUSUM.finditer(t))[:Y_SINIR]:
+            ba, bb = m.group(2), m.group(5)
+            pa, pb = re.sub(r"\s+", "", m.group(3) or "").lower(), re.sub(r"\s+", "", m.group(6) or "").lower()
+            if pa != pb:
+                continue                              # paydalar farklıysa ('mg/saat = mg/dk') başka bir dönüşüm
+            ad = [sayi_adaylari_(m.group(1)), sayi_adaylari_(m.group(4))]
             if ba != bb and not _herhangi(ad, lambda a, b: _yakin(a * BIRIM_KAT[ba], b * BIRIM_KAT[bb])):
                 a = sy(m.group(1))
-                hatali.append((m.group(0), f"{a:g} {ba} = {a * BIRIM_KAT[ba] / BIRIM_KAT[bb]:g} {bb}"))
+                hatali.append((m.group(0), f"{a:g} {ba}{pa} = {a * BIRIM_KAT[ba] / BIRIM_KAT[bb]:g} {bb}{pb}"))
             elif ba != bb and len(ad[0]) * len(ad[1]) > 1 and not all(
                     _yakin(a * BIRIM_KAT[ba], b * BIRIM_KAT[bb]) for a in ad[0] for b in ad[1]):
                 ekle("Doğruluk", "UYARI", f"Noktalı sayı iki türlü okunabiliyor («{m.group(0)}»): binlik mi ondalık mı?",
                      "Türkçede ondalık virgülle yazılır (1,125 mg); binlikse 1125 mg yaz", ornek=m.group(0), satir=st["no"])
         for h, dogru in hatali:
+            rapor_satir.add(st["no"])
             ekle("Doğruluk", "ENGEL", f"Doz hesabı tutmuyor («{h}» → {'' if dogru.startswith('birim') else 'doğrusu '}{dogru})",
                  "Hesabı yeniden yap; sonuç nottaki sayıyla aynı olmalı", ornek=h, satir=st["no"])
+    tablo_hatalari = tablo_doz_hatalari(c)
+    rapor_satir.update(no for _h, _d, no in tablo_hatalari)
+    # Yapısal doz hesabı: birim (paragraf / liste maddesi / tablo satırı) başına kilo + kiloya göre doz + sonuç doz
+    yapisal_satir = set()
+    uzun_not = 0
+    for b in doz_birimleri(c) + onceki_birimle_birlesik(c):
+        if len(b["tam"]) > Y_METIN_TAVAN and re.search(r"(?i)kg", b["tam"]) and uzun_not < 3:
+            uzun_not += 1
+            ekle("Doğruluk", "UYARI", f"Satır çok uzun ({len(b['tam'])} karakter): doz hesabı denetimi yalnız ilk {Y_METIN_TAVAN} karakterde yapıldı",
+                 "Satırı böl", ornek=b["tam"][:40], satir=b["nolar"][0])
+        if rapor_satir.intersection(b["nolar"]) or not re.search(r"(?i)kg", b["tam"]) or \
+                (len(b["nolar"]) > 1 and b["liste"] and yapisal_satir.intersection(b["nolar"])) or \
+                ("ilk_yeni" in b and yapisal_satir.intersection(b["nolar"][len(b["nolar"]) - sum(1 for x in b["bas"] if x >= b["ilk_yeni"]):])):
+            continue
+        en_b = satir_dili(c, b["nolar"][0]) == "en"
+        sonuc_l = kg_yapisal(b["tam"], nok, en_b)
+        if sonuc_l is None:
+            continue
+        yapisal_satir.update(b["nolar"])
+        for ifade, dogru, duzey, poz in sonuc_l[:5]:
+            if "ilk_yeni" in b and poz < b["ilk_yeni"]:
+                continue
+            no_ = b["nolar"][max(bisect.bisect_right(b["bas"], poz) - 1, 0)]
+            if duzey == "ENGEL":
+                ekle("Doğruluk", "ENGEL", f"Doz hesabı tutmuyor («{ifade}» → doğrusu {dogru})",
+                     "Hesabı yeniden yap; sonuç nottaki sayıyla aynı olmalı", ornek=ifade, satir=no_)
+            else:
+                ekle("Doğruluk", "UYARI", f"Doz hesabı tutmuyor olabilir («{ifade}» → doğrusu {dogru}); eşleşme ya da sıklık belirsiz",
+                     "Kilo, oran ve sonuç dozunu aynı cümlede açık yaz; günlük mü doz başına mı belirt", ornek=ifade, satir=no_)
     tablo_idleri = {id(x) for x in c["tablo"]}
     for st in tarama_satirlari(c):
-        if id(st) in tablo_idleri:
+        if id(st) in tablo_idleri or st["no"] in yapisal_satir:
             continue
         en = satir_dili(c, st["no"]) == "en"
         cumle_listesi = [en_binlik_sil(x) if en else x for x in yan_cumleler(st["tam"])]
@@ -1473,7 +2207,13 @@ def k_doz_aritmetigi(c, ekle):
             elif sonuc:
                 ekle("Doğruluk", "UYARI", f"Doz hesabı tutmuyor olabilir («{sonuc[0]}» → W×R = {sonuc[1]}); sıklık belirsiz",
                      "'mg/kg/doz' mu 'mg/kg/gün' mü yaz; günlük doz bölünüyorsa sıklığı belirt", ornek=sonuc[0], satir=st["no"])
-    for h, dogru, no in tablo_doz_hatalari(c):
+    for h, dogru, no in tablo_baslik_oran_hatalari(c):
+        if no in rapor_satir:
+            continue
+        rapor_satir.add(no)
+        ekle("Doğruluk", "ENGEL", f"Doz hesabı tutmuyor («{h}» → doğrusu {dogru}; tavan varsa tavanla sınırlı)",
+             "Hesabı yeniden yap; hücre = min(kilo × oran, tavan) olmalı", ornek=h, satir=no)
+    for h, dogru, no in tablo_hatalari:
         ekle("Doğruluk", "ENGEL", f"Doz hesabı tutmuyor («{h}» → doğrusu {dogru})",
              "Hesabı yeniden yap; sonuç nottaki sayıyla aynı olmalı", ornek=h, satir=no)
 
@@ -1553,7 +2293,7 @@ def lab_duzyazi_ciftleri(k: str, analit: str, geleneksel: str, si: str, tip: str
         ad = onceki[-1]
         g1, g2 = k[ad.end():v1.start()], k[v1.end():v2.start()]
         izin = re.sub(r"i\.e\.", "i_e_", g1 + "§" + g2)
-        if len(g1) > 60 or len(g2) > 80 or CUMLE_SONU.search(izin):
+        if len(g1) > 60 or len(g2) > 80 or CUMLE_SONU.search(izin) or lab_formul_mu(g2) or lab_formul_mu(g1):
             continue
         if any(ad.end() <= m.start() and m.end() <= v1.start() for m in digerleri) or \
                 any(v1.end() <= m.start() and m.end() <= v2.start() for m in digerleri):
@@ -1563,6 +2303,250 @@ def lab_duzyazi_ciftleri(k: str, analit: str, geleneksel: str, si: str, tip: str
         if LAB_IPUCU.search(g2) or re.match(r"\s*(?:olarak\s+(?:raporlan|yaz[ıi]l[ıi]r|ifade\s+edilir|kaydedilir)|e[sş][ıi]tt[ıi]r)", son):
             cikti.append(((v1.start(), v2.end()), v1.group(1), v2.group(1), yon))
     return cikti
+
+
+# ── Lab dönüşümü, yapısal (v2.1.1): aynı analitin iki birimli değeri ──
+LAB_ANALIT_AD = {"glukoz": "glukoz", "glikoz": "glukoz", "kan şekeri": "glukoz", "glucose": "glukoz", "blood sugar": "glukoz",
+                 "kolesterol": "kolesterol", "cholesterol": "kolesterol", "ldl": "ldl", "hdl": "hdl", "kreatinin": "kreatinin",
+                 "creatinine": "kreatinin", "trigliserit": "trigliserit", "triglyceride": "trigliserit"}
+LAB_ANALIT_IS = {"glukoz": "g", "kolesterol": "c", "ldl": "c", "hdl": "c", "kreatinin": "k", "trigliserit": "t"}
+LAB_ANALIT_UNIT = {"glukoz": ("mg/dl", "mmol/l"), "kolesterol": ("mg/dl", "mmol/l"), "ldl": ("mg/dl", "mmol/l"),
+                   "hdl": ("mg/dl", "mmol/l"), "kreatinin": ("mg/dl", "(?:µ|μ|u)mol/l"), "trigliserit": ("mg/dl", "mmol/l")}
+LAB_DIGER = r"sodyum|sodium|potasyum|potassium|bikarbonat|bicarbonate|hco3|klor(?:ür|ur)?|chloride|osmolalite|osmolality|osmolarite|osmolarity|anyon|anion\s+gap|laktat|lactate|magnezyum|magnesium|fosfat|phosphate|bun\b|ürik|uric|\bna\b|\bk\+|\bcl\b"
+LAB_ANALIT_RE = re.compile(r"(?<![\w])(?:(?P<ldl>ldl|hdl)(?:[\s-]*(?:cholesterol|kolesterol))?|(?P<ad>" + "|".join(
+    sorted((re.escape(a) for a in LAB_ANALIT_AD if a not in ("ldl", "hdl")), key=len, reverse=True)) + r")\w*|(?P<diger>" + LAB_DIGER + r"))")
+LAB_AYRAC = re.compile(r"sonra|after|\bsaat|\bhours?\b|\b\d+\s*h\b|\bgün|\bdays?\b|haftas?\b|\bweeks?\b|tedavi|treat|düş|yüksel|çık(?:tı|mış)|arttı|azaldı|"
+                      r"\bfell\b|\brose\b|dropped|increas|decreas|reduc|hedef|target|goal|baseline|başlangıç|\bönce|before|\bvs\b|versus|"
+                      r"compared|karşılaştır|\bthen\b|ardından|followed|later|yatış|taburcu|admission|discharge|nadir|\bpeak|tepe")
+LAB_DEN = re.compile(r"^['’]?[dt][ae]n\b")                     # '250 mg/dL'den 9 mmol/L'ye': değişim anlatımı
+LAB_ONCE = re.compile(r"\bfrom\b|\bfell\b|\brose\b|dropped|increased|decreased|düştü|yükseldi|başlangıç|baseline|\bfrom\b")
+LAB_BILINEN_CARPAN = re.compile(r"0[.,]0555|0[.,]0259|0[.,]0113|88[.,]4|38[.,]67|88[.,]5|\b18\b")
+LAB_FORMUL_KELIME = re.compile(r"corrected|düzeltilmiş|duzeltilmis|anyon|anion\s+gap|osmolal|osmolar", re.I)
+
+
+def lab_formul_mu(ara: str) -> bool:
+    """İki değer arasındaki metin bir hesap mı (toplama/çıkarma ya da bilinmeyen çarpan): dönüşüm değil formüldür."""
+    if re.search(r"\d\s*[+−]\s*\d|[+−]\s*\d+[.,]?\d*\s*[×x*]", ara) or re.search(r"\d\s*-\s*\(", ara):
+        return True
+    for m in re.finditer(r"[×*·]\s*(\d[\d.,]*)", ara):
+        if not LAB_BILINEN_CARPAN.search(m.group(0)):
+            return True
+    return False
+
+
+def lab_deger_analit(k: str, bas: int, onceki_analit: str | None):
+    """Değerin hemen solundaki en yakın analit adı: (kanon ad | 'diger' | None). Aynı cümle ya da ≤ 200 karakter geri."""
+    en_yakin = None
+    for m in LAB_ANALIT_RE.finditer(k, max(0, bas - 200), bas):
+        en_yakin = m
+    if en_yakin is None:
+        return onceki_analit
+    if en_yakin.group("diger"):
+        return "diger"
+    if en_yakin.group("ldl"):
+        return "ldl" if en_yakin.group("ldl")[0] == "l" else "hdl"
+    return LAB_ANALIT_AD.get(en_yakin.group("ad"))
+
+
+def _lab_bicim(birim: str):
+    """('g'|'si', anahtar) lab birimine göre: trad (mg/dl, g/dl) ya da SI (mmol/l, µmol/l, g/l)."""
+    b = birim.lower().replace("μ", "µ").replace("u", "µ", 1) if birim.lower().startswith("umol") else birim.lower().replace("μ", "µ")
+    return "trad" if b in ("mg/dl", "g/dl") else "si"
+
+
+def lab_cift_denetle(analit: str, v1, v2, en: bool):
+    """İki değer (g1: trad ya da SI) → (beklenen, yazılan, yön) ya da None (birim uyuşmuyor)."""
+    geleneksel, si = LAB_ANALIT_UNIT[analit]
+    b1, b2 = v1.group(2), v2.group(2)
+    if re.fullmatch(re.escape(geleneksel), b1) and re.fullmatch(si, b2):
+        yon = 1
+    elif re.fullmatch(si, b1) and re.fullmatch(re.escape(geleneksel), b2):
+        yon = -1
+    else:
+        return None
+    a, b = sayi_dil(v1.group(1), en), sayi_dil(v2.group(1), en)
+    kat = KATSAYI[LAB_ANALIT_IS[analit]]
+    beklenen = a / kat if yon == 1 else a * kat
+    return beklenen, b, a, yon
+
+
+LAB_DEGER2 = re.compile(SAYI + r"(?:\s*[-–—]\s*(\d+(?:[.,]\d+)*))?\s*(g/dl|mg/dl|mmol/l|[µμu]mol/l|g/l)(?![\w/])")
+LAB_PAREN_ON = re.compile(r"\s*\(\s*(?:[≈=]\s*)?$")
+
+
+def lab_eslestir(k: str, onceki_analit: str | None):
+    """Bir birimdeki (ya da tablo hücresindeki) lab değerlerini bire bir eşler. Önce parantezli çift ('126 mg/dL (7,0 mmol/L)'; aralık
+    'a–b mg/dL (c–d mmol/L)' uç uca), sonra kalanlar sırayla en yakın komşuyla; her değer bir kez kullanılır.
+    Döner: ([(v1, v2, parantezli)], eşleşmeyen_dönüştürülebilir_değer_sayısı)."""
+    deg = []
+    for m in itertools.islice(LAB_DEGER2.finditer(k), 60):
+        deg.append({"m": m, "bas": m.start(), "son": m.end(), "lo": m.group(1), "hi": m.group(2), "birim": m.group(3),
+                    "klas": _lab_bicim(m.group(3)), "analit": lab_deger_analit(k, m.start(), onceki_analit)})
+    kullan, cift = set(), []
+    for i in range(len(deg) - 1):
+        a, c_ = deg[i], deg[i + 1]
+        if i in kullan or i + 1 in kullan or a["klas"] == c_["klas"] or a["analit"] != c_["analit"]:
+            continue
+        if LAB_PAREN_ON.fullmatch(k[a["son"]:c_["bas"]]) and re.match(r"\s*\)", k[c_["son"]:c_["son"] + 4]):
+            cift.append((a, c_, True))
+            kullan.update((i, i + 1))
+    kalan = [i for i in range(len(deg)) if i not in kullan]
+    j = 0
+    while j < len(kalan) - 1:
+        a, c_ = deg[kalan[j]], deg[kalan[j + 1]]
+        ara = k[a["son"]:c_["bas"]]
+        izin = re.sub(r"i\.e\.", "i_e_", ara)
+        uygun = (a["klas"] != c_["klas"] and a["analit"] in LAB_ANALIT_IS and a["analit"] == c_["analit"] and len(ara) <= 100
+                 and not CUMLE_SONU.search(izin) and not LAB_AYRAC.search(ara) and not lab_formul_mu(ara) and not re.search(r"\d", ara)
+                 and not LAB_DEN.match(ara) and not LAB_ONCE.search(k[max(0, a["bas"] - 30):a["bas"]]) and "(" not in ara and ")" not in ara)
+        if uygun:
+            cift.append((a, c_, False))
+            kullan.update((kalan[j], kalan[j + 1]))
+            j += 2
+        else:
+            j += 1
+    artan = sum(1 for i, d in enumerate(deg) if i not in kullan and d["analit"] in LAB_ANALIT_IS)
+    return cift, artan
+
+
+def lab_eslestir_raporla(c, ekle, bildirilen_cift, k, metin, bas_listesi, nolar, onceki_analit, en, tek_no=None):
+    cift, artan = lab_eslestir(k, onceki_analit)
+    for a, c_, paren in cift:
+        analit = a["analit"]
+        if analit not in LAB_ANALIT_IS:
+            continue
+        geleneksel, si = LAB_ANALIT_UNIT[analit]
+        if a["klas"] == "trad":
+            trad, sid, yon = a, c_, 1
+        else:
+            trad, sid, yon = c_, a, -1
+        if not (re.fullmatch(re.escape(geleneksel), trad["birim"]) and re.fullmatch(si, sid["birim"])):
+            continue
+        if bool(trad["hi"]) != bool(sid["hi"]):
+            continue                                   # biri aralık, biri tek değer: eşleme belirsiz
+        kat = KATSAYI[LAB_ANALIT_IS[analit]]
+        uclar = [(trad["lo"], sid["lo"])] + ([(trad["hi"], sid["hi"])] if trad["hi"] else [])
+        for x_t, x_s in uclar:
+            t_, s_ = sayi_dil(x_t, en), sayi_dil(x_s, en)
+            beklenen = t_ / kat
+            no_ = tek_no if tek_no is not None else nolar[max(bisect.bisect_right(bas_listesi, a["bas"]) - 1, 0)]
+            anahtar = (no_, round(t_, 6), round(s_, 6))
+            if _yakin(beklenen, s_) or abs(beklenen - s_) <= 0.15 or anahtar in bildirilen_cift:
+                continue
+            ara = k[a["son"]:c_["bas"]]
+            bitisik = len(ara) <= 40
+            ipucu = bool(LAB_IPUCU.search(ara) or LAB_IPUCU.search(k[c_["son"]:c_["son"] + 40]))
+            kesin = paren or (artan == 0 and (ipucu or bitisik))
+            bildirilen_cift.add(anahtar)
+            ifade = metin[a["bas"]:c_["son"]] if len(k) == len(metin) else k[a["bas"]:c_["son"]]
+            ekle("Doğruluk", "ENGEL" if kesin else "UYARI",
+                 f"Birim dönüşümü tutmuyor («{ifade}» → yaklaşık {round(beklenen, 2)})"
+                 + ("" if kesin else "; eşleme belirsiz (birimde eşleşmeyen lab değeri var)"),
+                 "Glukoz: mg/dL ÷ 18 = mmol/L; kreatinin: mg/dL × 88,4 = µmol/L; "
+                 "kolesterol (total/LDL/HDL): mg/dL ÷ 38,67 = mmol/L; trigliserit: mg/dL ÷ 88,5 = mmol/L",
+                 ornek=ifade, satir=no_)
+
+
+def lab_yapisal(c, ekle, bildirilen_cift: set) -> None:
+    """Düzyazıda (paragraf / liste maddesi / tablo satırı) ve tabloda aynı analitin iki birimli değerini eşleştirip dönüşümü denetler.
+    İpucu sözcüğü gerekmez: aynı cümlede, bitişik, zaman/olay ayracı ve formül olmayan iki değer dönüşüm sayılır."""
+    onceki_baslik_analit = None
+    for b in doz_birimleri(c):
+        metin = b["tam"]
+        k = en_kucuk(metin)
+        if len(k) > 4000:
+            k = k[:4000]                               # çok uzun birimde doğrusal süre (ilk 4000 karakter)
+        if b["baslik"] or not LAB_DEGER.search(k):
+            m_ = None
+            for m_ in LAB_ANALIT_RE.finditer(k):
+                pass
+            if m_ and b["baslik"]:
+                onceki_baslik_analit = "diger" if m_.group("diger") else ("ldl" if m_.group("ldl") and m_.group("ldl")[0] == "l"
+                                       else "hdl" if m_.group("ldl") else LAB_ANALIT_AD.get(m_.group("ad")))
+            continue
+        if b["tablo"] or LAB_FORMUL_KELIME.search(k):
+            continue                                   # tablo satırını lab_tablo (hücre sınırı bilen) işler
+        en = satir_dili(c, b["nolar"][0]) == "en"
+        lab_eslestir_raporla(c, ekle, bildirilen_cift, k, metin, b["bas"], b["nolar"], onceki_baslik_analit, en)
+    lab_tablo(c, ekle, bildirilen_cift)
+
+
+LAB_BIRIM_HUCRE = re.compile(r"(?<![\w/])(mg/dl|g/dl|mmol/l|[µμu]mol/l|g/l)(?![\w/])", re.I)
+LAB_SAYI_HUCRE = re.compile(r"^[~≈<>]?\s*(\d[\d.,]*)\s*$")
+
+
+def lab_tablo(c, ekle, bildirilen_cift: set) -> None:
+    """Tablo: satırda aynı analitin geleneksel ve SI birimli iki değeri (birim hücrede ya da sütun başlığında). Analit satır
+    etiketinde, sütun başlığında ya da tablonun üstündeki başlık/cümlede olabilir."""
+    satirlar = _borusuz_tablo(c["satirlar"])
+    onceki = {}
+    son_analit = None
+    for x in satirlar:
+        onceki[x["no"]] = son_analit
+        m_ = None
+        for m_ in LAB_ANALIT_RE.finditer(en_kucuk(x["tam"])):
+            pass
+        if m_ and not x["ham"].lstrip().startswith("|"):
+            son_analit = "diger" if m_.group("diger") else ("ldl" if m_.group("ldl") and m_.group("ldl")[0] == "l"
+                         else "hdl" if m_.group("ldl") else LAB_ANALIT_AD.get(m_.group("ad")))
+        elif x["tam"].strip() and not x["ham"].lstrip().startswith("|"):
+            son_analit = None if not m_ else son_analit
+    for tb in c["tbl"]:
+        blok, hucreler, ayirici = tb["blok"], tb["hucreler"], tb["ayirici"]
+        if not ayirici or ayirici[0] != 1:
+            continue
+        baslik = hucreler[0]
+        baslik_ad = [lab_deger_analit(en_kucuk(h), len(h), None) if LAB_ANALIT_RE.search(en_kucuk(h)) else None for h in baslik]
+        baslik_birim = []
+        for h in baslik:
+            m = LAB_BIRIM_HUCRE.search(h)
+            baslik_birim.append(m.group(1) if m else None)
+        tablo_analit = onceki.get(blok[0]["no"])
+        for j, (s, h) in enumerate(zip(blok, hucreler)):
+            if j in ayirici or j == 0:
+                continue
+            satir_etiket = None
+            if h and LAB_ANALIT_RE.search(en_kucuk(h[0])):
+                satir_etiket = lab_deger_analit(en_kucuk(h[0]), len(h[0]), None)
+            degerler = []                              # (analit, birim, sayı metni)
+            for ci, hucre in enumerate(h):
+                kh = en_kucuk(hucre)
+                vm = list(LAB_DEGER.finditer(kh))
+                analit = (lab_deger_analit(kh, vm[0].start(), None) if vm and LAB_ANALIT_RE.search(kh[:vm[0].start()]) else None) or \
+                    (baslik_ad[ci] if ci < len(baslik_ad) else None) or satir_etiket or tablo_analit
+                if len(vm) >= 2:
+                    lab_eslestir_raporla(c, ekle, bildirilen_cift, kh, hucre, [0], [s["no"]], analit or tablo_analit, satir_dili(c, s["no"]) == "en",
+                                         tek_no=s["no"])
+                elif len(vm) == 1:
+                    degerler.append((analit, vm[0].group(2), vm[0].group(1)))
+                elif not vm and ci < len(baslik_birim) and baslik_birim[ci] and LAB_SAYI_HUCRE.match(hucre.strip()):
+                    degerler.append((analit, baslik_birim[ci].lower(), LAB_SAYI_HUCRE.match(hucre.strip()).group(1)))
+            tek = {d[0] for d in degerler if d[0]}
+            if len(tek) == 1:                         # analit adı yalnız bir hücre/başlıkta ('Glucose' | 'mmol/L'): satırdaki öteki değerler de onundur
+                degerler = [(next(iter(tek)), d[1], d[2]) for d in degerler]
+            if len(degerler) < 2:
+                continue
+            en = satir_dili(c, s["no"]) == "en"
+            for analit in {d[0] for d in degerler if d[0] in LAB_ANALIT_IS}:
+                grup = [d for d in degerler if d[0] == analit]
+                trad = [d for d in grup if _lab_bicim(d[1]) == "trad"]
+                si = [d for d in grup if _lab_bicim(d[1]) == "si"]
+                if len(trad) != 1 or len(si) != 1:
+                    continue
+                geleneksel, si_bi = LAB_ANALIT_UNIT[analit]
+                if not (re.fullmatch(geleneksel, trad[0][1].lower()) and re.fullmatch(si_bi, si[0][1].lower().replace("μ", "µ"))):
+                    continue
+                a, b = sayi_dil(trad[0][2], en), sayi_dil(si[0][2], en)
+                beklenen = a / KATSAYI[LAB_ANALIT_IS[analit]]
+                anahtar = (s["no"], round(a, 6), round(b, 6))
+                if _yakin(beklenen, b) or abs(beklenen - b) <= 0.15 or anahtar in bildirilen_cift:
+                    continue
+                bildirilen_cift.add(anahtar)
+                ifade = f"{trad[0][2]} {trad[0][1]} | {si[0][2]} {si[0][1]}"
+                ekle("Doğruluk", "ENGEL", f"Birim dönüşümü tutmuyor («{ifade}» → yaklaşık {round(beklenen, 2)})",
+                     "Glukoz: mg/dL ÷ 18 = mmol/L; kreatinin: mg/dL × 88,4 = µmol/L; "
+                     "kolesterol (total/LDL/HDL): mg/dL ÷ 38,67 = mmol/L; trigliserit: mg/dL ÷ 88,5 = mmol/L",
+                     ornek=ifade, satir=s["no"])
 
 
 def k_lab_birim_karisik(c, ekle):
@@ -1612,6 +2596,7 @@ def k_lab_birim_karisik(c, ekle):
                              ornek=ifade, satir=st["no"])
         if g and s_ and not belge_donusum and not esitlik:
             karisik.append(analit)
+    lab_yapisal(c, ekle, bildirilen_cift)
     if karisik:
         ekle("Doğruluk", "UYARI", f"Aynı analit iki birimle ve dönüşüm yazılmadan ({', '.join(karisik)})",
              "Tek birim kullan ya da dönüşüm katsayısını yaz (ör. glukoz mg/dL ÷ 18 = mmol/L)")
@@ -1706,14 +2691,18 @@ HASTA_AD = re.compile(AD_ETIKET + r"[ \t]*[:：][ \t]*(" + AD + r"(?:[ \t]+" + A
 HASTA_AD_KUCUK = re.compile(r"(?i:\b(?:hasta(?:nın)?\s+(?:ad[ıi]|ismi|isim)(?:\s*(?:/|ve)?\s*soyad[ıi])?|ad[ıi]?\s+soyad[ıi]?"
                             r"|patient\s+name))[ \t]*[:：][ \t]*([a-zçğıöşü]{2,}[ \t]+[a-zçğıöşü]{2,}(?:[ \t]+[a-zçğıöşü]{2,})?)\b")
 HASTA_AD_VIRGUL = re.compile(r"(?i:\bhasta)[ \t]+(" + AD + r"[ \t]+" + AD + r")[ \t]*,[ \t]*\d{1,3}[ \t]*yaşında")
+# Danışan / Client / Olgu / Case N etiketi 'Hasta:' gibidir; numaralı biçimleri ('Case 2:', 'Vaka 3:') de
+HASTA_AD_ETIKET2 = re.compile(r"(?i:\b(?:danışan|client|olgu|case|vaka|hasta|patient)(?:\s*(?:no\.?|nr\.?|#)?\s*\d+)?)[ \t]*[:：][ \t]*("
+                              + AD + r"(?:[ \t]+" + AD + r"){1,2})")
 HASTA_BAS_HARF = re.compile(AD_ETIKET + r"[ \t]*[:：][ \t]*([A-ZÇĞİÖŞÜ]\.[ \t]*" + AD + r")")
-PROTOKOL_KESIN = re.compile(r"(?i:\b(?:protokol|mrn|hbys)\s*(?:no|numarası|nr)?\.?)[ \t]*[:：]?[ \t]*([A-Z]{0,3}-?\d{4,})(?![/\d])")
+PROTOKOL_KESIN = re.compile(r"(?i:\b(?:protokol|mrn|hbys)\s*(?:no|numarası|nr)?\.?)[ \t]*[:：]?[ \t]*([A-Z]{0,3}-?\d{4,}(?:/\d{3,})?)(?![/\d])")
 PROTOKOL_VAKA = re.compile(r"(?i:\b(?:dosya|hasta|kayıt|arşiv|yatış)\s*(?:no|numarası|nr)\.?)[ \t]*[:：]?[ \t]*([A-Z]{0,3}-?\d{4,})(?![/\d])")
 AYLAR = (r"(?:ocak|şubat|mart|nisan|mayıs|haziran|temmuz|ağustos|eylül|ekim|kasım|aralık|january|february|march|april"
          r"|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sept?|oct|nov|dec)\.?")
 DOGUM = re.compile(r"(?i:\bdoğum\s+tarihi|\bd\.\s?t\.|\bdt\b|date of birth|\bdob\b)[ \t]*[:：]?[ \t]*"
                    r"(\d{1,2}[./-]\d{1,2}[./-](\d{2,4})|\d{1,2}[ \t]+" + "(?i:" + AYLAR + r")[ \t]+(\d{4})"
                    r"|(\d{4})-\d{1,2}-\d{1,2})")
+DOGUM_PAREN = re.compile(r"\(\s*(?i:d\.|b\.|doğ\.|doğum|born|dob)\s*[:：]?\s*(\d{1,2}[./-]\d{1,2}[./-]\d{4}|\d{4}-\d{1,2}-\d{1,2})\s*\)")
 YATIS = re.compile(r"(?i:yatış|taburcu|başvuru|muayene)\s+tarihi\s*[:：]?\s*\d{1,2}[./-]\d{1,2}[./-]\d{4}")
 TELEFON = re.compile(r"(?:\+90|\b0)\s*5\d{2}[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}\b")
 EPOSTA = re.compile(r"\b[\w.+-]+@[\w-]+\.[\w.]+\b")
@@ -1769,7 +2758,11 @@ YAS_EN = r"\d{1,3}[- ]year[- ]old"
 ADSOY = AD + r"(?:[ \t]+" + AD + r"){1,2}"
 YAS_AD = [re.compile(r"(?<!\w)" + YAS_TR + r"[ \t]+(" + ADSOY + r")"),
           re.compile(YAS_EN + r"(?:[ \t]+(?i:woman|man|male|female|girl|boy|patient|adult|child|lady|gentleman|person))?[ \t]*,?[ \t]*(" + ADSOY + r")(?=[ \t]*[,.;:]|[ \t]+(?:[a-z]))"),
-          re.compile(r"(?<![\w])(" + ADSOY + r")[ \t]*,[ \t]*(?:(?i:an?|aged)[ \t]+)?(?:" + YAS_EN + r"|\d{1,3}\s*yaşında)")]
+          re.compile(r"(?<![\w])(" + ADSOY + r")[ \t]*,[ \t]*(?:(?i:an?|aged)[ \t]+)?(?:" + YAS_EN + r"|\d{1,3}\s*yaşında)"),
+          re.compile(r"(?<!\w)\d{4}[ \t]+doğumlu[ \t]+(" + ADSOY + r")"),
+          re.compile(r"(?<![\w])(" + ADSOY + r")[ \t]*,[ \t]*\d{1,3}[ \t]*,"),                                  # Maria Lindqvist, 61, arrives …
+          re.compile(r"(?<![\w])(?:(?i:hasta|patient|danışan)[ \t]+)?(" + ADSOY + r")[ \t]*\([ \t]*\d{1,3}[ \t]*(?:yaşında|yaşlı|years?\b|yo\b|y\b)"),  # Kemal Arslan (82 yaşında, 58 kg)
+          re.compile(YAS_EN + r"(?:[ \t]+[a-z]{3,}){1,2}[ \t]*,[ \t]*(" + ADSOY + r")(?=[ \t]*[,.;:])")]            # a 34-year-old teacher, Sarah Whitfield,
 # Yaş kalıbından sonra gelen büyük harfli sözcük bu listedeyse ad değildir (cinsiyet/hasta sözcüğü, kurum, yer, bölüm)
 YAS_AD_DEGIL = {"hasta", "kadın", "erkek", "çocuk", "bebek", "kız", "oğlan", "genç", "yetişkin", "erişkin", "patient", "man", "woman",
                 "male", "female", "girl", "boy", "adult", "child", "infant", "lady", "gentleman", "person", "emergency", "department",
@@ -1787,6 +2780,60 @@ YAS_VAKA = re.compile(VAKA_BAGLAM.pattern + r"|emergency|hospital|\bward\b|prese
                       r"|\bacil|hastane|başvur|şikâyet|şikayet|taburcu|muayene|semptom|belirti", re.I)
 
 
+# Klinik eylem: vaka bağlamının cümle düzeyindeki kanıtı. Genel 'klinik', 'hemşire' sözcüğü eylem değildir.
+KLINIK_EYLEM = re.compile(r"başvur|getiril|getirdi|şikâyet|şikayet|yakınma|acile|acil\s+servis|yatırıl|yatış|taburcu|muayene|kabul\s+edil|sevk\s+edil"
+                          r"|tedavi\s+(?:edil|altın|başlan)|arriv(?:ed|es|ing)\b|present(?:ed|s|ing)\b(?!\s+(?:the|a|an|his|her|their|its|our|this|that|these|those|results?|findings?|data|paper|idea|theory|case|work)\b)|admitted|admission|complain|referred|brought\s+(?:in|to)"
+                          r"|\bsessions?\b|\bseans|homework|ev\s+ödevi|terapi\s+(?:seans|not)|exposure\s+therapy"
+                          r"|was\s+(?:seen|treated|diagnosed)|diagnosed\s+with|hospitali[sz]ed|prescribed|underwent|ameliyat|reçete|semptom|symptom"
+                          r"|wheez|hives|nöbet\s+geçir|teşhis|tanısı\s+kon|tanı\s+kon|vital\s+(?:bulgu|sign)|\bED\b|emergency\s+(?:department|room)", re.I)
+# Tarihî/kamusal kişi işareti (yapısal): hükümdar sırası ya da unvan, 1900 öncesi/açık geçmiş yıl, meslek + geçmiş anlatı fiili
+TARIH_UNVAN = re.compile(r"\bthrone\b|\btaht|\bkral\w*|\bkraliçe|\bimparator|\bsultan|\bking\b|\bqueen\b|\bemperor\b|\btsar\b|\bczar\b|\bpharaoh|"
+                         r"firavun|\bprince|\bprens|\bduke\b|\bdük\b|\bcaliph|halife|\b(?:[IVXL]{2,7}|II)\b(?!\s*(?:diabet|tip|type))")
+TARIH_YIL = re.compile(r"\b(?:in|during|by|until|since|around|circa|after|before|of)\s+(\d{4})\b|\b(\d{4})\s*['’]?\s*(?:da|de|ta|te)\b|"
+                       r"\b(\d{4})\s+yılında|\b(\d{4})['’]?(?:den|dan|ten|tan)\b", re.I)
+TARIH_MESLEK = re.compile(r"\b(?:nurse|physician|doctor|researcher|scientist|surgeon|psychologist|professor|hemşire|doktor|hekim|araştırmacı|"
+                          r"bilim\s*insanı|cerrah|psikolog|profesör)\b", re.I)
+TARIH_FIIL = re.compile(r"\b(?:led|founded|published|established|pioneered|invented|discovered|developed|wrote|taught|worked|worked\s+at|"
+                        r"kurdu|kurmuş|yayımladı|yayımlamış|geliştirdi|geliştirmiş|çalışan|çalıştı|yazdı|keşfetti|keşfetmiş|öncülük|yönetti)\b", re.I)
+VAKA_BASLIK = re.compile(r"worked\s+example|\bcases?\b|scenario|vignette|"
+                         r"örnek\s+(?:olgu|vaka|sunum)|\bolgu|\bvaka|senaryo|çözümlü\s+örnek|örnek\s+sunum", re.I)
+
+
+# 'Case: Dosing Sheet' gibi başlık söz öbekleri ad değildir
+ETIKET_AD_DEGIL = {"study", "studies", "report", "reports", "example", "examples", "presentation", "sheet", "frame", "analysis", "review",
+                   "management", "summary", "series", "notes", "note", "definition", "history", "scenario", "discussion", "outcome",
+                   "plan", "table", "dosing", "dose", "protocol", "guideline", "overview", "introduction", "conclusion", "exercise",
+                   "çalışması", "raporu", "örnek", "örneği", "sunumu", "özeti", "tablosu", "planı", "analizi", "tartışma", "giriş", "sonuç"}
+
+
+YAS_VAKA_GENIS = re.compile(YAS_VAKA.pattern + "|" + KLINIK_EYLEM.pattern, re.I)
+
+
+def cumle_penceresi(t: str, bas: int, son: int) -> str:
+    """Eşleşmeyi içeren cümle (çok uzun satırda ≤ 600 karakterlik pencere; ondalık nokta cümleyi bölmez)."""
+    a = max(0, bas - 300)
+    onceki = t[a:bas]
+    ayrac = [m.end() for m in re.finditer(r"(?<=[.!?])\s+(?=[A-ZÇĞİÖŞÜ0-9\"“(])", onceki)]
+    bas_c = a + (ayrac[-1] if ayrac else 0)
+    sonraki = t[son:son + 300]
+    m2 = re.search(r"(?<=[.!?])\s+(?=[A-ZÇĞİÖŞÜ0-9\"“(])", sonraki)
+    return t[bas_c:son + (m2.start() if m2 else len(sonraki))]
+
+
+def tarihi_isaret(cumle: str, yil: int) -> bool:
+    """Cümle tarihî/kamusal kişiyi anlatıyor mu: yapısal işaretler (ad listesi yok)."""
+    for y in YIL.findall(cumle):
+        if int(y) < 1900 or int(y) <= yil - 40:
+            return True
+    for m in TARIH_YIL.finditer(cumle):
+        y = int(next(g for g in m.groups() if g))
+        if y <= yil - 10:
+            return True
+    if TARIH_UNVAN.search(cumle):
+        return True
+    return bool(TARIH_MESLEK.search(cumle) and TARIH_FIIL.search(cumle))
+
+
 def yas_ad_mi(ad: str) -> bool:
     soz = [tr_kucuk(w) for w in ad.split()]
     if any(w.startswith(KLINIK_KOK) or w.startswith(YAS_AD_KURUM) or w in YAS_AD_DEGIL
@@ -1799,9 +2846,14 @@ def k_hasta_kimlik(c, ekle):
     """Ortak çekirdek: her alanda (HIPAA Safe Harbor tanımlayıcıları; kimliksizleştirme yönetmeliği)."""
     paragraf_kurmaca = paragraf_bayragi(c, KURMACA)
     paragraf_vaka = paragraf_bayragi(c, VAKA_BAGLAM)
-    paragraf_yas_vaka = paragraf_bayragi(c, YAS_VAKA)
+    paragraf_yas_vaka = paragraf_bayragi(c, YAS_VAKA_GENIS)
     saglik = bool(c["alanlar"] & SAGLIK_ALANLAR)
     satirlar = tarama_satirlari(c)
+    bolum_vaka, son_baslik = {}, False             # satır no → bölüm başlığı vaka bağlamı mı ('Worked example', 'Case', 'Senaryo'…)
+    for x in c["satirlar"]:
+        if x["ham"].lstrip().startswith("#"):
+            son_baslik = bool(VAKA_BASLIK.search(x["tam"]))
+        bolum_vaka[x["no"]] = son_baslik
     for st in satirlar:
         t, no = st["tam"], st["no"]
         kurmaca = paragraf_kurmaca.get(id(st), bool(KURMACA.search(t)))
@@ -1814,16 +2866,35 @@ def k_hasta_kimlik(c, ekle):
                     ekle("Doğruluk", duzey, f"Vakada hasta adı ({_maskele(m.group(1))}){not_}",
                          "Adı çıkar; yaş ve cinsiyetle anlat ('58 yaşında erkek hasta')", ornek=m.group(1), satir=no)
         bildirilen_ad = {m.group(1) for desen in (HASTA_AD, HASTA_AD_VIRGUL, HASTA_AD_KUCUK) for m in desen.finditer(t)}
+        yas_vaka_par = paragraf_yas_vaka.get(id(st), bool(YAS_VAKA_GENIS.search(t))) or bolum_vaka.get(no, False)
+        for m in itertools.islice(HASTA_AD_ETIKET2.finditer(t), 100):       # Danışan: / Client: / Olgu: / Case 2:
+            ad = m.group(1)
+            if ad in bildirilen_ad or not _ad_mi(ad) or not yas_ad_mi(ad) or t.startswith("#") \
+                    or any(w in ETIKET_AD_DEGIL for w in tr_kucuk(ad).split()):
+                continue
+            bildirilen_ad.add(ad)
+            c["maske"].add(ad)
+            if saglik or yas_vaka_par:
+                ekle("Doğruluk", duzey, f"Vakada hasta adı ({_maskele(ad)}){not_}",
+                     "Adı çıkar; yaş ve cinsiyetle anlat ('58 yaşında erkek hasta')", ornek=ad, satir=no)
+            else:
+                ekle("Doğruluk", "UYARI", f"Etiketli ad-soyad ({_maskele(ad)}); vaka bağlamı yok",
+                     "Gerçek bir kişiyse adı çıkar; yaş ve cinsiyetle anlat", ornek=ad, satir=no)
         for desen in YAS_AD:
-            for m in desen.finditer(t):
+            for m in itertools.islice(desen.finditer(t), 100):
                 ad = m.group(1)
                 if ad in bildirilen_ad or not yas_ad_mi(ad):
                     continue
                 bildirilen_ad.add(ad)
-                vaka_ = paragraf_yas_vaka.get(id(st), bool(YAS_VAKA.search(t)))
+                cumle = cumle_penceresi(t, m.start(), m.end())
+                klinik = bool(KLINIK_EYLEM.search(cumle))
+                tarihi = tarihi_isaret(cumle, c["yil"])
+                vaka_ = (klinik or yas_vaka_par) and not (tarihi and not klinik)
                 c["maske"].add(ad)
                 if not vaka_:
-                    ekle("Doğruluk", "UYARI", f"Yaşın yanında ad-soyad ({_maskele(ad)}); vaka bağlamı yok, biyografiyse sorun değil",
+                    ek_not = "; tarihî/kamusal kişi gibi görünüyor (yıl, unvan ya da meslek + anlatı)" if tarihi and not klinik else \
+                        "; vaka bağlamı yok, biyografiyse sorun değil"
+                    ekle("Doğruluk", "UYARI", f"Yaşın yanında ad-soyad ({_maskele(ad)}){ek_not}",
                          "Gerçek bir hasta/öğrenciyse adı çıkar; yaş ve cinsiyetle anlat", ornek=ad, satir=no)
                 else:
                     ekle("Doğruluk", duzey, f"Vakada hasta adı ({_maskele(ad)}){not_}",
@@ -1839,17 +2910,18 @@ def k_hasta_kimlik(c, ekle):
             c["maske"].add(m.group(1))
             ekle("Doğruluk", duzey, f"Vakada protokol/dosya numarası{not_}", "Numarayı çıkar", ornek=m.group(1), satir=no)
         vaka = paragraf_vaka.get(id(st), bool(VAKA_BAGLAM.search(t)))
-        for m in DOGUM.finditer(t):
-            yil = m.group(2) or m.group(3) or m.group(4) or ""
+        dogumlar = [(m.group(1), m.group(2) or m.group(3) or m.group(4) or "") for m in DOGUM.finditer(t)]
+        dogumlar += [(m.group(1), (re.search(r"(?<!\d)(\d{4})(?!\d)", m.group(1)) or [None, ""])[1]) for m in DOGUM_PAREN.finditer(t)]
+        for tarih_metni, yil in dogumlar:
             yil = (int(yil) + (2000 if int(yil) <= c["yil"] % 100 else 1900) if len(yil) == 2 else int(yil)) if yil.isdigit() else 0
             if yil and yil < 1930 and not vaka:
                 continue          # tarihsel kişi (vaka bağlamı yok)
-            c["maske"].add(m.group(1))
+            c["maske"].add(tarih_metni)
             if vaka or saglik:
-                ekle("Doğruluk", duzey, f"Vakada tam doğum tarihi{not_}", "Tam tarihi çıkar; yaşı yaz", ornek=m.group(1), satir=no)
+                ekle("Doğruluk", duzey, f"Vakada tam doğum tarihi{not_}", "Tam tarihi çıkar; yaşı yaz", ornek=tarih_metni, satir=no)
             else:
                 ekle("Doğruluk", "UYARI", "Tam doğum tarihi (vaka bağlamı yok; biyografiyse sorun değil)",
-                     "Gerçek bir öğrenci/hasta değilse yoksay; kişisel veriyse çıkar", ornek=m.group(1), satir=no)
+                     "Gerçek bir öğrenci/hasta değilse yoksay; kişisel veriyse çıkar", ornek=tarih_metni, satir=no)
         for m in YATIS.finditer(t):
             ekle("Doğruluk", "UYARI", "Vakada tam yatış/başvuru tarihi", "Yalnız yıl ya da göreli süre yaz ('3. gün')",
                  ornek=m.group(0), satir=no)
@@ -2322,16 +3394,49 @@ CEKIRDEK_KONTROLLER = ["hasta_kimlik", "tc_kimlik"]
 def cekirdek(c, ek, profil_alan):
     gor, govde, meta, olcum = c["gor"], c["govde"], c["meta"], c["olcum"]
     gevsek = bool(c["alanlar"] & SAYISAL_ALANLAR)
-    kiril = [s for s in karisik_sozcukler(gor) if KIRIL.search(s)]
-    yunan = [s for s in karisik_sozcukler(gor) if YUNAN.search(s) and not KIRIL.search(s)]
-    if kiril:
-        ek("alfabe")("Doğruluk", "HATA", f"Latin harfle karışık Kiril harfi ({len(kiril)} sözcük: {', '.join(sorted(set(kiril))[:3])})",
-             "--duzelt benzer Kiril harfleri Latin harfe çevirir", ornek=kiril[0])
+    kiril_satir, yunan_satir = [], []             # (satır no, sözcükler): karışık alfabe geçen her satır (S12)
+    for x in c["satirlar"]:
+        if not x["gor"] or (not KIRIL.search(x["gor"]) and not YUNAN.search(x["gor"])):
+            continue
+        kar = karisik_sozcukler(x["gor"])
+        k_ = [w for w in kar if KIRIL.search(w)]
+        y_ = [w for w in kar if YUNAN.search(w) and not KIRIL.search(w)]
+        if k_:
+            kiril_satir.append((x["no"], k_))
+        if y_:
+            yunan_satir.append((x["no"], y_))
+    kiril = [w for _, ws in kiril_satir for w in ws]
+    yunan = [w for _, ws in yunan_satir for w in ws]
+    if kiril_satir:
+        for sira, (no, ws) in enumerate(kiril_satir[:ALFABE_SATIR_TAVAN]):
+            kalan = len(kiril_satir) - ALFABE_SATIR_TAVAN
+            ek_not = f" (+{kalan} satır daha)" if sira == ALFABE_SATIR_TAVAN - 1 and kalan > 0 else ""
+            ek("alfabe")("Doğruluk", "HATA", f"Latin harfle karışık Kiril harfi ({len(ws)} sözcük: {', '.join(sorted(set(ws))[:3])}){ek_not}"
+                         if sira else f"Latin harfle karışık Kiril harfi ({len(kiril)} sözcük, {len(kiril_satir)} satır: {', '.join(sorted(set(kiril))[:3])}){ek_not}",
+                 "--duzelt benzer Kiril harfleri Latin harfe çevirir", ornek=ws[0], satir=no)
     if yunan and not gevsek:
         uzun = [s for s in yunan if len(s) >= 4 and len(LATIN.findall(s)) >= 2]
-        ek("alfabe")("Doğruluk", "HATA" if uzun else "UYARI",
-             f"Latin harfle karışık Yunan harfi ({len(yunan)} sözcük: {', '.join(sorted(set(yunan))[:3])})",
-             "Sembol değilse Latin harfe çevir; formülse alanı belirt (alan: fizik)", ornek=yunan[0])
+        for sira, (no, ws) in enumerate(yunan_satir[:ALFABE_SATIR_TAVAN]):
+            kalan = len(yunan_satir) - ALFABE_SATIR_TAVAN
+            ek_not = f" (+{kalan} satır daha)" if sira == ALFABE_SATIR_TAVAN - 1 and kalan > 0 else ""
+            ek("alfabe")("Doğruluk", "HATA" if uzun else "UYARI",
+                         f"Latin harfle karışık Yunan harfi ({len(ws)} sözcük: {', '.join(sorted(set(ws))[:3])}){ek_not}",
+                         "Sembol değilse Latin harfe çevir; formülse alanı belirt (alan: fizik)", ornek=ws[0], satir=no)
+    for x in c["satirlar"][:]:                    # S15: URL / e-posta / dosya yolu / bağlantı hedefinde karışık alfabe: --duzelt dokunmaz, elle bak
+        if x["kod"] or not x["ham"] or not (KIRIL.search(x["ham"]) or YUNAN.search(x["ham"])):
+            continue
+        for b_, s_ in _baglanti_araliklari(x["ham"]):
+            parca = x["ham"][b_:s_]
+            if LATIN.search(parca) and (KIRIL.search(parca) or YUNAN.search(parca)):
+                ek("alfabe")("Doğruluk", "UYARI", "Bağlantıda/adreste Latin harfle karışık Kiril ya da Yunan harf: elle bak (--duzelt dokunmaz)",
+                             "Adres, e-posta ve dosya yolundaki harf değiştirilmez; doğru adresi kaynaktan kontrol et", ornek=parca[:60], satir=x["no"])
+                break
+    ph = [(x["no"], x["ham"], x["gor"]) for x in c["satirlar"] if not x["kod"] and "???" in x["ham"]]
+    for no, ham, gor_ in ph:
+        # hücrenin tamamı / satır sonu / cümle ortasında bağımsız jeton (iki yanı boşluk, satır ucu ya da noktalama; sözcüğe yapışık 'Neden???' değil)
+        if re.search(r"\|\s*\?{3,}\s*(?=\|)|\|\s*\?{3,}\s*$|[:=]\s*\?{3,}\s*$", ham) or YER_TUTUCU_JETON.search(gor_):
+            ek("yer_tutucu")("Doğruluk", "HATA", "Bitmemiş yer işareti (???) tablo hücresinde ya da satır sonunda", "Tamamla ya da sil",
+                             ornek=re.search(r"[^|:=]*\?{3,}", ham).group(0).strip() or "???", satir=no)
     for m in list(YER_TUTUCU.finditer(gor))[:20]:
         ek("yer_tutucu")("Doğruluk", "HATA", "Bitmemiş yer işareti (TODO/FIXME/???) öğrenciye gidiyor", "Tamamla ya da sil", ornek=m.group(0).strip())
 
@@ -2368,7 +3473,10 @@ def cekirdek(c, ek, profil_alan):
     if olcum and olcum.get("metin_var", True):
         kutu = olcum.get("kutu", olcum.get("yazi", 0.0))
         if kutu:
-            en_az, en_cok = kutu / KUTU_ORAN_UST, kutu / KUTU_ORAN_ALT
+            alt_, ust_ = KUTU_ORAN_ALT, KUTU_ORAN_UST
+            if olcum.get("oran"):
+                alt_, ust_ = olcum["oran"][0] * (1 - ORAN_PAYI), olcum["oran"][1] * (1 + ORAN_PAYI)
+            en_az, en_cok = kutu / ust_, kutu / alt_
             if en_cok < PUNTO_HATA:
                 ek("pdf_yazi")("Okunaklılık", "HATA", f"Yazı çok küçük (tahmini {en_az:.1f}–{en_cok:.1f} pt; kelime kutusu {kutu} pt)",
                      "Gövdeyi ≥ 11 pt, tabloyu ≥ 9 pt yap")
@@ -2515,7 +3623,7 @@ def elle_gecerli(anahtar: str, deger: str) -> bool:
 
 # ── Denetim ──
 def denetle(metin: str, olcum: dict | None = None, alan: str | None = None, dil: str | None = None,
-            yil: int | None = None, pdf_metin: str | None = None) -> dict:
+            yil: int | None = None, pdf_metin: str | None = None, pdf_olculemedi: bool = False) -> dict:
     """metin: .md içeriği; olcum: pdf_olc() sonucu ya da None; alan/dil: tespiti geçmek için; yil: değerlendirme yılı;
     pdf_metin: PDF'ten çıkarılan metin (verilirse kimlik ve ilaç güvenlik kontrolleri PDF'te de çalışır)."""
     profil = profiller()
@@ -2541,11 +3649,20 @@ def denetle(metin: str, olcum: dict | None = None, alan: str | None = None, dil:
     alanlar = {a, *ek_alanlar}
     tur = re.sub(r"[\s_]+", "-", meta.get("tur", "").strip().lower())
     govde_kodsuz = re.sub(r"^```.*?^```", " ", govde, flags=re.S | re.M) if govde.count("```") < 2000 else govde
+    tbl = tablo_ayristir(satirlar)
+    ogr_harita = tablo_ogretici_haritasi(tbl)
+    for x in satirlar:
+        if ogr_harita.get(x["no"]):
+            x["ogretici"] = True
+    tablo_ = tablolar(satirlar)
+    for x in tablo_:
+        if ogr_harita.get(x["no"]):
+            x["ogretici"] = True
     c = {"meta": meta, "govde": govde, "govde_kodsuz": govde_kodsuz, "gor": gor, "tam": tam, "kucuk": tr_kucuk(gor),
          "kucuk_en": en_kucuk(gor), "tur": tur, "olcum": olcum, "dil": dil_kodu, "satirlar": satirlar,
-         "tablo": tablolar(satirlar), "okunuslar": OKUNUS.findall(gor), "bicim": bicim_tespit(meta, govde, gor, olcum),
+         "tablo": tablo_, "okunuslar": OKUNUS.findall(gor), "bicim": bicim_tespit(meta, govde, gor, olcum),
          "alanlar": alanlar, "yil": yil or date.today().year, "maske": set(),
-         "satir_dili": satir_dili_, "belge_dili": belge_dili}
+         "satir_dili": satir_dili_, "belge_dili": belge_dili, "tbl": tbl}
     bulgu: list[dict] = []
 
     def ekleyici(kural, kaynak="md"):
@@ -2555,6 +3672,13 @@ def denetle(metin: str, olcum: dict | None = None, alan: str | None = None, dil:
         return ekle
 
     cekirdek(c, ekleyici, profil[a])
+    genis = max((s_["ham"].count("|") for tb in tbl for s_ in tb["blok"]), default=0)
+    if genis > TABLO_SUTUN_TAVAN + 1:
+        ekleyici("tablo_genis")("Doğruluk", "UYARI", f"Tablo çok geniş (~{genis - 1} sütun): her satırın ilk {TABLO_SUTUN_TAVAN} sütunu denetlendi, sonrası taranmadı",
+                                "Tabloyu böl; geniş tablo öğrenciye de okunaksızdır")
+    if pdf_olculemedi:
+        ekleyici("pdf_okunamadi")("Okunaklılık", "UYARI", "Aynı adlı PDF var ama ölçülemedi (bozuk ya da okunamadı): PDF denetlenmedi",
+                                  "PDF'i yeniden üret; karar PDF ölçülmeden verilemez")
     if tur and tur not in SINAMA_ISTEYEN + OKUNUS_ISTEMEYEN + ("kilavuz", "indeks", "yonetim", "sinav", "kelime-listesi"):
         ekleyici("tur")("Kendini sınama", "UYARI", f"Bilinmeyen tur: '{meta.get('tur')}'",
                         "Geçerli değerler: konu-anlatimi, rehber, ders-notu, pano, kilavuz, indeks, yonetim; "
@@ -2565,7 +3689,7 @@ def denetle(metin: str, olcum: dict | None = None, alan: str | None = None, dil:
             if k not in kontroller:
                 kontroller.append(k)
     risk_izi = any(ILAC_ADI.search(x["tam"]) or (DOZ_IZI.search(x["tam"]) and DOZ_BAGLAM.search(x["tam"]))
-                   or LAB_IZI.search(x["tam"]) for x in satirlar + c["tablo"])
+                   or LAB_IZI.search(x["tam"]) or RISK_ORAN.search(x["tam"]) for x in satirlar + c["tablo"])
     risk = risk_izi and not all(k in kontroller for k in RISK_KONTROLLERI)
     if risk:
         kontroller += [k for k in RISK_KONTROLLERI if k not in kontroller]
@@ -2576,7 +3700,7 @@ def denetle(metin: str, olcum: dict | None = None, alan: str | None = None, dil:
     if pdf_metin:
         ps = [{"no": None, "tam": satir_hazirla(x), "gor": satir_hazirla(x), "kod": False, "ham": x}
               for x in pdf_metin.splitlines()]
-        cp = dict(c, satirlar=ps, tablo=[], tam="\n".join(x["tam"] for x in ps), gor="\n".join(x["gor"] for x in ps))
+        cp = dict(c, satirlar=ps, tablo=[], tbl=tablo_ayristir(ps), _dz=None, tam="\n".join(x["tam"] for x in ps), gor="\n".join(x["gor"] for x in ps))
         _, satir_sus_md = susturmalar(metin)
         mevcut = {}
         for b in bulgu:
@@ -2663,7 +3787,7 @@ def denetle(metin: str, olcum: dict | None = None, alan: str | None = None, dil:
     elle_eksik = [k for k, v in elle.items() if not v]
     if engel or hata:
         karar = "yayına engel var"
-    elif elle_eksik or belge_engel_susturuldu:
+    elif elle_eksik or belge_engel_susturuldu or pdf_olculemedi:
         karar = "karar için denetim eksik"
     else:
         karar = "tanımlı kapsamda uygun"
@@ -2678,10 +3802,35 @@ def denetle(metin: str, olcum: dict | None = None, alan: str | None = None, dil:
             "sayfa": olcum["sayfa"] if olcum else None,
             "kutu_pt": (olcum.get("kutu", olcum.get("yazi")) if olcum else None),
             "sonuc": "ENGEL" if engel else "HATA" if hata else ("UYARI" if bulgu else "TEMIZ"),
-            "karar": karar}
+            "pdf_olculemedi": bool(pdf_olculemedi), "karar": karar}
 
 
 # ── Düzeltme ──
+BAGLANTI_DESENLERI = [re.compile(r"(?i)\b(?:https?|ftp)://[^\s<>\"')\]]+"), re.compile(r"(?i)\bwww\.[^\s<>\"')\]]+"),
+                      re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+"),
+                      re.compile(r"\]\(\s*<?([^)\s>]+)"),                                   # Markdown bağlantı hedefi
+                      re.compile(r"(?:(?<=[\s(\"'])|^)(?:~|\.{1,2})?/(?:[^\s/<>()\"']+/)+[^\s/<>()\"']+"),   # dosya yolu (en az 2 parça)
+                      re.compile(r"\b[A-Za-z]:\\[^\s<>\"']+")]
+
+
+def _baglanti_araliklari(metin: str) -> list[tuple[int, int]]:
+    """URL, e-posta, dosya yolu ve Markdown bağlantı hedefinin aralıkları ((başlangıç, bitiş), birleşik)."""
+    ar = []
+    for d in BAGLANTI_DESENLERI:
+        for i, m in enumerate(d.finditer(metin)):
+            if i >= 500:
+                break
+            ar.append(m.span(1) if m.re.groups and m.group(1) else m.span())
+    ar.sort()
+    birlesik = []
+    for a, b in ar:
+        if birlesik and a <= birlesik[-1][1]:
+            birlesik[-1] = (birlesik[-1][0], max(birlesik[-1][1], b))
+        else:
+            birlesik.append((a, b))
+    return birlesik
+
+
 def _korunan_araliklar(govde: str) -> list[tuple[int, int]]:
     """Kod (``` ~~~ çit, girintili blok, satır içi), formül ($…$, $$…$$, \\[…\\], \\(…\\)) ve <pre>/<code>."""
     araliklar = []
@@ -2741,7 +3890,13 @@ def duzelt(metin: str, alan: str = "genel") -> tuple[str, list[str]]:
         return "".join(parca(x) if i % 2 == 0 else x for i, x in enumerate(re.split(r"(['’])", m.group(0))))
 
     parcalar, son = [], 0
-    for a, b in _korunan_araliklar(govde):
+    birles = []
+    for a, b in sorted(_korunan_araliklar(govde) + _baglanti_araliklari(govde)):
+        if birles and a <= birles[-1][1]:
+            birles[-1] = (birles[-1][0], max(birles[-1][1], b))
+        else:
+            birles.append((a, b))
+    for a, b in birles:
         if a >= son:
             parcalar.append(SOZCUK.sub(cevir, govde[son:a]))
             parcalar.append(govde[a:b])
@@ -2882,13 +4037,14 @@ def main(argv: list[str]) -> int:
     if arg["pdf"] and not pdf.is_file():
         print(f"PDF yok: {pdf}", file=sys.stderr)
         return 2
-    olcum, pdf_metin = None, None
+    olcum, pdf_metin, pdf_olculemedi = None, None, False
     if pdf.is_file() and md_degisti:
         notlar.append("md düzeltildiği için eski PDF ölçülmedi; PDF'i yeniden üretip tekrar çalıştır")
     elif pdf.is_file():
         olcum = pdf_olc(pdf)
         if olcum is None:
             notlar.append("PDF ölçülemedi (pdftotext/pdfimages yok ya da PDF okunamadı)")
+            pdf_olculemedi = True
         elif not olcum["metin_var"]:
             notlar.append("PDF'te metin katmanı yok (taranmış olabilir): yazı boyu, sayfa ve PDF içeriği ölçülmedi")
         else:
@@ -2896,7 +4052,7 @@ def main(argv: list[str]) -> int:
                                encoding="utf-8", errors="replace")
             pdf_metin = r.stdout if r.returncode == 0 else None
     try:
-        s = denetle(metin, olcum, arg["alan"], arg["dil"], yil, pdf_metin)
+        s = denetle(metin, olcum, arg["alan"], arg["dil"], yil, pdf_metin, pdf_olculemedi)
     except ValueError as e:
         print(str(e), file=sys.stderr)
         return 2
